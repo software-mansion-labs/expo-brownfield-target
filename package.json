@@ -12,9 +12,45 @@
   },
   "license": "MIT",
   "author": "",
-  "type": "commonjs",
-  "main": "index.js",
+  "main": "./build/commonjs/index",
+  "module": "./build/module/index",
+  "types": "./build/typescript/index.d.ts",
+  "source": "./plugin/index",
+  "react-native": "./plugin/index",
+  "exports": {
+    ".": {
+      "source": "./plugin/index.ts",
+      "types": "./build/typescript/index.d.ts",
+      "default": "./build/module/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clean": "rimraf ./build",
+    "prepack": "npm run clean && bob build"
+  },
+  "devDependencies": {
+    "expo": "^54.0.18",
+    "expo-module-scripts": "^5.0.7",
+    "react-native-builder-bob": "^0.40.13",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.9.3"
+  },
+  "peerDependencies": {
+    "expo": "*"
+  },
+  "react-native-builder-bob": {
+    "source": "./plugin",
+    "output": "./build",
+    "targets": [
+      "commonjs",
+      "module",
+      [
+        "typescript",
+        {
+          "project": "tsconfig.json"
+        }
+      ]
+    ]
   }
 }
