@@ -31,6 +31,7 @@
   },
   "devDependencies": {
     "expo": "^54.0.18",
+    "expo-build-properties": "^1.0.9",
     "expo-module-scripts": "^5.0.7",
     "react-native-builder-bob": "^0.40.13",
     "rimraf": "^6.0.1",

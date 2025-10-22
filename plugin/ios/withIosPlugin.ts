@@ -1,7 +1,12 @@
 import type { ConfigPlugin } from "expo/config-plugins";
+import {
+  withBuildPropertiesPlugin,
+  withPodfilePropertiesPlugin,
+} from "./plugins";
 
 const withIosPlugin: ConfigPlugin = (config) => {
-  console.log("Test: iOS plugin");
+  config = withPodfilePropertiesPlugin(config);
+  config = withBuildPropertiesPlugin(config);
   return config;
 };
 
