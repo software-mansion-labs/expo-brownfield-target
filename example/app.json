@@ -41,7 +41,14 @@
           }
         }
       ],
-      "expo-brownfield-target"
+      [
+        "expo-brownfield-target", 
+        { 
+          "ios": { 
+            "targetName": "MyBrownfieldApp" 
+          } 
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

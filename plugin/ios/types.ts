@@ -1,3 +1,11 @@
+export interface PluginConfig {
+  targetName: string;
+}
+
+export type IOSPluginProps = Partial<PluginConfig>;
+
+export type PluginProps = IOSPluginProps | undefined;
+
 export interface PbxNativeTarget {
   isa: string;
   name: string;

@@ -31,7 +31,7 @@ module Pod
             end
 
             targets_with_modules_provider.each do |target|
-              next unless target.target_definition.name == "BrownfieldApp"
+              next unless target.target_definition.name == $BROWNFIELD_TARGET_NAME
 
               target_name = target.target_definition.name
               native_target = project.native_targets.find { |native_target| native_target.name == target_name }

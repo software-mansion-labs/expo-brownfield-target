@@ -6,12 +6,17 @@ import {
   withPodfilePropertiesPlugin,
   withXcodeProjectPlugin,
 } from './plugins';
+import type { PluginProps } from './types';
+import { getPluginConfig } from './utils';
 
-const withIosPlugin: ConfigPlugin = (config) => {
-  config = withXcodeProjectPlugin(config);
-  config = withPodfilePlugin(config);
+const withIosPlugin: ConfigPlugin<PluginProps> = (config, props) => {
+  const pluginConfig = getPluginConfig(props, config);
+
+  config = withXcodeProjectPlugin(config, pluginConfig);
+  config = withPodfilePlugin(config, pluginConfig);
   config = withPodfilePropertiesPlugin(config);
   config = withBuildPropertiesPlugin(config);
+
   return config;
 };
 

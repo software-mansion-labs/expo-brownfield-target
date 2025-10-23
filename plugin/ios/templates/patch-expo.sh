@@ -1,4 +1,4 @@
-FILE="${SRCROOT}/Pods/Target Support Files/Pods-expobrownfieldtest-BrownfieldApp/ExpoModulesProvider.swift"
+FILE="${SRCROOT}/Pods/Target Support Files/Pods-${{projectName}}-${{targetName}}/ExpoModulesProvider.swift"
 
 if [ -f "$FILE" ]; then
   echo "Patching $FILE to hide Expo from public interface"

@@ -1,4 +1,5 @@
 import type { XcodeProject } from '@expo/config-plugins';
+import { readdirSync } from 'node:fs';
 
 import type { Group, PbxGroup, Target } from '../types';
 import { Constants } from './constants';
@@ -53,6 +54,8 @@ export const createGroup = (
 export const configureBuildPhases = (
   project: XcodeProject,
   target: Target,
+  targetName: string,
+  projectName: string,
   files: string[] = [],
 ) => {
   const nativeTargetSection = project.pbxNativeTargetSection();
@@ -81,7 +84,7 @@ export const configureBuildPhases = (
 
   destTarget.buildPhases = [...destTarget.buildPhases, bundlePhase];
 
-  const script = readFromTemplate('patch-expo.sh');
+  const script = readFromTemplate('patch-expo.sh', { targetName, projectName });
   project.addBuildPhase(
     [],
     Constants.BuildPhase.Script,
@@ -194,4 +197,18 @@ const getCommonBuildSettings = (
     SKIP_INSTALL: '"NO"',
     ENABLE_MODULE_VERIFIER: '"NO"',
   };
+};
+
+export const inferProjectName = (platformProjectRoot: string): string => {
+  const files = readdirSync(platformProjectRoot);
+  const xcodeproj = files.find((file) => file.endsWith('.xcodeproj'));
+
+  if (!xcodeproj) {
+    throw new Error(
+      `Error: Failed to infer the Xcode project name
+      \`config.modRequest.projectName\` is undefined and .xcodeproj cannot be found at \`platformProjectRoot\``,
+    );
+  }
+
+  return xcodeproj.replace('.xcodeproj', '');
 };
