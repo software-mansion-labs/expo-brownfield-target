@@ -1,5 +1,7 @@
-import { withXcodeProject, type ConfigPlugin } from "expo/config-plugins";
-import path from "node:path";
+import path from 'node:path';
+
+import { type ConfigPlugin, withXcodeProject } from 'expo/config-plugins';
+
 import {
   configureBuildPhases,
   configureBuildSettings,
@@ -9,7 +11,7 @@ import {
   createFramework,
   createGroup,
   mkdir,
-} from "../utils";
+} from '../utils';
 
 const withXcodeProjectPlugin: ConfigPlugin = (config) => {
   return withXcodeProject(config, (config) => {
@@ -27,27 +29,27 @@ const withXcodeProjectPlugin: ConfigPlugin = (config) => {
     const target = createFramework(
       xcodeProject,
       Constants.Target.Name,
-      bundleIdentifier
+      bundleIdentifier,
     );
 
     // Create a directory 'BrownfieldApp' for the framework files
-    const groupPath = path.join(projectRoot, "ios", Constants.Target.Name);
+    const groupPath = path.join(projectRoot, 'ios', Constants.Target.Name);
     mkdir(groupPath);
     // Create the brownfield entrypoint based on the template
-    createFileFromTemplate("ExpoApp.swift", groupPath);
+    createFileFromTemplate('ExpoApp.swift', groupPath);
     // Create and properly add a new group for the framework
     createGroup(xcodeProject, Constants.Target.Name, groupPath, [
-      "ExpoApp.swift",
+      'ExpoApp.swift',
     ]);
 
     // Create 'Info.plist' and '<target-name>.entitlements' based on the templates
-    createFileFromTemplate("Info.plist", groupPath, {
+    createFileFromTemplate('Info.plist', groupPath, {
       targetName: Constants.Target.Name,
     });
     createFileFromTemplateAs(
-      "Target.entitlements",
+      'Target.entitlements',
       groupPath,
-      Constants.Target.Name + ".entitlements"
+      Constants.Target.Name + '.entitlements',
     );
 
     // Configure build phases:
@@ -61,8 +63,8 @@ const withXcodeProjectPlugin: ConfigPlugin = (config) => {
     configureBuildSettings(
       xcodeProject,
       Constants.Target.Name,
-      config.ios?.buildNumber || "1",
-      bundleIdentifier
+      config.ios?.buildNumber || '1',
+      bundleIdentifier,
     );
 
     return config;

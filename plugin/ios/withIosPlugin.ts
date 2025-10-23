@@ -1,10 +1,11 @@
-import type { ConfigPlugin } from "expo/config-plugins";
+import type { ConfigPlugin } from 'expo/config-plugins';
+
 import {
   withBuildPropertiesPlugin,
   withPodfilePlugin,
   withPodfilePropertiesPlugin,
   withXcodeProjectPlugin,
-} from "./plugins";
+} from './plugins';
 
 const withIosPlugin: ConfigPlugin = (config) => {
   config = withXcodeProjectPlugin(config);

@@ -1,7 +1,7 @@
-import type { ConfigPlugin } from "expo/config-plugins";
+import type { ConfigPlugin } from 'expo/config-plugins';
 
 const withAndroidPlugin: ConfigPlugin = (config) => {
-  console.log("Test: Android plugin");
+  console.log('Test: Android plugin');
   return config;
 };
 

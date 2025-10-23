@@ -1,24 +1,25 @@
-import type { XcodeProject } from "@expo/config-plugins";
-import { Constants } from "./constants";
-import { readFromTemplate } from "./filesystem";
-import type { Group, PbxGroup, Target } from "../types";
+import type { XcodeProject } from '@expo/config-plugins';
+
+import type { Group, PbxGroup, Target } from '../types';
+import { Constants } from './constants';
+import { readFromTemplate } from './filesystem';
 
 export const createFramework = (
   project: XcodeProject,
   targetName: string,
-  bundleIdentifier: string
+  bundleIdentifier: string,
 ): Target => {
   return project.addTarget(
     targetName,
     Constants.Target.Framework,
     targetName,
-    bundleIdentifier
+    bundleIdentifier,
   ) as unknown as Target;
 };
 
 export const getGroupByUUID = (
   project: XcodeProject,
-  uuid: string
+  uuid: string,
 ): PbxGroup => {
   return project.getPBXGroupByKey(uuid) as unknown as PbxGroup;
 };
@@ -27,18 +28,18 @@ export const createGroup = (
   project: XcodeProject,
   name: string,
   path: string,
-  files: string[] = []
+  files: string[] = [],
 ): Group => {
   const group = project.addPbxGroup(
     files,
     name,
     path,
-    '"<group>"'
+    '"<group>"',
   ) as unknown as Group;
 
   const mainGroup = getGroupByUUID(
     project,
-    project.getFirstProject().firstProject.mainGroup
+    project.getFirstProject().firstProject.mainGroup,
   );
 
   mainGroup.children = [
@@ -52,39 +53,41 @@ export const createGroup = (
 export const configureBuildPhases = (
   project: XcodeProject,
   target: Target,
-  files: string[] = []
+  files: string[] = [],
 ) => {
   const nativeTargetSection = project.pbxNativeTargetSection();
 
   const mainTargetKey = Object.keys(nativeTargetSection).find(
     (key) =>
-      !key.endsWith("_comment") &&
+      !key.endsWith('_comment') &&
       nativeTargetSection[key].productType ===
-        Constants.Target.ApplicationProductType
+        Constants.Target.ApplicationProductType,
   );
   const mainTarget = nativeTargetSection[mainTargetKey];
 
+  // TODO: Fix types
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const bundlePhase = mainTarget.buildPhases.find((phase: any) =>
-    phase.comment.includes(Constants.BuildPhase.RNBundlePhase)
+    phase.comment.includes(Constants.BuildPhase.RNBundlePhase),
   );
 
   const destTargetKey = Object.keys(nativeTargetSection).find(
     (key) =>
-      !key.endsWith("_comment") &&
+      !key.endsWith('_comment') &&
       nativeTargetSection[key].productType !==
-        Constants.Target.ApplicationProductType
+        Constants.Target.ApplicationProductType,
   );
   const destTarget = nativeTargetSection[destTargetKey];
 
   destTarget.buildPhases = [...destTarget.buildPhases, bundlePhase];
 
-  const script = readFromTemplate("patch-expo.sh");
+  const script = readFromTemplate('patch-expo.sh');
   project.addBuildPhase(
     [],
     Constants.BuildPhase.Script,
     Constants.BuildPhase.PatchExpoPhase,
     target.uuid,
-    { shellPath: "/bin/sh", shellScript: script }
+    { shellPath: '/bin/sh', shellScript: script },
   );
 
   project.addBuildPhase(
@@ -93,7 +96,7 @@ export const configureBuildPhases = (
     target.pbxNativeTarget.name,
     target.uuid,
     Constants.Target.Framework,
-    Constants.Utils.XCEmptyString
+    Constants.Utils.XCEmptyString,
   );
 };
 
@@ -101,25 +104,25 @@ export const configureBuildSettings = (
   project: XcodeProject,
   targetName: string,
   currentProjectVersion: string,
-  bundleIdentifier: string
+  bundleIdentifier: string,
 ) => {
   const commonBuildSettings = getCommonBuildSettings(
     targetName,
     currentProjectVersion,
-    bundleIdentifier
+    bundleIdentifier,
   );
 
   const buildConfigurationList = [
     {
-      name: "Debug",
-      isa: "XCBuildConfiguration",
+      name: 'Debug',
+      isa: 'XCBuildConfiguration',
       buildSettings: {
         ...commonBuildSettings,
       },
     },
     {
-      name: "Release",
-      isa: "XCBuildConfiguration",
+      name: 'Release',
+      isa: 'XCBuildConfiguration',
       buildSettings: {
         ...commonBuildSettings,
       },
@@ -128,17 +131,17 @@ export const configureBuildSettings = (
 
   const configurationList = project.addXCConfigurationList(
     buildConfigurationList,
-    "Release",
-    "Build configuration list for PBXNativeTarget"
+    'Release',
+    'Build configuration list for PBXNativeTarget',
   );
 
   const nativeTargetSection = project.pbxNativeTargetSection();
 
   const destTargetKey = Object.keys(nativeTargetSection).find(
     (key) =>
-      !key.endsWith("_comment") &&
+      !key.endsWith('_comment') &&
       nativeTargetSection[key].productType !==
-        Constants.Target.ApplicationProductType
+        Constants.Target.ApplicationProductType,
   );
   const destTarget = nativeTargetSection[destTargetKey];
 
@@ -148,7 +151,7 @@ export const configureBuildSettings = (
 const getCommonBuildSettings = (
   targetName: string,
   currentProjectVersion: string,
-  bundleIdentifier: string
+  bundleIdentifier: string,
 ): Record<string, string> => {
   return {
     /* ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -173,7 +176,7 @@ const getCommonBuildSettings = (
     SWIFT_EMIT_LOC_STRINGS = YES;
     SWIFT_OPTIMIZATION_LEVEL = "-Onone"; */
     PRODUCT_NAME: `"$(TARGET_NAME)"`,
-    SWIFT_VERSION: "5.0",
+    SWIFT_VERSION: '5.0',
     TARGETED_DEVICE_FAMILY: `"1,2"`,
     INFOPLIST_FILE: `${targetName}/Info.plist`,
     CURRENT_PROJECT_VERSION: `"${currentProjectVersion}"`,

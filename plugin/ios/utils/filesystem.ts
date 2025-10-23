@@ -1,5 +1,5 @@
-import fs, { writeFileSync } from "node:fs";
-import path from "node:path";
+import fs, { writeFileSync } from 'node:fs';
+import path from 'node:path';
 
 export const mkdir = (path: string, recursive: boolean = false) => {
   fs.mkdirSync(path, {
@@ -9,7 +9,7 @@ export const mkdir = (path: string, recursive: boolean = false) => {
 
 const interpolateVariables = (
   str: string,
-  variables: Record<string, unknown>
+  variables: Record<string, unknown>,
 ): string => {
   const variableRegex = /\${{[A-z0-9]+}}/;
   let match = variableRegex.exec(str);
@@ -22,10 +22,8 @@ const interpolateVariables = (
   return str;
 };
 
-const readTemplate = (
-  template: string,
-): string => {
-  const templatesPath = path.join(__filename, "../..", "templates");
+const readTemplate = (template: string): string => {
+  const templatesPath = path.join(__filename, '../..', 'templates');
   const templatePath = path.join(templatesPath, template);
 
   if (!fs.existsSync(templatePath)) {
@@ -39,7 +37,7 @@ const createFileFromTemplateInternal = (
   template: string,
   at: string,
   dest: string,
-  variables?: Record<string, unknown>
+  variables?: Record<string, unknown>,
 ) => {
   let templateContents = readTemplate(template);
   if (variables) {
@@ -53,7 +51,7 @@ const createFileFromTemplateInternal = (
 export const createFileFromTemplate = (
   template: string,
   at: string,
-  variables?: Record<string, unknown>
+  variables?: Record<string, unknown>,
 ) => {
   createFileFromTemplateInternal(template, at, template, variables);
 };
@@ -62,14 +60,14 @@ export const createFileFromTemplateAs = (
   template: string,
   at: string,
   as: string,
-  variables?: Record<string, unknown>
+  variables?: Record<string, unknown>,
 ) => {
   createFileFromTemplateInternal(template, at, as, variables);
 };
 
 export const readFromTemplate = (
   template: string,
-  variables?: Record<string, unknown>
+  variables?: Record<string, unknown>,
 ): string => {
   let templateContents = readTemplate(template);
   if (variables) {

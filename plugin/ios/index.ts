@@ -1,1 +1,1 @@
-export { default } from "./withIosPlugin";
+export { default } from './withIosPlugin';

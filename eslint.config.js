@@ -1,16 +1,11 @@
 import js from '@eslint/js';
-import tseslint from 'typescript-eslint';
 import prettierPluginRecommendedConfig from 'eslint-plugin-prettier/recommended';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import tseslint from 'typescript-eslint';
 
 export default [
   {
-    ignores: [
-      'app.plugin.js',
-      'build/',
-      'example/',
-      'node_modules/',
-    ],
+    ignores: ['app.plugin.js', 'build/', 'example/', 'node_modules/'],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
