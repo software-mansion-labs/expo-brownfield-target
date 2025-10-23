@@ -1,4 +1,5 @@
 export interface PluginConfig {
+  bundleIdentifier: string;
   targetName: string;
 }
 

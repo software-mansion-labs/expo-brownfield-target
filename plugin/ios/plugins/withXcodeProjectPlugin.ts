@@ -5,7 +5,6 @@ import { type ConfigPlugin, withXcodeProject } from 'expo/config-plugins';
 import {
   configureBuildPhases,
   configureBuildSettings,
-  Constants,
   createFileFromTemplate,
   createFileFromTemplateAs,
   createFramework,
@@ -26,18 +25,11 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
     const projectRoot = config.modRequest.projectRoot;
     const xcodeProject = config.modResults;
 
-    // Create the bundle identifier for the framework
-    // Either based on value from Expo config
-    // Or the default fallback ('com.example...')
-    const bundleIdentifier = `${
-      config.ios?.bundleIdentifier ?? Constants.Target.FallbackBundleIdentifier
-    }.${pluginConfig.targetName}`;
-
     // Create a target for the framework
     const target = createFramework(
       xcodeProject,
       pluginConfig.targetName,
-      bundleIdentifier,
+      pluginConfig.bundleIdentifier,
     );
 
     // Create a directory for the framework files
@@ -52,6 +44,7 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
 
     // Create 'Info.plist' and '<target-name>.entitlements' based on the templates
     createFileFromTemplate('Info.plist', groupPath, {
+      bundleIdentifier: pluginConfig.bundleIdentifier,
       targetName: pluginConfig.targetName,
     });
     createFileFromTemplateAs(
@@ -76,7 +69,7 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
       xcodeProject,
       pluginConfig.targetName,
       config.ios?.buildNumber || '1',
-      bundleIdentifier,
+      pluginConfig.bundleIdentifier,
     );
 
     return config;

@@ -4,7 +4,7 @@
 <plist version="1.0">
   <dict>
     <key>CFBundleIdentifier</key>
-    <string>com.pmleczek.brownfield.${{targetName}}</string>
+    <string>${{bundleIdentifier}}</string>
     <key>CFBundleName</key>
     <string>${{targetName}}</string>
     <key>CFBundlePackageType</key>
