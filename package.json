@@ -1,22 +1,16 @@
 {
   "name": "expo-brownfield-target",
   "version": "0.0.1",
-  "description": "",
-  "homepage": "https://github.com/software-mansion-labs/expo-brownfield-target#readme",
-  "bugs": {
-    "url": "https://github.com/software-mansion-labs/expo-brownfield-target/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/software-mansion-labs/expo-brownfield-target.git"
-  },
   "license": "MIT",
-  "files": [
-    "app.plugin.js",
-    "build/**/*",
-    "plugin/**/*"
+  "description": "Expo config plugin extending native projects for building app as a brownfield.",
+  "keywords": [
+    "react-native",
+    "expo",
+    "brownfield",
+    "ios",
+    "apple",
+    "android"
   ],
-  "author": "",
   "main": "./build/commonjs/index",
   "module": "./build/module/index",
   "types": "./build/typescript/index.d.ts",
@@ -31,9 +25,24 @@
     "./package.json": "./package.json",
     "./app.plugin.js": "./app.plugin.js"
   },
+  "files": [
+    "app.plugin.js",
+    "build/**/*",
+    "plugin/**/*"
+  ],
   "scripts": {
     "clean": "rimraf ./build",
     "prepack": "npm run clean && bob build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/software-mansion-labs/expo-brownfield-target.git"
+  },
+  "author": "Patryk Mleczek <patryk.mleczek@swmansion.com> (https://github.com/pmleczek)",
+  "readmeFilename": "README.md",
+  "homepage": "https://github.com/software-mansion-labs/expo-brownfield-target#readme",
+  "bugs": {
+    "url": "https://github.com/software-mansion-labs/expo-brownfield-target/issues"
   },
   "devDependencies": {
     "expo": "^54.0.18",
