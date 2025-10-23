@@ -25,7 +25,7 @@ const interpolateVariables = (
 const readTemplate = (
   template: string,
 ): string => {
-  const templatesPath = path.join(__filename, "../", "templates");
+  const templatesPath = path.join(__filename, "../..", "templates");
   const templatePath = path.join(templatesPath, template);
 
   if (!fs.existsSync(templatePath)) {
