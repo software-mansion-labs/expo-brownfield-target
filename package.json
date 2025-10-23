@@ -32,6 +32,8 @@
   ],
   "scripts": {
     "clean": "rimraf ./build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "prepack": "npm run clean && bob build"
   },
   "repository": {
@@ -45,12 +47,18 @@
     "url": "https://github.com/software-mansion-labs/expo-brownfield-target/issues"
   },
   "devDependencies": {
+    "eslint": "^9.38.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
     "expo": "^54.0.18",
     "expo-build-properties": "^1.0.9",
     "expo-module-scripts": "^5.0.7",
     "react-native-builder-bob": "^0.40.13",
+    "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.24.1"
   },
   "peerDependencies": {
     "expo": "*"
