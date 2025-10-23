@@ -1,8 +1,7 @@
 {
   "extends": "expo-module-scripts/tsconfig.plugin",
   "compilerOptions": {
-    "baseUrl": "./plugin",
-    "outDir": "./build",
+    "baseUrl": "./",
     "allowJs": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,

@@ -1,6 +1,6 @@
-import withAndroidPlugin from "android";
+import withAndroidPlugin from "./android";
 import type { ConfigPlugin } from "expo/config-plugins";
-import withIosPlugin from "ios";
+import withIosPlugin from "./ios";
 
 const withExpoBrownfieldTargetPlugin: ConfigPlugin = (config) => {
   config = withAndroidPlugin(config);

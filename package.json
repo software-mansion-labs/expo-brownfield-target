@@ -11,6 +11,11 @@
     "url": "git+https://github.com/software-mansion-labs/expo-brownfield-target.git"
   },
   "license": "MIT",
+  "files": [
+    "app.plugin.js",
+    "build/**/*",
+    "plugin/**/*"
+  ],
   "author": "",
   "main": "./build/commonjs/index",
   "module": "./build/module/index",
@@ -23,7 +28,8 @@
       "types": "./build/typescript/index.d.ts",
       "default": "./build/module/index.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./app.plugin.js": "./app.plugin.js"
   },
   "scripts": {
     "clean": "rimraf ./build",
