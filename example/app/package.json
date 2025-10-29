@@ -16,7 +16,7 @@
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/native": "^7.1.8",
     "expo": "~54.0.19",
-    "expo-brownfield-target": "file:../",
+    "expo-brownfield-target": "file:../../",
     "expo-constants": "~18.0.10",
     "expo-font": "~14.0.9",
     "expo-haptics": "~15.0.7",
