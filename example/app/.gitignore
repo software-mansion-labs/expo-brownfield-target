@@ -41,6 +41,3 @@ app-example
 # generated native folders
 /ios
 /android
-
-# brownfield artifacts
-/artifacts
