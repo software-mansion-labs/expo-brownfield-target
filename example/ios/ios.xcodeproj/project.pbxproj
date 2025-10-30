@@ -6,8 +6,32 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		870283722EB3759500A9E139 /* hermes.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 870283712EB3759500A9E139 /* hermes.xcframework */; };
+		870283732EB3759500A9E139 /* hermes.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 870283712EB3759500A9E139 /* hermes.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		870283762EB3759E00A9E139 /* MyBrownfieldApp.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 870283752EB3759E00A9E139 /* MyBrownfieldApp.xcframework */; };
+		870283772EB3759E00A9E139 /* MyBrownfieldApp.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 870283752EB3759E00A9E139 /* MyBrownfieldApp.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		870283742EB3759500A9E139 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				870283732EB3759500A9E139 /* hermes.xcframework in Embed Frameworks */,
+				870283772EB3759E00A9E139 /* MyBrownfieldApp.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		8702832A2EB363F300A9E139 /* ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ios.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		870283712EB3759500A9E139 /* hermes.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = hermes.xcframework; path = ../artifacts/hermes.xcframework; sourceTree = "<group>"; };
+		870283752EB3759E00A9E139 /* MyBrownfieldApp.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MyBrownfieldApp.xcframework; path = ../artifacts/MyBrownfieldApp.xcframework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -36,6 +60,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				870283722EB3759500A9E139 /* hermes.xcframework in Frameworks */,
+				870283762EB3759E00A9E139 /* MyBrownfieldApp.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -46,6 +72,7 @@
 			isa = PBXGroup;
 			children = (
 				8702832C2EB363F300A9E139 /* ios */,
+				870283702EB3759500A9E139 /* Frameworks */,
 				8702832B2EB363F300A9E139 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -58,6 +85,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		870283702EB3759500A9E139 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				870283752EB3759E00A9E139 /* MyBrownfieldApp.xcframework */,
+				870283712EB3759500A9E139 /* hermes.xcframework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -68,6 +104,7 @@
 				870283262EB363F300A9E139 /* Sources */,
 				870283272EB363F300A9E139 /* Frameworks */,
 				870283282EB363F300A9E139 /* Resources */,
+				870283742EB3759500A9E139 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
