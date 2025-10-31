@@ -11,19 +11,24 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.fragment.app.FragmentActivity
 import com.pmleczek.android.ui.theme.AndroidTheme
-import com.pmleczek.brownfield
+import com.pmleczek.expobrownfieldtargetexample.brownfield.ReactNativeHostManager
+import com.pmleczek.expobrownfieldtargetexample.brownfield.ReactNativeViewFactory
 
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        ReactNativeHostManager.shared.initialize(this.application)
+
         enableEdgeToEdge()
         setContent {
             AndroidTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+                    ReactNativeViewFactory.createFrameLayout(
+                        this@MainActivity.applicationContext,
+                        this@MainActivity,
                     )
                 }
             }
