@@ -62,9 +62,23 @@ const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (
       'android',
     );
 
-    // Add build.gradle file
+    // Add build.gradle.kts file
     createFileFromTemplate(
-      'build.gradle',
+      'build.gradle.kts',
+      path.join(pluginConfig.projectRoot, 'android/brownfield'),
+      'android',
+    );
+
+    // Add proguard-rules.pro file
+    createFileFromTemplate(
+      'proguard-rules.pro',
+      path.join(pluginConfig.projectRoot, 'android/brownfield'),
+      'android',
+    );
+
+    // Add consumer-rules.pro file
+    createFileFromTemplate(
+      'consumer-rules.pro',
       path.join(pluginConfig.projectRoot, 'android/brownfield'),
       'android',
     );

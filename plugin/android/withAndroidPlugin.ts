@@ -1,5 +1,9 @@
 import type { ConfigPlugin } from 'expo/config-plugins';
-import { withProjectFilesPlugin, withSettingsGradlePlugin } from './plugins';
+import {
+  withProjectBuildGradlePlugin,
+  withProjectFilesPlugin,
+  withSettingsGradlePlugin,
+} from './plugins';
 import { getPluginConfig } from './utils';
 import type { PluginProps } from './types';
 
@@ -8,6 +12,7 @@ const withAndroidPlugin: ConfigPlugin<PluginProps> = (config, props) => {
 
   config = withProjectFilesPlugin(config, pluginConfig);
   config = withSettingsGradlePlugin(config);
+  config = withProjectBuildGradlePlugin(config);
 
   return config;
 };
