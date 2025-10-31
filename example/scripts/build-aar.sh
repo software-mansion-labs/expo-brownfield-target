@@ -10,3 +10,6 @@ echo "Building debug AAR..."
 
 echo "Building release AAR..."
 ./gradlew :brownfield:assembleRelease
+
+echo "Publishing AAR to local Maven repo..."
+./gradlew :brownfield:publishMavenAarPublicationToMavenLocal

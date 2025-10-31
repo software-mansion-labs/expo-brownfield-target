@@ -173,18 +173,28 @@ afterEvaluate {
                 // This will now successfully retrieve the component after it has been created
                 from components.release 
 
-                pom {
+               pom {
                     withXml {
                         def dependenciesNode = asNode().get("dependencies").first()
-                        dependenciesNode.children()
-                            .filter { it instanceof Node }
-                            .findAll {
-                                def artifactId = it.artifactId.text()
-                                def group = it.groupId.text()
+                        def childrenAsList = new ArrayList(dependenciesNode.children())
+                        def nodesToRemove = []
 
-                                return isExpoDep(group, artifactId) || group == rootProject.name
+                        childrenAsList.each { node ->
+                            // Check if it's a valid Node
+                            if (node instanceof Node) {
+                                def artifactId = node.artifactId.text()
+                                def group = node.groupId.text()
+                                
+                                // Apply your filter logic
+                                if (isExpoDep(group, artifactId) || group == rootProject.name) {
+                                    nodesToRemove.add(node)
+                                }
                             }
-                            .each { dependenciesNode.remove(it) }
+                        }
+
+                        nodesToRemove.each { nodeToRemove ->
+                            dependenciesNode.remove(nodeToRemove)
+                        }
                     }
                 }
             }
