@@ -22,7 +22,7 @@ react {
 }
 
 android {
-    namespace = "com.example.mylibrary"
+    namespace = "com.pmleczek.expobrownfieldtargetexample.brownfield"
     compileSdk = 36
 
     buildFeatures {
@@ -36,6 +36,8 @@ android {
         consumerProguardFiles("consumer-rules.pro")
         buildConfigField("boolean", "IS_NEW_ARCHITECTURE_ENABLED", properties["newArchEnabled"].toString())
         buildConfigField("boolean", "IS_HERMES_ENABLED", properties["hermesEnabled"].toString())
+        // TODO: Examine this var in more detail
+        buildConfigField("boolean", "IS_EDGE_TO_EDGE_ENABLED", "false")
     }
 
     buildTypes {
@@ -54,6 +56,25 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+
+    packaging {
+      jniLibs {
+        // if (!hermesEnabled) {
+        //   excludes += "lib/x86/libjsctooling.so"
+        //   excludes += "lib/x86_64/libjsctooling.so"
+        //   excludes += "lib/armeabi-v7a/libjsctooling.so"
+        //   excludes += "lib/arm64-v8a/libjsctooling.so"
+        // }
+
+        // Pick first libworklets.so to resolve conflicts between
+        // react-native-reanimated and react-native-worklets
+        pickFirsts += "lib/armeabi-v7a/libworklets.so"
+        pickFirsts += "lib/arm64-v8a/libworklets.so"
+        pickFirsts += "lib/x86/libworklets.so"
+        pickFirsts += "lib/x86_64/libworklets.so"
+      }
+    }
+
     publishing {
         singleVariant("release") {
             withSourcesJar()
@@ -101,7 +122,7 @@ fun isExpoDep(group: String, artifactId: String): Boolean {
 publishing {
     publications {
         create<MavenPublication>("mavenAar") {
-            groupId = "com.pmleczek"
+            groupId = "com.pmleczek.expobrownfieldtargetexample"
             artifactId = "brownfield"
             version = "0.0.1-local"
             afterEvaluate {
@@ -161,4 +182,21 @@ tasks.register("removeDependenciesFromModuleFile") {
 
 tasks.named("generateMetadataFileForMavenAarPublication") {
     finalizedBy("removeDependenciesFromModuleFile")
+}
+
+afterEvaluate {
+  listOf("mergeReleaseJniLibFolders", "mergeDebugJniLibFolders").forEach { taskName ->
+    tasks.named(taskName) {
+      doFirst {
+        // Remove duplicate libworklets.so from react-native-worklets to avoid conflicts
+        // with react-native-reanimated which also provides the same library
+        fileTree("$buildDir/intermediates/exploded-aar/expo-brownfield-target-example/react-native-worklets") {
+          include("**/jni/**/libworklets.so")
+        }.forEach { file ->
+          println("Removing duplicate libworklets.so: ${file.path}")
+          file.delete()
+        }
+      }
+    }
+  }
 }

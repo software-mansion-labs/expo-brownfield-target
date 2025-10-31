@@ -28,7 +28,9 @@ export const getPackagePath = (projectRoot: string) => {
     throw new Error();
   }
 
-  return stripPackagePath(mainApplicationFile);
+  const stripped = stripPackagePath(mainApplicationFile);
+
+  return path.join(stripped, 'brownfield');
 };
 
 const stripPackagePath = (mainApplicationPath: string): string => {
