@@ -5,6 +5,9 @@ cd app/android
 
 echo "Building brownfield library..."
 
+echo "Running ./gradlew clean..."
+./gradlew :brownfield:clean
+
 echo "Building debug AAR..."
 ./gradlew :brownfield:assembleDebug
 
