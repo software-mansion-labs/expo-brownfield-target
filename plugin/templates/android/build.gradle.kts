@@ -1,5 +1,6 @@
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import expo.modules.plugin.ExpoGradleExtension
 
 plugins {
     id("com.android.library")
@@ -83,8 +84,13 @@ android {
     }
 }
 
-dependencies {
+val gradleExtension = project.gradle.extensions.findByType(ExpoGradleExtension::class.java)
+    ?: throw IllegalStateException("`ExpoGradleExtension` not found. Please, make sure that `useExpoModules` was called in `settings.gradle`.")
+val config = gradleExtension.config
+val (prebuiltProjects, projects) = config.allProjects.partition { it.usePublication }
 
+
+dependencies {
     api("com.facebook.react:react-android:0.81.5")
     api("com.facebook.react:hermes-android:0.81.5")
 
@@ -97,6 +103,16 @@ dependencies {
     api("com.github.penfeizhou.android.animation:glide-plugin:3.0.5")
     api("com.caverock:androidsvg-aar:1.4")
 
+    // Embed the subproject Expo packages
+    projects.forEach { proj ->
+      embed(project(":${proj.name}"))
+    }
+
+    // Embed the prebuilt Expo packages
+    prebuiltProjects.forEach { proj ->
+      val publication = requireNotNull(proj.publication)
+      embed("${publication.groupId}:${publication.artifactId}:${publication.version}")
+    }
 
     implementation("androidx.core:core-ktx:1.16.0")
     implementation("androidx.appcompat:appcompat:1.7.1")
