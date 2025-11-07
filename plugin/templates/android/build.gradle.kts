@@ -114,6 +114,13 @@ dependencies {
       embed("${publication.groupId}:${publication.artifactId}:${publication.version}")
     }
 
+    // We need to explicitly include Coil 
+    // because of issues related to it in Screens
+    val COIL_VERSION = "3.0.4"
+    implementation("io.coil-kt.coil3:coil:${COIL_VERSION}")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:${COIL_VERSION}")
+    implementation("io.coil-kt.coil3:coil-svg:${COIL_VERSION}")
+
     implementation("androidx.core:core-ktx:1.16.0")
     implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("com.google.android.material:material:1.12.0")

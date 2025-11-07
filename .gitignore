@@ -53,3 +53,6 @@ yarn-error.log
 
 # TypeScript
 plugin/tsconfig.tsbuildinfo
+
+# Logs
+*.log

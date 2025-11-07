@@ -9,49 +9,50 @@ import androidx.lifecycle.LifecycleOwner
 import com.facebook.react.ReactDelegate
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
+import com.pmleczek.expobrownfieldtargetexample.brownfield.ReactNativeHostManager
+
+enum class RootComponent(val key: String) {
+    Main("main")
+}
 
 object ReactNativeViewFactory {
     fun createFrameLayout(
         context: Context,
         activity: FragmentActivity,
-        initialParams: Bundle? = null,
+        rootComponent: RootComponent,
+        launchOptions: Bundle? = null,
     ): FrameLayout {
-        val componentName = "main"
         val reactHost = ReactNativeHostManager.shared.getReactHost()
-
         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-            val reactDelegate = ReactDelegate(activity, reactHost!!, componentName, initialParams)
-            val lifecycleObserver = getLifeCycleObserver(reactDelegate)
+            val reactDelegate = ReactDelegate(activity, reactHost!!, rootComponent.key, launchOptions)
 
-            activity.lifecycle.addObserver(lifecycleObserver)
+            activity.lifecycle.addObserver(object : DefaultLifecycleObserver {
+                override fun onResume(owner: LifecycleOwner) {
+                    reactDelegate.onHostResume()
+                }
+
+                override fun onPause(owner: LifecycleOwner) {
+                    reactDelegate.onHostPause()
+                }
+
+                override fun onDestroy(owner: LifecycleOwner) {
+                    reactDelegate.onHostDestroy()
+                    owner.lifecycle.removeObserver(this) // Cleanup to avoid leaks
+                }
+            })
+
             reactDelegate.loadApp()
-            return reactDelegate.reactRootView as FrameLayout
+            return reactDelegate.reactRootView!!
         }
 
         val instanceManager: ReactInstanceManager? = ReactNativeHostManager.shared.getReactNativeHost()?.reactInstanceManager
         val reactView = ReactRootView(context)
         reactView.startReactApplication(
             instanceManager,
-            componentName,
-            initialParams,
+            rootComponent.key,
+            launchOptions,
         )
+
         return reactView
-    }
-
-    private fun getLifeCycleObserver(reactDelegate: ReactDelegate): DefaultLifecycleObserver {
-        return object : DefaultLifecycleObserver {
-            override fun onResume(owner: LifecycleOwner) {
-                reactDelegate.onHostResume()
-            }
-
-            override fun onPause(owner: LifecycleOwner) {
-                reactDelegate.onHostPause()
-            }
-
-            override fun onDestroy(owner: LifecycleOwner) {
-                reactDelegate.onHostDestroy()
-                owner.lifecycle.removeObserver(this)
-            }
-        }
     }
 }

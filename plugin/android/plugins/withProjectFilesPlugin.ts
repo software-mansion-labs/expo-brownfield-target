@@ -52,15 +52,16 @@ const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (
     );
 
     // Create ReactNativeFragment.kt from the template
-    createFileFromTemplate(
-      'ReactNativeFragment.kt',
-      path.join(
-        pluginConfig.projectRoot,
-        'android/brownfield/src/main/',
-        packagePath,
-      ),
-      'android',
-    );
+    // TODO: Consider placement for below
+    // createFileFromTemplate(
+    //   'ReactNativeFragment.kt',
+    //   path.join(
+    //     pluginConfig.projectRoot,
+    //     'android/brownfield/src/main/',
+    //     packagePath,
+    //   ),
+    //   'android',
+    // );
 
     // Add build.gradle.kts file
     createFileFromTemplate(

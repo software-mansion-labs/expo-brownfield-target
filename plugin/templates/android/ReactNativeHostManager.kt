@@ -37,16 +37,10 @@ class ReactNativeHostManager {
 
         SoLoader.init(application, OpenSourceMergedSoMapping)
         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-            // If you opted-in for the New Architecture, we load the native entry point for this app.
             load()
         }
         ApplicationLifecycleDispatcher.onApplicationCreate(application)
 
-        /**
-         * If your project is using ExpoModules, you can use `index` instead.
-         *
-         * Below module name is when your project is using Expo CLI
-         */
         val jsMainModuleName = ".expo/.virtual-metro-entry"
 
         val reactApp = object : ReactApplication {
@@ -71,6 +65,5 @@ class ReactNativeHostManager {
 
         reactNativeHost = reactApp.reactNativeHost
         reactHost = reactApp.reactHost
-
     }
 }
