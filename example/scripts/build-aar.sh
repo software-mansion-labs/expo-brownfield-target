@@ -8,8 +8,8 @@ echo "Building brownfield library..."
 echo "Running ./gradlew clean..."
 ./gradlew :brownfield:clean
 
-echo "Building debug AAR..."
-./gradlew :brownfield:assembleDebug
+# echo "Building debug AAR..."
+# ./gradlew :brownfield:assembleDebug
 
 echo "Building release AAR..."
 ./gradlew :brownfield:assembleRelease
