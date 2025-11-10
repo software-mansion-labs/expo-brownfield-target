@@ -39,6 +39,7 @@ android {
         buildConfigField("boolean", "IS_HERMES_ENABLED", properties["hermesEnabled"].toString())
         // TODO: Examine this var in more detail
         buildConfigField("boolean", "IS_EDGE_TO_EDGE_ENABLED", "false")
+        buildConfigField("String", "REACT_NATIVE_RELEASE_LEVEL", "\"${findProperty("reactNativeReleaseLevel") ?: "stable"}\"")
     }
 
     buildTypes {
