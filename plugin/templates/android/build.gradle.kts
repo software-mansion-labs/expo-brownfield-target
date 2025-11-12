@@ -6,16 +6,7 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("com.facebook.react")
-    id("com.callstack.react.brownfield")
     `maven-publish`
-}
-
-reactBrownfield {
-    /**
-     * This will be available from `com.callstack.react.brownfield` version > 3.0.0
-     * It takes care of linking expo dependencies like expo-image with your AAR module.
-     */
-    isExpo = true
 }
 
 react {
@@ -131,13 +122,14 @@ dependencies {
 
     // Embed the subproject Expo packages
     projects.forEach { proj ->
-      embed(project(":${proj.name}"))
+      project.evaluationDependsOn(":${proj.name}")
+      api(project(":${proj.name}"))
     }
 
     // Embed the prebuilt Expo packages
     prebuiltProjects.forEach { proj ->
       val publication = requireNotNull(proj.publication)
-      embed("${publication.groupId}:${publication.artifactId}:${publication.version}")
+      api("${publication.groupId}:${publication.artifactId}:${publication.version}")
     }
 
     // We need to explicitly include Coil 
@@ -155,19 +147,6 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 }
 
-/**
- * This function is used in the places where we:
- *
- * Remove the `expo` dependency from the `module.json` and `pom.xml file. Otherwise, the
- * gradle will try to resolve this and will throw an error, since this dependency won't
- * be available from a remote repository.
- *
- * Your AAR does not need this dependency.
- */
-fun isExpoDep(group: String, artifactId: String): Boolean {
-    return group == "host.exp.exponent" && artifactId == "expo"
-}
-
 publishing {
     publications {
         create<MavenPublication>("mavenAar") {
@@ -180,21 +159,6 @@ publishing {
 
             pom {
                 withXml {
-                    /**
-                     * As a result of `from(components.getByName("release")` all of the project
-                     * dependencies are added to `pom.xml` file. We do not need the react-native
-                     * third party dependencies to be a part of it as we embed those dependencies.
-                     */
-                    val dependenciesNode = (asNode().get("dependencies") as groovy.util.NodeList).first() as groovy.util.Node
-                    dependenciesNode.children()
-                        .filterIsInstance<groovy.util.Node>()
-                        .filter {
-                            val artifactId = (it["artifactId"] as groovy.util.NodeList).text()
-                            val group = (it["groupId"] as groovy.util.NodeList).text()
-
-                            (isExpoDep(group, artifactId) || group == rootProject.name)
-                        }
-                        .forEach { dependenciesNode.remove(it) }
                 }
             }
         }
@@ -203,34 +167,6 @@ publishing {
     repositories {
         mavenLocal() // Publishes to the local Maven repository (~/.m2/repository by default)
     }
-}
-
-val moduleBuildDir: Directory = layout.buildDirectory.get()
-
-/**
- * As a result of `from(components.getByName("default")` all of the project
- * dependencies are added to `module.json` file. We do not need the react-native
- * third party dependencies to be a part of it as we embed those dependencies.
- */
-tasks.register("removeDependenciesFromModuleFile") {
-    doLast {
-        file("$moduleBuildDir/publications/mavenAar/module.json").run {
-            val json = inputStream().use { JsonSlurper().parse(it) as Map<String, Any> }
-            (json["variants"] as? List<MutableMap<String, Any>>)?.forEach { variant ->
-                (variant["dependencies"] as? MutableList<Map<String, Any>>)?.removeAll {
-                    val module = it["module"] as String
-                    val group = it["group"] as String
-
-                    (isExpoDep(group, module) || group == rootProject.name)
-                }
-            }
-            writer().use { it.write(JsonOutput.prettyPrint(JsonOutput.toJson(json))) }
-        }
-    }
-}
-
-tasks.named("generateMetadataFileForMavenAarPublication") {
-    finalizedBy("removeDependenciesFromModuleFile")
 }
 
 afterEvaluate {
