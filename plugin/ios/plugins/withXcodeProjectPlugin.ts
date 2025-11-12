@@ -37,9 +37,11 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
     mkdir(groupPath);
     // Create the brownfield entrypoint based on the template
     createFileFromTemplate('ExpoApp.swift', groupPath);
+    // Create the SwiftUI brownfield entrypoint based on the template
+    createFileFromTemplate('ReactNativeView.swift', groupPath);
     // Create and properly add a new group for the framework
     createGroup(xcodeProject, pluginConfig.targetName, groupPath, [
-      'ExpoApp.swift',
+      'ExpoApp.swift', 'ReactNativeView.swift'
     ]);
 
     // Create 'Info.plist' and '<target-name>.entitlements' based on the templates
@@ -56,13 +58,13 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
     // Configure build phases:
     // - Reference Expo app target's RN bundle script
     // - Add custom script for patching ExpoModulesProvider
-    // - Add 'ExpoApp.swift' to the compile sources phase
+    // - Add 'ExpoApp.swift' and 'ReactNativeView.swift' to the compile sources phase
     configureBuildPhases(
       xcodeProject,
       target,
       pluginConfig.targetName,
       projectName,
-      [`${pluginConfig.targetName}/ExpoApp.swift`],
+      [`${pluginConfig.targetName}/ExpoApp.swift`, `${pluginConfig.targetName}/ReactNativeView.swift`],
     );
     // Add the required build settings
     configureBuildSettings(
