@@ -9,21 +9,23 @@ Commands:
   build [options]
 `;
 
-export const BUILD_HELP_MESSAGE = `
-Usage: expo-brownfield-target build [options]
+export const BUILD_ANDROID_HELP_MESSAGE = `
+Usage: expo-brownfield-target build-android [options]
 
 Options:
-  -h, --help        display help for command for 'build'
+  -h, --help        display help for command for 'build-android'
+`;
+
+export const BUILD_IOS_HELP_MESSAGE = `
+Usage: expo-brownfield-target build-ios [options]
+
+Options:
+  -h, --help        display help for command for 'build-ios'
 `;
 
 export const UNKNOWN_COMMAND_MESSAGE = (command: string): string =>
   `Unknown command: '${command}'
-Supported commands: build
-`;
-
-export const UNKNOWN_PLATFORM_MESSAGE = (platform: string): string =>
-  `Unknown platform: '${platform}'
-Supported platfroms: android, ios
+Supported commands: build-android, build-ios
 `;
 
 export const UNKNOWN_OPTION_MESSAGE = (option: string): string =>
