@@ -16,6 +16,7 @@
   "types": "./build/typescript/index.d.ts",
   "source": "./plugin/index",
   "react-native": "./plugin/index",
+  "bin": "./build/commonjs/cli/index.js",
   "exports": {
     ".": {
       "source": "./plugin/index.ts",
@@ -34,7 +35,7 @@
     "clean": "rimraf ./build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "prepack": "npm run clean && bob build",
+    "prepack": "npm run clean && bob build && chmod +x build/commonjs/cli/index.js",
     "test": "jest"
   },
   "repository": {
