@@ -1,13 +1,21 @@
 import fs from 'node:fs/promises';
 import type { BasicConfigIOS, BuildConfigIOS, ConfigurationIOS } from './types';
 import { getOptionValue, runCommand, validatePrebuild } from './build';
-import { Loader } from './output';
+import { errorMessage, infoMessage, Loader, successMessage } from './output';
+import { BUILD_IOS_HELP_MESSAGE } from './messages';
 
 const basicConfig = {
   artifactsDir: './artifacts',
   derivedDataPath: './ios/build',
   hermesFrameworkPath:
     'Pods/hermes-engine/destroot/Library/Frameworks/universal/hermes.xcframework',
+};
+
+const maybeDisplayHelp = (options: string[]) => {
+  if (options.includes('-h') || options.includes('--help')) {
+    console.log(BUILD_IOS_HELP_MESSAGE);
+    process.exit(0);
+  }
 };
 
 const inferXCWorkspace = async (): Promise<string> => {
@@ -18,8 +26,8 @@ const inferXCWorkspace = async (): Promise<string> => {
     return xcworkspace;
   }
 
-  console.log(
-    'Error: Failed to infer .xcworkspace in the prebuilt ios directory',
+  errorMessage(
+    'Failed to infer .xcworkspace path from the prebuilt ios directory',
   );
   process.exit(1);
 };
@@ -39,7 +47,7 @@ const inferScheme = async (): Promise<string> => {
     return scheme;
   }
 
-  console.log('Error: Failed to infer scheme in the prebuilt ios directory');
+  errorMessage('Failed to infer scheme from the prebuilt ios directory');
   process.exit(1);
 };
 
@@ -74,13 +82,15 @@ const getFullConfig = async (options: string[]): Promise<BuildConfigIOS> => {
 const cleanUpArtifacts = async (config: BasicConfigIOS) => {
   try {
     await fs.access(config.artifactsDir);
-    console.log(`i Cleaning up previous artifacts at ${config.artifactsDir}`);
     await fs.rm(config.artifactsDir, { recursive: true, force: true });
+    successMessage(`Cleaned up previous artifacts at: ${config.artifactsDir}`);
   } catch (error: unknown) {}
 };
 
 const compileFrameworks = async (config: BuildConfigIOS) => {
-  Loader.shared.start('Compiling frameworks...');
+  Loader.shared.start(
+    `Compiling frameworks from scheme: ${config.scheme} with configuration: ${config.configuration}...`,
+  );
   await runCommand('xcodebuild', [
     '-workspace',
     `ios/${config.xcworkspace}`,
@@ -96,6 +106,9 @@ const compileFrameworks = async (config: BuildConfigIOS) => {
     config.configuration,
   ]);
   Loader.shared.stop();
+  successMessage(
+    `Successfully compiled frameworks from scheme: ${config.scheme}`,
+  );
 };
 
 const packageFrameworks = async (config: BuildConfigIOS) => {
@@ -110,16 +123,31 @@ const packageFrameworks = async (config: BuildConfigIOS) => {
     `${config.artifactsDir}/${config.scheme}.xcframework`,
   ]);
   Loader.shared.stop();
+  successMessage(
+    `Successfully created ${config.scheme}.xcframework at: ${config.artifactsDir}`,
+  );
 };
 
 const copyHermesFramework = async (config: BasicConfigIOS) => {
-  await fs.cp(`./ios/${config.hermesFrameworkPath}`, `${config.artifactsDir}/hermes.xcframework`, {
-    recursive: true,
-  });
+  Loader.shared.start('');
+  await fs.cp(
+    `./ios/${config.hermesFrameworkPath}`,
+    `${config.artifactsDir}/hermes.xcframework`,
+    {
+      recursive: true,
+    },
+  );
+  Loader.shared.stop();
+  successMessage(
+    'Successfully copied hermes.xcframework to the artifact directory',
+  );
 };
 
 export const buildIOS = async (options: string[]) => {
-  console.log('Building brownfield for iOS');
+  infoMessage('Building brownfield for iOS');
+
+  // Show help message
+  maybeDisplayHelp(options);
 
   // Clean up previous build artifacts
   await cleanUpArtifacts(basicConfig);

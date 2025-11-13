@@ -1,8 +1,9 @@
 import { spawn } from 'node:child_process';
 import fs from 'node:fs/promises';
 import readline from 'node:readline/promises';
-import { Loader } from './output';
+import { errorMessage, Loader, successMessage, warningMessage } from './output';
 import type { RunCommandOptions } from './types';
+import chalk from 'chalk';
 
 export const runCommand = (
   command: string,
@@ -73,7 +74,7 @@ export const validatePrebuild = async (
     });
 
     let response = await rl.question(
-      `Project seems to be missing prebuild for ${platform}. Do you want to prebuild now? [Y/n] `,
+      `${chalk.yellow(warningMessage)} Project seems to be missing prebuild for ${platform}. Do you want to prebuild now? [Y/n] `,
     );
     response = response.toLowerCase();
 
@@ -89,10 +90,11 @@ export const validatePrebuild = async (
       );
 
       Loader.shared.stop();
-      console.log(`Native project for ${platform} prebuilt successfully`);
+      successMessage(`Native project for ${platform} prebuilt successfully`);
 
       return true;
     } else {
+      errorMessage(`Missing prebuild! Skipping building for ${platform}`);
       return false;
     }
   }
@@ -107,9 +109,7 @@ export const getOptionValue = (options: string[], flags: string[]): string => {
 
   const index = options.findLastIndex((option) => flags.includes(option));
   if (index + 1 >= options.length) {
-    console.error(
-      `Error: Option '${options[index]}' requires a value to be passed`,
-    );
+    errorMessage(`Option '${options[index]}' requires a value to be passed`);
     process.exit(1);
   }
 
