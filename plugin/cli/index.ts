@@ -2,8 +2,12 @@
 import { GENERAL_HELP_MESSAGE, UNKNOWN_COMMAND_MESSAGE } from './messages';
 // @ts-expect-error
 import { version } from '../../../package.json';
-import { handleBuild } from './handling';
 import type { CLIAction } from './types';
+import { buildIOS } from './build-ios';
+
+const isSupportedCommand = (command: string): command is CLIAction => {
+  return ['build-ios', 'build-android'].includes(command);
+};
 
 const parseArgs = (args: string[]): CLIAction => {
   if (args.length < 1 || args[0] === '-h' || args[0] === '--help') {
@@ -14,8 +18,8 @@ const parseArgs = (args: string[]): CLIAction => {
     return 'version';
   }
 
-  if (args[0] === 'build') {
-    return 'build';
+  if (isSupportedCommand(args[0])) {
+    return args[0];
   }
 
   return 'unknown';
@@ -25,8 +29,11 @@ const main = async () => {
   const args = process.argv.slice(2);
   const action = parseArgs(args);
   switch (action) {
-    case 'build':
-      handleBuild(args.slice(1));
+    case 'build-android':
+      // TODO: Add android build fn
+      process.exit(0);
+    case 'build-ios':
+      await buildIOS(args.slice(1));
       process.exit(0);
     case 'help':
       console.log(GENERAL_HELP_MESSAGE);
