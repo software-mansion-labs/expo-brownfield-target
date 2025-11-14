@@ -5,6 +5,6 @@ import org.gradle.api.Project
 
 class ExpoBrownfieldPlugin : Plugin<Project> {
     override fun apply(project: Project) {
-        println("ExpoBrownfieldPlugin applied")
+        project.evaluationDependsOn(":expo")
     }
 }
