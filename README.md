@@ -1,4 +1,4 @@
-<img width="5334" height="2667" alt="expo-brownfield-target-banner" src="https://github.com/user-attachments/assets/7994328f-6401-474a-965d-35829ba4ac41" />
+![expo-brownfield-target by Software Mansion](https://github.com/user-attachments/assets/7994328f-6401-474a-965d-35829ba4ac41)
 
 > [!WARNING]  
 > This library is in early development stage; breaking changes can be introduced in minor version upgrades.
