@@ -1,6 +1,10 @@
 import { withAndroidManifest, type ConfigPlugin } from 'expo/config-plugins';
 import type { PluginConfig } from '../types';
-import { createFileFromTemplate, mkdir } from '../../common';
+import {
+  createFileFromTemplate,
+  createFileFromTemplateAs,
+  mkdir,
+} from '../../common';
 import path from 'node:path';
 import { getPackagePath } from '../utils';
 
@@ -81,6 +85,58 @@ const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (
     createFileFromTemplate(
       'consumer-rules.pro',
       path.join(pluginConfig.projectRoot, 'android/brownfield'),
+      'android',
+    );
+
+    // Add buildSrc directory
+    mkdir(
+      path.join(pluginConfig.projectRoot, 'android/buildSrc/src/main'),
+      true,
+    );
+
+    // Add gradle-plugins directory
+    mkdir(
+      path.join(
+        pluginConfig.projectRoot,
+        'android/buildSrc/src/main/resources/META-INF/gradle-plugins',
+      ),
+      true,
+    );
+
+    // Add gradle-plugin.properties file
+    createFileFromTemplateAs(
+      'plugin.properties',
+      path.join(
+        pluginConfig.projectRoot,
+        'android/buildSrc/src/main/resources/META-INF/gradle-plugins',
+      ),
+      'com.pmleczek.expo-brownfield.properties',
+      'android',
+    );
+
+    // Add ExpoBrownfieldPlugin.kt file
+    mkdir(
+      path.join(
+        pluginConfig.projectRoot,
+        'android/buildSrc/src/main/kotlin/com/pmleczek/plugin',
+      ),
+      true,
+    );
+    createFileFromTemplateAs(
+      'Plugin.kt',
+      path.join(
+        pluginConfig.projectRoot,
+        'android/buildSrc/src/main/kotlin/com/pmleczek/plugin',
+      ),
+      'ExpoBrownfieldPlugin.kt',
+      'android',
+    );
+
+    // Add build.gradle.kts file for the plugin
+    createFileFromTemplateAs(
+      'build.gradle.plugin.kts',
+      path.join(pluginConfig.projectRoot, 'android/buildSrc'),
+      'build.gradle.kts',
       'android',
     );
 

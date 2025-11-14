@@ -7,6 +7,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.facebook.react")
     `maven-publish`
+    id("com.pmleczek.expo-brownfield")
 }
 
 react {
