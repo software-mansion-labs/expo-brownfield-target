@@ -1,4 +1,4 @@
-<!-- <img width="5334" height="2667" alt="expo-brownfield-target-banner" src="https://github.com/user-attachments/assets/7994328f-6401-474a-965d-35829ba4ac41" /> -->
+<img width="5334" height="2667" alt="expo-brownfield-target-banner" src="https://github.com/user-attachments/assets/7994328f-6401-474a-965d-35829ba4ac41" />
 
 > [!WARNING]  
 > This library is in early development stage; breaking changes can be introduced in minor version upgrades.
@@ -19,6 +19,7 @@
 - [CLI reference](#cli)
   - [CLI commands](#cli-commands)
 - [Configuration reference](#configuration)
+  - [Android](#configuration-android)
   - [iOS](#configuration-ios)
 
 <a name="features"></a>
@@ -154,3 +155,23 @@ npx expo-brownfield-target build-ios [options]
 | --- | --- | --- |
 | `bundleIdentifier` | Bundle identifier for the brownfield native target. | `ios.bundleIdentifier` with last component replaced with the target name or `com.example.<target-name>` if `ios.bundleIdentifier` is undefined. |
 | `targetName` | Name of the brownfield native target. Also used as the name of the directory containing brownfield files. The value is sanitized to only contain alphanumeric characters and start with a letter. | `config.scheme` or `config.ios.scheme` appended with `brownfield`, if either value is defined and a single string. If not defaults to to `<slug>brownfield`, where `<slug>` is sanitized slug from the Expo project config |
+
+## expo-brownfield-target is created by Software Mansion
+
+[![swm](https://logo.swmansion.com/logo?color=white&variant=desktop&width=150&tag=typegpu-github 'Software Mansion')](https://swmansion.com)
+
+Since 2012 [Software Mansion](https://swmansion.com) is a software agency with
+experience in building web and mobile apps. We are Core React Native
+Contributors and experts in dealing with all kinds of React Native issues. We
+can help you build your next dream product –
+[Hire us](https://swmansion.com/contact/projects?utm_source=typegpu&utm_medium=readme).
+
+<!-- automd:contributors author="software-mansion" -->
+
+Made by [@software-mansion](https://github.com/software-mansion) 💙
+<br><br>
+<a href="https://github.com/software-mansion-labs/expo-brownfield-target/graphs/contributors">
+<img src="https://contrib.rocks/image?repo=software-mansion-labs/expo-brownfield-target" />
+</a>
+
+<!-- /automd -->
