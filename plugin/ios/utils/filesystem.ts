@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+
 import {
   createFileFromTemplate as createFileFromTemplateCommon,
   createFileFromTemplateAs as createFileFromTemplateAsCommon,

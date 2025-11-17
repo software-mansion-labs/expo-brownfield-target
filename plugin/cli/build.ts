@@ -109,7 +109,7 @@ const hasPrebuildDirectory = async (
   try {
     await fs.access(platform);
     return true;
-  } catch (error: unknown) {
+  } catch {
     return false;
   }
 };

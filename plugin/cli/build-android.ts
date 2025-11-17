@@ -1,7 +1,6 @@
-import { infoMessage, successMessage, errorMessage, Loader } from './output';
-import { BUILD_ANDROID_HELP_MESSAGE } from './messages';
-import type { BuildConfigAndroid, BuildConfigCommon } from './types';
 import fs from 'node:fs/promises';
+import path from 'node:path';
+
 import {
   getCommonConfig,
   getOptionValue,
@@ -9,7 +8,9 @@ import {
   splitOptionList,
   validatePrebuild,
 } from './build';
-import path from 'node:path';
+import { BUILD_ANDROID_HELP_MESSAGE } from './messages';
+import { errorMessage, infoMessage, Loader, successMessage } from './output';
+import type { BuildConfigAndroid, BuildConfigCommon } from './types';
 
 const maybeDisplayHelp = (options: string[]) => {
   if (options.includes('-h') || options.includes('--help')) {
@@ -58,7 +59,8 @@ const cleanUpArtifacts = async (config: BuildConfigCommon) => {
     successMessage(
       `Cleaned up previous Android artifacts at: ${config.artifactsDir}`,
     );
-  } catch (error: unknown) {}
+    // eslint-disable-next-line no-empty
+  } catch {}
 };
 
 const compileLibrary = async (config: BuildConfigAndroid) => {

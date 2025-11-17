@@ -2,6 +2,7 @@ import path from 'node:path';
 
 import { type ConfigPlugin, withXcodeProject } from 'expo/config-plugins';
 
+import type { PluginConfig } from '../types';
 import {
   configureBuildPhases,
   configureBuildSettings,
@@ -12,7 +13,6 @@ import {
   inferProjectName,
   mkdir,
 } from '../utils';
-import type { PluginConfig } from '../types';
 
 const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
   config,
@@ -41,7 +41,8 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
     createFileFromTemplate('ReactNativeView.swift', groupPath);
     // Create and properly add a new group for the framework
     createGroup(xcodeProject, pluginConfig.targetName, groupPath, [
-      'ExpoApp.swift', 'ReactNativeView.swift'
+      'ExpoApp.swift',
+      'ReactNativeView.swift',
     ]);
 
     // Create 'Info.plist' and '<target-name>.entitlements' based on the templates
@@ -64,7 +65,10 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
       target,
       pluginConfig.targetName,
       projectName,
-      [`${pluginConfig.targetName}/ExpoApp.swift`, `${pluginConfig.targetName}/ReactNativeView.swift`],
+      [
+        `${pluginConfig.targetName}/ExpoApp.swift`,
+        `${pluginConfig.targetName}/ReactNativeView.swift`,
+      ],
     );
     // Add the required build settings
     configureBuildSettings(

@@ -1,4 +1,4 @@
-import { withProjectBuildGradle, type ConfigPlugin } from 'expo/config-plugins';
+import { type ConfigPlugin, withProjectBuildGradle } from 'expo/config-plugins';
 
 const withProjectBuildGradlePlugin: ConfigPlugin = (config) => {
   // TODO: Move to constants
