@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-import { GENERAL_HELP_MESSAGE, UNKNOWN_COMMAND_MESSAGE } from './messages';
-// @ts-expect-error
+// @ts-expect-error - the directory structure is different after building
 import { version } from '../../../package.json';
-import type { CLIAction } from './types';
-import { buildIOS } from './build-ios';
 import { buildAndroid } from './build-android';
+import { buildIOS } from './build-ios';
+import { GENERAL_HELP_MESSAGE, UNKNOWN_COMMAND_MESSAGE } from './messages';
+import type { CLIAction } from './types';
 
 const isSupportedCommand = (command: string): command is CLIAction => {
   return ['build-ios', 'build-android'].includes(command);
@@ -29,6 +29,8 @@ const parseArgs = (args: string[]): CLIAction => {
 const main = async () => {
   const args = process.argv.slice(2);
   const action = parseArgs(args);
+
+  /* eslint-disable no-fallthrough */
   switch (action) {
     case 'build-android':
       await buildAndroid(args.slice(1));
@@ -48,6 +50,7 @@ const main = async () => {
     default:
       process.exit(0);
   }
+  /* eslint-enable no-fallthrough */
 };
 
 main();

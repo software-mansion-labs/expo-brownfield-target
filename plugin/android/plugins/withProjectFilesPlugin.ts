@@ -1,8 +1,10 @@
-import { withAndroidManifest, type ConfigPlugin } from 'expo/config-plugins';
+import path from 'node:path';
+
+import { type ConfigPlugin, withAndroidManifest } from 'expo/config-plugins';
+
+import { mkdir } from '../../common';
 import type { PluginConfig } from '../types';
 import { createFileFromTemplate } from '../utils';
-import { mkdir } from '../../common';
-import path from 'node:path';
 
 const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (
   config,

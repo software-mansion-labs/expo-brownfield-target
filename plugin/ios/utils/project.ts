@@ -1,9 +1,10 @@
-import type { XcodeProject } from '@expo/config-plugins';
 import { readdirSync } from 'node:fs';
 
+import type { XcodeProject } from '@expo/config-plugins';
+
 import type { Group, PbxGroup, Target } from '../types';
-import { Constants } from './constants';
 import { readFromTemplate } from '../utils';
+import { Constants } from './constants';
 
 export const createFramework = (
   project: XcodeProject,

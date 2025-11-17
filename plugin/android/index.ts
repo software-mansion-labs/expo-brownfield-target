@@ -1,2 +1,2 @@
-export { default } from './withAndroidPlugin';
 export type { AndroidPluginProps } from './types';
+export { default } from './withAndroidPlugin';

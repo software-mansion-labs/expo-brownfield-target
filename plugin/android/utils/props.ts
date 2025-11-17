@@ -1,7 +1,9 @@
-import type { ExpoConfig } from 'expo/config';
 import path from 'node:path';
-import type { PluginConfig, PluginProps } from '../types';
+
+import type { ExpoConfig } from 'expo/config';
 import { withAndroidManifest } from 'expo/config-plugins';
+
+import type { PluginConfig, PluginProps } from '../types';
 
 export const getPluginConfig = (
   props: PluginProps,

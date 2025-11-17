@@ -6,6 +6,7 @@ import {
   writeFileSync,
 } from 'node:fs';
 import path from 'node:path';
+
 import type { PlatformString } from './types';
 
 export const mkdir = (path: string, recursive: boolean = false) => {
@@ -62,7 +63,8 @@ const maybeReadOverwrittenTemplate = (
         ),
       ).toString();
     }
-  } catch (error) {}
+    // eslint-disable-next-line no-empty
+  } catch {}
 
   return '';
 };

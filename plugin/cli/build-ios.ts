@@ -1,13 +1,14 @@
 import fs from 'node:fs/promises';
-import type { BuildConfigCommon, BuildConfigIOS } from './types';
+
 import {
   getCommonConfig,
   getOptionValue,
   runCommand,
   validatePrebuild,
 } from './build';
-import { errorMessage, infoMessage, Loader, successMessage } from './output';
 import { BUILD_IOS_HELP_MESSAGE } from './messages';
+import { errorMessage, infoMessage, Loader, successMessage } from './output';
+import type { BuildConfigCommon, BuildConfigIOS } from './types';
 
 const maybeDisplayHelp = (options: string[]) => {
   if (options.includes('-h') || options.includes('--help')) {
@@ -35,7 +36,7 @@ const inferScheme = async (): Promise<string> => {
     (item) => item.isDirectory(),
   );
   let scheme: string | undefined = undefined;
-  for (let subDir of subDirs) {
+  for (const subDir of subDirs) {
     if ((await fs.readdir(`ios/${subDir.name}`)).includes('ExpoApp.swift')) {
       scheme = subDir.name;
     }
@@ -88,7 +89,8 @@ const cleanUpArtifacts = async (config: BuildConfigCommon) => {
     successMessage(
       `Cleaned up previous iOS artifacts at: ${config.artifactsDir}`,
     );
-  } catch (error: unknown) {}
+    // eslint-disable-next-line no-empty
+  } catch {}
 };
 
 const compileFrameworks = async (config: BuildConfigIOS) => {

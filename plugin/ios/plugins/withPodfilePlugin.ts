@@ -1,12 +1,12 @@
 import { type ConfigPlugin, withPodfile } from 'expo/config-plugins';
 
-import {
-  addCustomRubyScriptImport,
-  addNewPodsTarget,
-} from '../utils';
 import type { PluginConfig } from '../types';
+import { addCustomRubyScriptImport, addNewPodsTarget } from '../utils';
 
-const withPodfilePlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig) => {
+const withPodfilePlugin: ConfigPlugin<PluginConfig> = (
+  config,
+  pluginConfig,
+) => {
   return withPodfile(config, (config) => {
     config.modResults.contents = addCustomRubyScriptImport(
       config.modResults.contents,
