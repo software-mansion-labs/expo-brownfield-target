@@ -101,6 +101,27 @@ const compileLibrary = async (config: BuildConfigAndroid) => {
   successMessage(`Successfully ran ${gradlewTask}...`);
 };
 
+const copyAARToArtifacts = async (config: BuildConfigAndroid) => {
+  Loader.shared.start(`Copying AAR to artifacts directory...`);
+  const androidPath = path.join(process.cwd(), 'android');
+  const aarPath = path.join(
+    androidPath,
+    `${config.libraryName}/build/outputs/aar/${config.libraryName}-${config.configuration.toLowerCase()}.aar`,
+  );
+  await fs.cp(
+    aarPath,
+    path.join(
+      config.artifactsDir,
+      `${config.libraryName}-${config.configuration.toLowerCase()}.aar`,
+    ),
+    {
+      recursive: true,
+    },
+  );
+  Loader.shared.stop();
+  successMessage(`Successfully copied AAR to the artifacts directory`);
+};
+
 const maybePublishAAR = async (config: BuildConfigAndroid) => {
   if (!config.publish) {
     infoMessage(
@@ -184,6 +205,9 @@ export const buildAndroid = async (options: string[]) => {
 
   // Compile the fat-AAR
   await compileLibrary(config);
+
+  // Copy the AAR to the artifacts directory
+  await copyAARToArtifacts(config);
 
   // Publish the AAR to Maven
   await maybePublishAAR(config);
