@@ -3,7 +3,7 @@ import { readdirSync } from 'node:fs';
 
 import type { Group, PbxGroup, Target } from '../types';
 import { Constants } from './constants';
-import { readFromTemplate } from './filesystem';
+import { readFromTemplate } from '../../common';
 
 export const createFramework = (
   project: XcodeProject,
