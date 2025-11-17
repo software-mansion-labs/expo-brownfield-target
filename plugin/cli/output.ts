@@ -10,8 +10,17 @@ export class Loader {
   public static shared = new Loader();
   private interval: NodeJS.Timeout | null = null;
   private index = 0;
+  private verbose = false;
+
+  public setVerbose(verbose: boolean) {
+    this.verbose = verbose;
+  }
 
   public start(message: string) {
+    if (this.verbose) {
+      return;
+    }
+
     if (this.interval) {
       clearInterval(this.interval);
       this.interval = null;
@@ -28,6 +37,10 @@ export class Loader {
   }
 
   public stop() {
+    if (this.verbose) {
+      return;
+    }
+
     if (this.interval) {
       clearInterval(this.interval);
       this.interval = null;

@@ -153,6 +153,8 @@ export const getCommonConfig = async (
   if (options.includes('--verbose')) {
     verbose = true;
   }
+  // TODO: Move to earlier method when available
+  Loader.shared.setVerbose(verbose);
 
   return {
     artifactsDir,
