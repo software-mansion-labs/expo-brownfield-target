@@ -9,7 +9,8 @@ export const runCommand = (
   command: string,
   args: string[] = [],
   options?: RunCommandOptions,
-): Promise<void> => {
+  // TODO; Fix return type
+): Promise<object> => {
   return new Promise((resolve, reject) => {
     const stdio = options?.verbose ? 'inherit' : 'pipe';
 
@@ -20,6 +21,7 @@ export const runCommand = (
         ...process.env,
         ...(options?.env ?? {}),
       },
+      cwd: options?.cwd,
     });
 
     let stdOut = '';
@@ -37,7 +39,7 @@ export const runCommand = (
 
     childProc.on('close', (code) => {
       if (code === 0) {
-        resolve();
+        resolve({ stdout: stdOut });
       } else {
         const errorMessage = `Command '${command} ${args.join(' ')}' failed with code ${code}
         \n${stdErr.substring(0, 300)}`;
@@ -103,15 +105,29 @@ export const validatePrebuild = async (
 };
 
 export const getOptionValue = (options: string[], flags: string[]): string => {
-  if (!flags.some((flag) => options.includes(flag))) {
+  const index = options.findLastIndex((option) => flags.includes(option));
+  if (index === -1) {
     return '';
   }
 
-  const index = options.findLastIndex((option) => flags.includes(option));
+  // --flag=value
+  if (options[index].includes('=')) {
+    return options[index].split('=')[1];
+  }
+
+  // --flag value
   if (index + 1 >= options.length) {
     errorMessage(`Option '${options[index]}' requires a value to be passed`);
     process.exit(1);
   }
 
   return options[index + 1];
+};
+
+export const splitOptionList = (optionValue: string): string[] => {
+  if (!optionValue) {
+    return [];
+  }
+
+  return optionValue.split(',');
 };

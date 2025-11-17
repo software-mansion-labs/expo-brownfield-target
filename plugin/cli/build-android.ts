@@ -1,0 +1,193 @@
+import { infoMessage, successMessage, errorMessage, Loader } from './output';
+import { BUILD_ANDROID_HELP_MESSAGE } from './messages';
+import type {
+  BasicConfigAndroid,
+  BuildConfigAndroid,
+  ConfigurationIOS,
+} from './types';
+import fs from 'node:fs/promises';
+import {
+  getOptionValue,
+  runCommand,
+  splitOptionList,
+  validatePrebuild,
+} from './build';
+import path from 'node:path';
+
+const basicConfig = {
+  artifactsDir: './artifacts',
+};
+
+const maybeDisplayHelp = (options: string[]) => {
+  if (options.includes('-h') || options.includes('--help')) {
+    console.log(BUILD_ANDROID_HELP_MESSAGE);
+    process.exit(0);
+  }
+};
+
+const getFullConfig = async (
+  options: string[],
+): Promise<BuildConfigAndroid> => {
+  // TODO: Rename the type to be more generic
+  let configuration: ConfigurationIOS = 'Release';
+  if (options.includes('-d') || options.includes('--debug')) {
+    configuration = 'Debug';
+  }
+  // If both options are passed, release takes precedence
+  if (options.includes('-r') || options.includes('--release')) {
+    configuration = 'Release';
+  }
+
+  let publish = true;
+  if (options.includes('--no-publish')) {
+    publish = false;
+  }
+
+  // TODO: Change?
+  // Hardcoded for now
+  const libraryName = 'brownfield';
+
+  const customTasks = splitOptionList(
+    getOptionValue(options, ['--tasks', '-t']),
+  );
+
+  return {
+    ...basicConfig,
+    configuration,
+    libraryName,
+    publish,
+    customTasks,
+  };
+};
+
+const cleanUpArtifacts = async (config: BasicConfigAndroid) => {
+  try {
+    await fs.access(config.artifactsDir);
+    const androidArtifacts = (await fs.readdir(config.artifactsDir)).filter(
+      (artifact) => artifact.endsWith('.aar'),
+    );
+    for (const artifact of androidArtifacts) {
+      await fs.rm(`${config.artifactsDir}/${artifact}`, {
+        recursive: true,
+        force: true,
+      });
+    }
+    successMessage(
+      `Cleaned up previous Android artifacts at: ${config.artifactsDir}`,
+    );
+  } catch (error: unknown) {}
+};
+
+const compileLibrary = async (config: BuildConfigAndroid) => {
+  console.log(`Compiling :${config.libraryName} library...`);
+  const androidPath = path.join(process.cwd(), 'android');
+
+  // Run ./gradlew clean on the target
+  const cleanTask = `:${config.libraryName}:clean`;
+  Loader.shared.start(`Running ${cleanTask}...`);
+  await runCommand('./gradlew', [cleanTask], {
+    cwd: androidPath,
+  });
+  Loader.shared.stop();
+  successMessage(`Successfully ran ${cleanTask}...`);
+
+  // Run ./gradlew assemble<configuration> on the target
+  const gradlewTask = `:${config.libraryName}:assemble${config.configuration}`;
+  Loader.shared.start(`Running ${gradlewTask}...`);
+  await runCommand('./gradlew', [gradlewTask], {
+    cwd: androidPath,
+  });
+  Loader.shared.stop();
+  successMessage(`Successfully ran ${gradlewTask}...`);
+};
+
+const maybePublishAAR = async (config: BuildConfigAndroid) => {
+  if (!config.publish) {
+    infoMessage(
+      '--no-publish flag passed, skipping publication of AAR to Maven',
+    );
+    return;
+  }
+
+  const androidPath = path.join(process.cwd(), 'android');
+
+  const taskExists = await runCommand(
+    './gradlew',
+    [`:${config.libraryName}:tasks`],
+    {
+      cwd: androidPath,
+    },
+  );
+  // TODO: Fix return type
+  // @ts-expect-error
+  const { stdout } = taskExists;
+  const hasDefaultPublishTask = stdout.includes(
+    'publishMavenAarPublicationToMavenLocal',
+  );
+  if (!hasDefaultPublishTask) {
+    errorMessage(
+      `Default publish task: \`publishMavenAarPublicationToMavenLocal\` not found in the project ${config.libraryName}`,
+    );
+    errorMessage('Skipping publication of AAR to Maven');
+    return;
+  }
+
+  const publishTask = `:${config.libraryName}:publishMavenAarPublicationToMavenLocal`;
+  Loader.shared.start(`Running ${publishTask}...`);
+  await runCommand('./gradlew', [publishTask], {
+    cwd: androidPath,
+  });
+  Loader.shared.stop();
+  successMessage(`Successfully published AAR to local Maven repo`);
+};
+
+const maybeRunCustomTasks = async (config: BuildConfigAndroid) => {
+  if (!config.customTasks || config.customTasks.length === 0) {
+    return;
+  }
+
+  const androidPath = path.join(process.cwd(), 'android');
+  infoMessage(`Running custom tasks`);
+
+  for (const task of config.customTasks) {
+    const taskCommand = `:${config.libraryName}:${task}`;
+    Loader.shared.start(`Running ${taskCommand}...`);
+    await runCommand('./gradlew', [taskCommand], {
+      cwd: androidPath,
+    });
+    Loader.shared.stop();
+    successMessage(`Successfully ran ${taskCommand}...`);
+  }
+};
+
+export const buildAndroid = async (options: string[]) => {
+  infoMessage('Building brownfield for Android');
+
+  // Show help message
+  maybeDisplayHelp(options);
+
+  // Clean up previous build artifacts
+  await cleanUpArtifacts(basicConfig);
+
+  // Validate prebuild
+  infoMessage('Validating prebuild for Android...');
+  if (!(await validatePrebuild('android'))) {
+    errorMessage(
+      'Prebuild validation failed. Please run `npx expo prebuild --platofm android` manually and try again.',
+    );
+    return;
+  }
+  successMessage('Prebuild validated successfully');
+
+  // Validate or infer configurations
+  const config = await getFullConfig(options);
+
+  // Compile the fat-AAR
+  await compileLibrary(config);
+
+  // Publish the AAR to Maven
+  await maybePublishAAR(config);
+
+  // Run custom tasks
+  await maybeRunCustomTasks(config);
+};

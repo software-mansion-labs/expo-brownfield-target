@@ -4,6 +4,7 @@ import { GENERAL_HELP_MESSAGE, UNKNOWN_COMMAND_MESSAGE } from './messages';
 import { version } from '../../../package.json';
 import type { CLIAction } from './types';
 import { buildIOS } from './build-ios';
+import { buildAndroid } from './build-android';
 
 const isSupportedCommand = (command: string): command is CLIAction => {
   return ['build-ios', 'build-android'].includes(command);
@@ -30,7 +31,7 @@ const main = async () => {
   const action = parseArgs(args);
   switch (action) {
     case 'build-android':
-      // TODO: Add android build fn
+      await buildAndroid(args.slice(1));
       process.exit(0);
     case 'build-ios':
       await buildIOS(args.slice(1));

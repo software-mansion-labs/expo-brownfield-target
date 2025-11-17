@@ -2,6 +2,8 @@ import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import expo.modules.plugin.ExpoGradleExtension
 
+// TODO: Cleanup comments
+
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
@@ -61,6 +63,7 @@ android {
 
     packaging {
       jniLibs {
+        //TODO: cleanup this section
         // if (!hermesEnabled) {
         //   excludes += "lib/x86/libjsctooling.so"
         //   excludes += "lib/x86_64/libjsctooling.so"
