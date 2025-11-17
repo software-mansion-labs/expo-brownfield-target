@@ -1,4 +1,4 @@
-// package com.pmleczek.expobrownfieldtargetexample.brownfield
+// package ${{packageId}}
 
 // import android.os.Bundle
 // import android.view.LayoutInflater

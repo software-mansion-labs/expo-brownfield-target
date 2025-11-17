@@ -1,58 +1,36 @@
 import { withAndroidManifest, type ConfigPlugin } from 'expo/config-plugins';
 import type { PluginConfig } from '../types';
-import { createFileFromTemplate, mkdir } from '../../common';
+import { createFileFromTemplate } from '../utils';
+import { mkdir } from '../../common';
 import path from 'node:path';
-import { getPackagePath } from '../utils';
 
 const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (
   config,
   pluginConfig,
 ) => {
   return withAndroidManifest(config, (config) => {
-    const packagePath = getPackagePath(pluginConfig.projectRoot);
-
-    // Create directory for the brownfield library
-    // and for the source code of the brownfield
-    mkdir(
-      path.join(
-        pluginConfig.projectRoot,
-        'android/brownfield/src/main/',
-        packagePath,
-      ),
-      true,
+    // Define paths for the brownfield target
+    const brownfieldPath = path.join(
+      pluginConfig.projectRoot,
+      'android/brownfield',
+    );
+    const brownfieldMainPath = path.join(brownfieldPath, 'src/main/');
+    const brownfieldSourcesPath = path.join(
+      brownfieldMainPath,
+      pluginConfig.packagePath,
     );
 
-    // Create AndroidManifest.xml file from the template
-    createFileFromTemplate(
-      'AndroidManifest.xml',
-      path.join(pluginConfig.projectRoot, 'android/brownfield/src/main/'),
-      'android',
-    );
+    // Define groupId and artifactId by splitting packageId
+    const lastDotIndex = pluginConfig.package.lastIndexOf('.');
+    const groupId = pluginConfig.package.substring(0, lastDotIndex);
+    const artifactId = pluginConfig.package.substring(lastDotIndex + 1);
 
-    // Create ReactNativeHostManager.kt from the template
-    createFileFromTemplate(
-      'ReactNativeHostManager.kt',
-      path.join(
-        pluginConfig.projectRoot,
-        'android/brownfield/src/main/',
-        packagePath,
-      ),
-      'android',
-    );
+    // Create directory for brownfield target sources
+    // and all intermediate directories
+    mkdir(brownfieldSourcesPath, true);
 
-    // Create ReactNativeViewFactory.kt from the template
-    createFileFromTemplate(
-      'ReactNativeViewFactory.kt',
-      path.join(
-        pluginConfig.projectRoot,
-        'android/brownfield/src/main/',
-        packagePath,
-      ),
-      'android',
-    );
-
-    // Create ReactNativeFragment.kt from the template
-    // TODO: Consider placement for below
+    // Add ReactNativeFragment.kt to the brownfield target:
+    // TODO: Consider inclusion of below
     // createFileFromTemplate(
     //   'ReactNativeFragment.kt',
     //   path.join(
@@ -60,29 +38,32 @@ const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (
     //     'android/brownfield/src/main/',
     //     packagePath,
     //   ),
-    //   'android',
+    //   {
+    //     packageId: pluginConfig.package,
+    //   },
     // );
 
-    // Add build.gradle.kts file
-    createFileFromTemplate(
-      'build.gradle.kts',
-      path.join(pluginConfig.projectRoot, 'android/brownfield'),
-      'android',
-    );
-
-    // Add proguard-rules.pro file
-    createFileFromTemplate(
-      'proguard-rules.pro',
-      path.join(pluginConfig.projectRoot, 'android/brownfield'),
-      'android',
-    );
-
-    // Add consumer-rules.pro file
-    createFileFromTemplate(
-      'consumer-rules.pro',
-      path.join(pluginConfig.projectRoot, 'android/brownfield'),
-      'android',
-    );
+    // Add files from templates to the brownfield target:
+    // - AndroidManifest.xml
+    // - ReactNativeHostManager.kt
+    // - ReactNativeViewFactory.kt
+    // - build.gradle.kts
+    // - proguard-rules.pro
+    // - consumer-rules.pro
+    createFileFromTemplate('AndroidManifest.xml', brownfieldMainPath);
+    createFileFromTemplate('ReactNativeHostManager.kt', brownfieldSourcesPath, {
+      packageId: pluginConfig.package,
+    });
+    createFileFromTemplate('ReactNativeViewFactory.kt', brownfieldSourcesPath, {
+      packageId: pluginConfig.package,
+    });
+    createFileFromTemplate('build.gradle.kts', brownfieldPath, {
+      packageId: pluginConfig.package,
+      groupId,
+      artifactId,
+    });
+    createFileFromTemplate('proguard-rules.pro', brownfieldPath);
+    createFileFromTemplate('consumer-rules.pro', brownfieldPath);
 
     return config;
   });
