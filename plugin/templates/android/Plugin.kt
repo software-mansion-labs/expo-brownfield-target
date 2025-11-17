@@ -4,6 +4,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.Copy
 import com.android.build.gradle.LibraryExtension
+import org.gradle.api.internal.artifacts.dependencies.DefaultProjectDependency
 import java.io.File
 
 class ExpoBrownfieldPlugin : Plugin<Project> {
@@ -11,6 +12,9 @@ class ExpoBrownfieldPlugin : Plugin<Project> {
         project.evaluationDependsOn(":expo")
         setupSourceSets(project)
         setupConfigurations(project)
+        project.afterEvaluate {
+          afterEvaluate(project)
+        }
     }
 
     private fun setupSourceSets(project: Project) {
@@ -108,5 +112,31 @@ class ExpoBrownfieldPlugin : Plugin<Project> {
           createConfiguration(project, variantName)
         }
       }
+    }
+
+    private fun embedExpoDependencies(project: Project) {
+      val expoProject = project.rootProject.project("expo")
+      val expoConfig = expoProject.configurations.findByName("api")
+      expoConfig?.dependencies?.forEach { dependency ->
+        // TODO: Move it to some constants (?)
+        if (true) {
+          if (dependency is DefaultProjectDependency) {
+            project.dependencies.add("embed", expoProject.dependencies.project(mapOf("path" to ":${dependency.name}")))
+          } else {
+            project.dependencies.add("embed", dependency)
+          }
+        }
+      }
+    } 
+    private fun processArtifacts(project: Project) {
+      embedExpoDependencies(project)
+    }
+
+    private fun afterEvaluate(project: Project) {
+      println("--------------------------------")
+      println("After evaluate: ${project.name}")
+      processArtifacts(project)
+      // TODO: Maybe set transitive to true for all configurations?
+      println("--------------------------------")
     }
 }

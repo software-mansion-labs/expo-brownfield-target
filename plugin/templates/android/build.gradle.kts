@@ -124,13 +124,13 @@ dependencies {
     // Embed the subproject Expo packages
     projects.forEach { proj ->
       project.evaluationDependsOn(":${proj.name}")
-      api(project(":${proj.name}"))
+      embed(project(":${proj.name}"))
     }
 
     // Embed the prebuilt Expo packages
     prebuiltProjects.forEach { proj ->
       val publication = requireNotNull(proj.publication)
-      api("${publication.groupId}:${publication.artifactId}:${publication.version}")
+      embed("${publication.groupId}:${publication.artifactId}:${publication.version}")
     }
 
     // We need to explicitly include Coil 
