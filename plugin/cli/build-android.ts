@@ -1,12 +1,9 @@
 import { infoMessage, successMessage, errorMessage, Loader } from './output';
 import { BUILD_ANDROID_HELP_MESSAGE } from './messages';
-import type {
-  BasicConfigAndroid,
-  BuildConfigAndroid,
-  ConfigurationIOS,
-} from './types';
+import type { BasicConfigAndroid, BuildConfigAndroid } from './types';
 import fs from 'node:fs/promises';
 import {
+  getCommonConfig,
   getOptionValue,
   runCommand,
   splitOptionList,
@@ -28,15 +25,7 @@ const maybeDisplayHelp = (options: string[]) => {
 const getFullConfig = async (
   options: string[],
 ): Promise<BuildConfigAndroid> => {
-  // TODO: Rename the type to be more generic
-  let configuration: ConfigurationIOS = 'Release';
-  if (options.includes('-d') || options.includes('--debug')) {
-    configuration = 'Debug';
-  }
-  // If both options are passed, release takes precedence
-  if (options.includes('-r') || options.includes('--release')) {
-    configuration = 'Release';
-  }
+  const commonConfig = await getCommonConfig(options);
 
   let publish = true;
   if (options.includes('--no-publish')) {
@@ -51,18 +40,12 @@ const getFullConfig = async (
     getOptionValue(options, ['--tasks', '-t']),
   );
 
-  let verbose = false;
-  if (options.includes('--verbose')) {
-    verbose = true;
-  }
-
   return {
     ...basicConfig,
-    configuration,
+    ...commonConfig,
     libraryName,
     publish,
     customTasks,
-    verbose
   };
 };
 

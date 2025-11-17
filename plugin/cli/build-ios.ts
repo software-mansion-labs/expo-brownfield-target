@@ -1,6 +1,11 @@
 import fs from 'node:fs/promises';
-import type { BasicConfigIOS, BuildConfigIOS, ConfigurationIOS } from './types';
-import { getOptionValue, runCommand, validatePrebuild } from './build';
+import type { BasicConfigIOS, BuildConfigIOS } from './types';
+import {
+  getCommonConfig,
+  getOptionValue,
+  runCommand,
+  validatePrebuild,
+} from './build';
 import { errorMessage, infoMessage, Loader, successMessage } from './output';
 import { BUILD_IOS_HELP_MESSAGE } from './messages';
 
@@ -52,14 +57,7 @@ const inferScheme = async (): Promise<string> => {
 };
 
 const getFullConfig = async (options: string[]): Promise<BuildConfigIOS> => {
-  let configuration: ConfigurationIOS = 'Release';
-  if (options.includes('-d') || options.includes('--debug')) {
-    configuration = 'Debug';
-  }
-  // If both options are passed, release takes precedence
-  if (options.includes('-r') || options.includes('--release')) {
-    configuration = 'Release';
-  }
+  const commonConfig = await getCommonConfig(options);
 
   let xcworkspace = getOptionValue(options, ['-x', '--xcworkspace']);
   if (!xcworkspace) {
@@ -73,7 +71,7 @@ const getFullConfig = async (options: string[]): Promise<BuildConfigIOS> => {
 
   return {
     ...basicConfig,
-    configuration,
+    ...commonConfig,
     scheme,
     xcworkspace,
   };
@@ -101,20 +99,26 @@ const compileFrameworks = async (config: BuildConfigIOS) => {
   Loader.shared.start(
     `Compiling frameworks from scheme: ${config.scheme} with configuration: ${config.configuration}...`,
   );
-  await runCommand('xcodebuild', [
-    '-workspace',
-    `ios/${config.xcworkspace}`,
-    '-scheme',
-    config.scheme,
-    '-derivedDataPath',
-    config.derivedDataPath,
-    '-destination',
-    'generic/platform=iphoneos',
-    '-destination',
-    'generic/platform=iphonesimulator',
-    '-configuration',
-    config.configuration,
-  ]);
+  await runCommand(
+    'xcodebuild',
+    [
+      '-workspace',
+      `ios/${config.xcworkspace}`,
+      '-scheme',
+      config.scheme,
+      '-derivedDataPath',
+      config.derivedDataPath,
+      '-destination',
+      'generic/platform=iphoneos',
+      '-destination',
+      'generic/platform=iphonesimulator',
+      '-configuration',
+      config.configuration,
+    ],
+    {
+      verbose: config.verbose,
+    },
+  );
   Loader.shared.stop();
   successMessage(
     `Successfully compiled frameworks from scheme: ${config.scheme}`,
@@ -123,15 +127,21 @@ const compileFrameworks = async (config: BuildConfigIOS) => {
 
 const packageFrameworks = async (config: BuildConfigIOS) => {
   Loader.shared.start('Packaging frameworks into an XCFramework...');
-  await runCommand('xcodebuild', [
-    '-create-xcframework',
-    '-framework',
-    `${config.derivedDataPath}/Build/Products/Release-iphoneos/${config.scheme}.framework`,
-    '-framework',
-    `${config.derivedDataPath}/Build/Products/Release-iphonesimulator/${config.scheme}.framework`,
-    '-output',
-    `${config.artifactsDir}/${config.scheme}.xcframework`,
-  ]);
+  await runCommand(
+    'xcodebuild',
+    [
+      '-create-xcframework',
+      '-framework',
+      `${config.derivedDataPath}/Build/Products/Release-iphoneos/${config.scheme}.framework`,
+      '-framework',
+      `${config.derivedDataPath}/Build/Products/Release-iphonesimulator/${config.scheme}.framework`,
+      '-output',
+      `${config.artifactsDir}/${config.scheme}.xcframework`,
+    ],
+    {
+      verbose: config.verbose,
+    },
+  );
   Loader.shared.stop();
   successMessage(
     `Successfully created ${config.scheme}.xcframework at: ${config.artifactsDir}`,
