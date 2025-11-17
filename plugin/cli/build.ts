@@ -2,8 +2,9 @@ import { spawn } from 'node:child_process';
 import fs from 'node:fs/promises';
 import readline from 'node:readline/promises';
 import { errorMessage, Loader, successMessage, warningMessage } from './output';
-import type { RunCommandOptions } from './types';
+import type { BuildConfigCommon, BuildType, RunCommandOptions } from './types';
 import chalk from 'chalk';
+import path from 'node:path';
 
 export const runCommand = (
   command: string,
@@ -130,4 +131,32 @@ export const splitOptionList = (optionValue: string): string[] => {
   }
 
   return optionValue.split(',');
+};
+
+export const getCommonConfig = async (
+  options: string[],
+): Promise<BuildConfigCommon> => {
+  // TODO: Change?
+  // Hardcoded for now
+  const artifactsDir = path.join(process.cwd(), 'artifacts');
+
+  let configuration: BuildType = 'Release';
+  if (options.includes('-d') || options.includes('--debug')) {
+    configuration = 'Debug';
+  }
+  // If both options are passed, release takes precedence
+  if (options.includes('-r') || options.includes('--release')) {
+    configuration = 'Release';
+  }
+
+  let verbose = false;
+  if (options.includes('--verbose')) {
+    verbose = true;
+  }
+
+  return {
+    artifactsDir,
+    configuration,
+    verbose,
+  };
 };
