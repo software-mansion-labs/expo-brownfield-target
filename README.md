@@ -306,6 +306,10 @@ npx expo-brownfield-target build-ios [options]
 <a name="configuration-android"></a>
 ### Android
 
+| Property | Description | Default value |
+| --- | --- | --- |
+| `package` | Package identifier for the brownfield library | `android.package` appended with `.brownfield` or `com.example.brownfield` if `android.package` is undefined  |
+
 <a name="configuration-ios"></a>
 ### iOS
 

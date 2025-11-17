@@ -23,7 +23,7 @@ react {
 }
 
 android {
-    namespace = "com.pmleczek.expobrownfieldtargetexample.brownfield"
+    namespace = "${{packageId}}"
     compileSdk = 36
 
     buildFeatures {
@@ -171,8 +171,8 @@ fun isExpoDep(group: String, artifactId: String): Boolean {
 publishing {
     publications {
         create<MavenPublication>("mavenAar") {
-            groupId = "com.pmleczek.expobrownfieldtargetexample"
-            artifactId = "brownfield"
+            groupId = "${{groupId}}"
+            artifactId = "${{artifactId}}"
             version = "0.0.1-local"
             afterEvaluate {
                 from(components.getByName("release"))
@@ -239,6 +239,7 @@ afterEvaluate {
       doFirst {
         // Remove duplicate libworklets.so from react-native-worklets to avoid conflicts
         // with react-native-reanimated which also provides the same library
+        // TODO: Fix this to use dynamic path
         fileTree("$buildDir/intermediates/exploded-aar/expo-brownfield-target-example/react-native-worklets") {
           include("**/jni/**/libworklets.so")
         }.forEach { file ->

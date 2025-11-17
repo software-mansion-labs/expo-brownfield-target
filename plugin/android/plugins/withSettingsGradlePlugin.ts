@@ -1,10 +1,6 @@
-import { withSettingsGradle, type ConfigPlugin } from 'expo/config-plugins';
-// import type { PluginConfig } from '../types';
+import { type ConfigPlugin, withSettingsGradle } from 'expo/config-plugins';
 
-const withSettingsGradlePlugin: ConfigPlugin = (
-  config,
-  // pluginConfig,
-) => {
+const withSettingsGradlePlugin: ConfigPlugin = (config) => {
   return withSettingsGradle(config, (config) => {
     config.modResults.contents += "include ':brownfield'\n";
     return config;

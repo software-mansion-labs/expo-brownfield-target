@@ -1,4 +1,4 @@
-package com.pmleczek.expobrownfieldtargetexample.brownfield
+package ${{packageId}}
 
 import android.app.Application
 import com.facebook.react.ReactNativeHost

@@ -1,4 +1,4 @@
-package com.pmleczek.expobrownfieldtargetexample.brownfield
+package ${{packageId}}
 
 import android.content.Context
 import android.os.Bundle
