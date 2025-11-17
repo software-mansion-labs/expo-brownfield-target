@@ -29,6 +29,7 @@ export interface BuildConfigAndroid {
   configuration: ConfigurationIOS;
   publish: boolean;
   customTasks: string[];
+  verbose: boolean;
 }
 
 export type BasicConfigAndroid = Pick<BuildConfigAndroid, 'artifactsDir'>;
