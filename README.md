@@ -25,6 +25,7 @@
 - [Configuration reference](#configuration)
   - [Android](#configuration-android)
   - [iOS](#configuration-ios)
+  - [File templates](#file-templates)
 
 <a name="features"></a>
 ## Features
@@ -282,7 +283,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 #### `build-android`
 
-Builds the Android library as a fat-AAR and copies it to 
+Builds the Android library as a fat-AAR and copies it to the artifacts directory. By default also publishes the AAR to the local Maven repository.
 
 ```
 npx expo-brownfield-target build-android [options]
@@ -333,6 +334,11 @@ npx expo-brownfield-target build-ios [options]
 | --- | --- | --- |
 | `bundleIdentifier` | Bundle identifier for the brownfield native target. | `ios.bundleIdentifier` with last component replaced with the target name or `com.example.<target-name>` if `ios.bundleIdentifier` is undefined. |
 | `targetName` | Name of the brownfield native target. Also used as the name of the directory containing brownfield files. The value is sanitized to only contain alphanumeric characters and start with a letter. | `config.scheme` or `config.ios.scheme` appended with `brownfield`, if either value is defined and a single string. If not defaults to to `<slug>brownfield`, where `<slug>` is sanitized slug from the Expo project config |
+
+<a name="file-templates"></a>
+### File templates
+
+You can also overwrite the templates which are used to generate the files to even better suit the plugin behavior to your requirements. More information about overwriting the templates can be found in [TEMPLATES.md](./TEMPLATES.md)
 
 ## expo-brownfield-target is created by Software Mansion
 
