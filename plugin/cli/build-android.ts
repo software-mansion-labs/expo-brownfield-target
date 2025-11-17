@@ -1,6 +1,9 @@
 import { infoMessage, successMessage, errorMessage, Loader } from './output';
 import { BUILD_ANDROID_HELP_MESSAGE } from './messages';
-import type { BasicConfigAndroid, BuildConfigAndroid } from './types';
+import type {
+  BuildConfigAndroid,
+  BuildConfigCommon,
+} from './types';
 import fs from 'node:fs/promises';
 import {
   getCommonConfig,
@@ -11,10 +14,6 @@ import {
 } from './build';
 import path from 'node:path';
 
-const basicConfig = {
-  artifactsDir: './artifacts',
-};
-
 const maybeDisplayHelp = (options: string[]) => {
   if (options.includes('-h') || options.includes('--help')) {
     console.log(BUILD_ANDROID_HELP_MESSAGE);
@@ -24,9 +23,8 @@ const maybeDisplayHelp = (options: string[]) => {
 
 const getFullConfig = async (
   options: string[],
+  commonConfig: BuildConfigCommon,
 ): Promise<BuildConfigAndroid> => {
-  const commonConfig = await getCommonConfig(options);
-
   let publish = true;
   if (options.includes('--no-publish')) {
     publish = false;
@@ -41,7 +39,6 @@ const getFullConfig = async (
   );
 
   return {
-    ...basicConfig,
     ...commonConfig,
     libraryName,
     publish,
@@ -49,7 +46,7 @@ const getFullConfig = async (
   };
 };
 
-const cleanUpArtifacts = async (config: BasicConfigAndroid) => {
+const cleanUpArtifacts = async (config: BuildConfigCommon) => {
   try {
     await fs.access(config.artifactsDir);
     const androidArtifacts = (await fs.readdir(config.artifactsDir)).filter(
@@ -176,12 +173,13 @@ const maybeRunCustomTasks = async (config: BuildConfigAndroid) => {
 
 export const buildAndroid = async (options: string[]) => {
   infoMessage('Building brownfield for Android');
+  const commonConfig = await getCommonConfig(options);
 
   // Show help message
   maybeDisplayHelp(options);
 
   // Clean up previous build artifacts
-  await cleanUpArtifacts(basicConfig);
+  await cleanUpArtifacts(commonConfig);
 
   // Validate prebuild
   infoMessage('Validating prebuild for Android...');
@@ -194,7 +192,7 @@ export const buildAndroid = async (options: string[]) => {
   successMessage('Prebuild validated successfully');
 
   // Validate or infer configurations
-  const config = await getFullConfig(options);
+  const config = await getFullConfig(options, commonConfig);
 
   // Compile the fat-AAR
   await compileLibrary(config);
