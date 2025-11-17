@@ -16,6 +16,10 @@
   - [Adding brownfield targets](#generating-brownfield-targets)
   - [Building with CLI](#with-cli)
   - [Building manually](#with-manually)
+  - [Using built artifacts in native projects](#using-built-artifacts)
+    - [Android](#using-android)
+    - [iOS (SwiftUI)](#using-swiftui)
+    - [iOS (UIKit)](#using-uikit)
 - [CLI reference](#cli)
   - [CLI commands](#cli-commands)
 - [Configuration reference](#configuration)
@@ -116,6 +120,160 @@ More details and full reference of the CLI commands can be found below in the [C
 
 Brownfields can be also built manually using the `xcodebuild` and `./gradlew` commands. Please see [build-xcframework.sh](#./example/scripts/build-xcframework.sh) and [build-aar.sh](#./example/scripts/build-aar.sh) for an example reference of manual building
 
+<a name="using-built-artifacts"></a>
+### Using built artifacts in native projects
+
+<a name="using-android"></a>
+### Android
+
+```kotlin
+package com.swmansion.example
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.widget.FrameLayout
+import androidx.fragment.app.Fragment
+import com.pmleczek.expobrownfieldtargetexample.brownfield.ReactNativeViewFactory
+import com.pmleczek.expobrownfieldtargetexample.brownfield.RootComponent
+
+class ReactNativeFragment : Fragment() {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): FrameLayout {
+        return ReactNativeViewFactory.createFrameLayout(
+            requireContext(),
+            requireActivity(),
+            RootComponent.Main
+        )
+    }
+}
+```
+
+```kotlin
+package com.swmansion.example
+
+import android.os.Bundle
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
+import com.pmleczek.android.ui.theme.AndroidTheme
+import com.pmleczek.expobrownfieldtargetexample.brownfield.ReactNativeHostManager
+import com.pmleczek.expobrownfieldtargetexample.brownfield.ReactNativeViewFactory
+
+class MainActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        ReactNativeHostManager.shared.initialize(this.application)
+        enableEdgeToEdge()
+        setContentView(R.layout.activity_main)
+    }
+
+    override fun invokeDefaultOnBackPressed() {
+        ...
+    }
+}
+
+```
+
+<a name="using-swiftui"></a>
+### iOS (SwiftUI)
+
+```swift
+import SwiftUI
+import MyBrownfieldApp
+
+@main
+struct ios_swiftuiApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+    }
+}
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        MyBrownfieldApp.ReactNativeHostManager.shared.initialize()
+        return true
+    }
+}
+```
+
+```swift
+import SwiftUI
+import MyBrownfieldApp
+
+struct ContentView: View {
+    var body: some View {
+        VStack {
+            MyBrownfieldApp.ReactNativeView(
+                moduleName: "main",
+            )
+        }
+        .ignoresSafeArea(.all)
+    }
+}
+```
+
+<a name="using-uikit"></a>
+### iOS (UIKit)
+
+```swift
+import MyBrownfieldApp
+import UIKit
+
+class ViewController: UIViewController {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        let reactNativeView = MyBrownfieldApp
+            .ReactNativeHostManager
+            .shared
+            .loadView(
+                moduleName: "main",
+                initialProps: nil,
+                launchOptions: [:]
+            )
+        
+        view.addSubview(reactNativeView)
+        
+        reactNativeView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            reactNativeView.topAnchor.constraint(equalTo: view.topAnchor),
+            reactNativeView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            reactNativeView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            reactNativeView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+    }
+}
+```
+
+```swift
+import MyBrownfieldApp
+import UIKit
+
+@main
+class AppDelegate: UIResponder, UIApplicationDelegate {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        MyBrownfieldApp.ReactNativeHostManager.shared.initialize()
+        return true
+    }
+
+...
+```
+
 <a name="cli"></a>
 ## CLI reference
 
@@ -128,7 +286,7 @@ TODO
 
 #### `build-ios`
 
-Builds the iOS frameworks, packages them as a single XCFramework places it in a single directory along with `hermes.xcframework` copied from Pods
+Builds the iOS frameworks, packages them as a single XCFramework and places it in a single directory along with `hermes.xcframework` copied from Pods
 
 ```
 npx expo-brownfield-target build-ios [options]
