@@ -10,6 +10,7 @@ class ExpoBrownfieldPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         project.evaluationDependsOn(":expo")
         setupSourceSets(project)
+        setupConfigurations(project)
     }
 
     private fun setupSourceSets(project: Project) {
@@ -82,5 +83,30 @@ class ExpoBrownfieldPlugin : Plugin<Project> {
 
     private fun findAppProject(root: Project): Project? {
       return root.allprojects.firstOrNull { it.plugins.hasPlugin("com.android.application") }
+    }
+
+
+    private fun createConfiguration(project: Project, configName: String) {
+        val configuration = project.configurations.create(configName)
+        configuration.isVisible = false
+        configuration.isTransitive = false
+        // project.gradle.addListener(CustomDependencyResolver(project, configuration))
+        // Configuration is automatically added to project.configurations when created
+    }
+
+    private fun setupConfigurations(project: Project) {
+      createConfiguration(project, "embed")
+      val androidExtension = project.extensions.getByType(LibraryExtension::class.java)
+      androidExtension.buildTypes.all {
+        createConfiguration(project, "${name}Embed")
+      }
+      androidExtension.productFlavors.all {
+        val flavorName = name
+        createConfiguration(project, "${flavorName}Embed")
+        androidExtension.buildTypes.all {
+          val variantName = "${flavorName}${name.replaceFirstChar(Char::titlecase)}Embed"
+          createConfiguration(project, variantName)
+        }
+      }
     }
 }
