@@ -8,14 +8,18 @@ ${chalk.bold('Options:')}
   -h, --help        display help for command
 
 ${chalk.bold('Commands:')}
-  build [options]
+  build-android [options]     build brownfield for Android
+  build-ios [options]         build brownfield for iOS
 `;
 
 export const BUILD_ANDROID_HELP_MESSAGE = `
-Usage: expo-brownfield-target build-android [options]
+${chalk.bold('Usage:')} expo-brownfield-target build-android [options]
 
-Options:
-  -h, --help        display help for 'build-android'
+${chalk.bold('Options:')}
+  -h, --help           display help for 'build-android'
+  --no-publish         do not publish AAR to Maven
+  -d, --debug          build AAR in debug configuration
+  -r, --release        build AAR in release configuration
 `;
 
 export const BUILD_IOS_HELP_MESSAGE = `

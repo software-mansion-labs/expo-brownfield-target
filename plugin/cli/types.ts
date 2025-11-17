@@ -23,7 +23,18 @@ export type BasicConfigIOS = Pick<
   'artifactsDir' | 'hermesFrameworkPath'
 >;
 
+export interface BuildConfigAndroid {
+  artifactsDir: string;
+  libraryName: string;
+  configuration: ConfigurationIOS;
+  publish: boolean;
+  customTasks: string[];
+}
+
+export type BasicConfigAndroid = Pick<BuildConfigAndroid, 'artifactsDir'>;
+
 export interface RunCommandOptions {
+  cwd?: string;
   verbose?: boolean;
   env?: Record<string, string>;
 }

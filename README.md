@@ -282,11 +282,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 #### `build-android`
 
-TODO
+Builds the Android library as a fat-AAR and copies it to 
+
+```
+npx expo-brownfield-target build-android [options]
+```
+
+| Option | Short option | Description | Default value |
+| --- | --- | --- | --- |
+| --help | -h | Displays help message for `build-android` | - |
+| --no-publish | - | Skips publishing the AAR to local Maven repo | - |
+| --tasks | -t | Enables running specified custom tasks sequentially after `assembleDebug`/`assembleRelease` (e.g. for custom Maven publishing flow). List should be specified in the following format: `task1,task2,task3,task4` | - |
+| --debug | -d | Specifies to build the framework with **Debug** configuration. If both `--debug` and `--release` are passed `--release` takes precedence | If no option for configuration is passed framework will be built in **Release** |
+| --release | -r | Specifies to build the framework with **Release** configuration. If both options are passed `--release` takes precedence over `--debug` | If no option for configuration is passed framework will be built in **Release** |
 
 #### `build-ios`
 
-Builds the iOS frameworks, packages them as a single XCFramework and places it in a single directory along with `hermes.xcframework` copied from Pods
+Builds the iOS framework, packages it as an XCFramework and places it in the artifacts directory (`artifacts/`) along with the `hermes.xcframework` copied from Pods
 
 ```
 npx expo-brownfield-target build-ios [options]

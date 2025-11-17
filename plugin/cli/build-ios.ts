@@ -82,8 +82,18 @@ const getFullConfig = async (options: string[]): Promise<BuildConfigIOS> => {
 const cleanUpArtifacts = async (config: BasicConfigIOS) => {
   try {
     await fs.access(config.artifactsDir);
-    await fs.rm(config.artifactsDir, { recursive: true, force: true });
-    successMessage(`Cleaned up previous artifacts at: ${config.artifactsDir}`);
+    const iosArtifacts = (await fs.readdir(config.artifactsDir)).filter(
+      (artifact) => artifact.endsWith('.xcframework'),
+    );
+    for (const artifact of iosArtifacts) {
+      await fs.rm(`${config.artifactsDir}/${artifact}`, {
+        recursive: true,
+        force: true,
+      });
+    }
+    successMessage(
+      `Cleaned up previous iOS artifacts at: ${config.artifactsDir}`,
+    );
   } catch (error: unknown) {}
 };
 
@@ -129,7 +139,9 @@ const packageFrameworks = async (config: BuildConfigIOS) => {
 };
 
 const copyHermesFramework = async (config: BasicConfigIOS) => {
-  Loader.shared.start('');
+  Loader.shared.start(
+    'Copying hermes.xcframework to the artifacts directory...',
+  );
   await fs.cp(
     `./ios/${config.hermesFrameworkPath}`,
     `${config.artifactsDir}/hermes.xcframework`,
@@ -154,8 +166,12 @@ export const buildIOS = async (options: string[]) => {
 
   // Validate prebuild
   if (!(await validatePrebuild('ios'))) {
+    errorMessage(
+      'Prebuild validation failed. Please run `npx expo prebuild --platofm ios` manually and try again.',
+    );
     return;
   }
+  successMessage('Prebuild validated successfully');
 
   // Validate or infer configurations
   const config = await getFullConfig(options);
