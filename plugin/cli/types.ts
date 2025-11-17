@@ -23,15 +23,8 @@ export interface BuildConfigAndroid extends BuildConfigCommon {
   customTasks: string[];
 }
 
-export type BasicConfigIOS = Pick<
-  BuildConfigIOS,
-  'artifactsDir' | 'hermesFrameworkPath'
->;
-
-export type BasicConfigAndroid = Pick<BuildConfigAndroid, 'artifactsDir'>;
-
 export interface RunCommandOptions {
   cwd?: string;
-  verbose?: boolean;
   env?: Record<string, string>;
+  verbose?: boolean;
 }

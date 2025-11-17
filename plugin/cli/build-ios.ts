@@ -1,5 +1,5 @@
 import fs from 'node:fs/promises';
-import type { BasicConfigIOS, BuildConfigIOS } from './types';
+import type { BuildConfigCommon, BuildConfigIOS } from './types';
 import {
   getCommonConfig,
   getOptionValue,
@@ -8,13 +8,6 @@ import {
 } from './build';
 import { errorMessage, infoMessage, Loader, successMessage } from './output';
 import { BUILD_IOS_HELP_MESSAGE } from './messages';
-
-const basicConfig = {
-  artifactsDir: './artifacts',
-  derivedDataPath: './ios/build',
-  hermesFrameworkPath:
-    'Pods/hermes-engine/destroot/Library/Frameworks/universal/hermes.xcframework',
-};
 
 const maybeDisplayHelp = (options: string[]) => {
   if (options.includes('-h') || options.includes('--help')) {
@@ -56,9 +49,10 @@ const inferScheme = async (): Promise<string> => {
   process.exit(1);
 };
 
-const getFullConfig = async (options: string[]): Promise<BuildConfigIOS> => {
-  const commonConfig = await getCommonConfig(options);
-
+const getFullConfig = async (
+  options: string[],
+  commonConfig: BuildConfigCommon,
+): Promise<BuildConfigIOS> => {
   let xcworkspace = getOptionValue(options, ['-x', '--xcworkspace']);
   if (!xcworkspace) {
     xcworkspace = await inferXCWorkspace();
@@ -70,14 +64,16 @@ const getFullConfig = async (options: string[]): Promise<BuildConfigIOS> => {
   }
 
   return {
-    ...basicConfig,
     ...commonConfig,
+    derivedDataPath: './ios/build',
+    hermesFrameworkPath:
+      'Pods/hermes-engine/destroot/Library/Frameworks/universal/hermes.xcframework',
     scheme,
     xcworkspace,
   };
 };
 
-const cleanUpArtifacts = async (config: BasicConfigIOS) => {
+const cleanUpArtifacts = async (config: BuildConfigCommon) => {
   try {
     await fs.access(config.artifactsDir);
     const iosArtifacts = (await fs.readdir(config.artifactsDir)).filter(
@@ -148,7 +144,7 @@ const packageFrameworks = async (config: BuildConfigIOS) => {
   );
 };
 
-const copyHermesFramework = async (config: BasicConfigIOS) => {
+const copyHermesFramework = async (config: BuildConfigIOS) => {
   Loader.shared.start(
     'Copying hermes.xcframework to the artifacts directory...',
   );
@@ -167,12 +163,13 @@ const copyHermesFramework = async (config: BasicConfigIOS) => {
 
 export const buildIOS = async (options: string[]) => {
   infoMessage('Building brownfield for iOS');
+  const commonConfig = await getCommonConfig(options);
 
   // Show help message
   maybeDisplayHelp(options);
 
   // Clean up previous build artifacts
-  await cleanUpArtifacts(basicConfig);
+  await cleanUpArtifacts(commonConfig);
 
   // Validate prebuild
   if (!(await validatePrebuild('ios'))) {
@@ -184,7 +181,7 @@ export const buildIOS = async (options: string[]) => {
   successMessage('Prebuild validated successfully');
 
   // Validate or infer configurations
-  const config = await getFullConfig(options);
+  const config = await getFullConfig(options, commonConfig);
 
   // Compile frameworks
   await compileFrameworks(config);
@@ -193,5 +190,5 @@ export const buildIOS = async (options: string[]) => {
   await packageFrameworks(config);
 
   // Copy hermes.xcframework
-  await copyHermesFramework(basicConfig);
+  await copyHermesFramework(config);
 };

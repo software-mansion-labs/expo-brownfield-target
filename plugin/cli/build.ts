@@ -136,9 +136,13 @@ export const splitOptionList = (optionValue: string): string[] => {
 export const getCommonConfig = async (
   options: string[],
 ): Promise<BuildConfigCommon> => {
-  // TODO: Change?
-  // Hardcoded for now
-  const artifactsDir = path.join(process.cwd(), 'artifacts');
+  let artifactsDir = getOptionValue(options, ['--artifacts', '-a']);
+  if (!artifactsDir) {
+    artifactsDir = './artifacts';
+  }
+  artifactsDir = path.isAbsolute(artifactsDir)
+    ? artifactsDir
+    : path.join(process.cwd(), artifactsDir);
 
   let configuration: BuildType = 'Release';
   if (options.includes('-d') || options.includes('--debug')) {
@@ -153,7 +157,6 @@ export const getCommonConfig = async (
   if (options.includes('--verbose')) {
     verbose = true;
   }
-  // TODO: Move to earlier method when available
   Loader.shared.setVerbose(verbose);
 
   return {
