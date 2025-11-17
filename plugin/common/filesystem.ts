@@ -1,4 +1,10 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import {
+  accessSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+} from 'node:fs';
 import path from 'node:path';
 import type { PlatformString } from './types';
 
@@ -24,6 +30,39 @@ const interpolateVariables = (
 };
 
 const readTemplate = (template: string, platform?: PlatformString): string => {
+  // First check if the template exists in the .brownfield-templates directory
+  try {
+    accessSync(path.join(process.cwd(), '.brownfield-templates'));
+    if (
+      existsSync(path.join(process.cwd(), '.brownfield-templates', template))
+    ) {
+      return readFileSync(
+        path.join(process.cwd(), '.brownfield-templates', template),
+      ).toString();
+    }
+
+    if (
+      existsSync(
+        path.join(
+          process.cwd(),
+          '.brownfield-templates',
+          platform ?? '.',
+          template,
+        ),
+      )
+    ) {
+      return readFileSync(
+        path.join(
+          process.cwd(),
+          '.brownfield-templates',
+          platform ?? '.',
+          template,
+        ),
+      ).toString();
+    }
+  } catch (error) {}
+
+  // If not use the default template
   const templatesPath = path.join(
     __filename,
     '../..',
