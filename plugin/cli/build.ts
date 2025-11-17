@@ -1,10 +1,23 @@
-import { spawn } from 'node:child_process';
+import { ChildProcess, spawn } from 'node:child_process';
 import fs from 'node:fs/promises';
 import readline from 'node:readline/promises';
 import { errorMessage, Loader, successMessage, warningMessage } from './output';
 import type { BuildConfigCommon, BuildType, RunCommandOptions } from './types';
 import chalk from 'chalk';
 import path from 'node:path';
+
+let subprocess: ChildProcess | null = null;
+const killChildProcess = () => {
+  if (subprocess != null) {
+    subprocess.kill('SIGINT');
+  }
+  errorMessage('Command interrupted');
+};
+
+process.on('SIGINT', killChildProcess);
+process.on('SIGTERM', killChildProcess);
+process.on('SIGQUIT', killChildProcess);
+process.on('exit', killChildProcess);
 
 export const runCommand = (
   command: string,
@@ -24,6 +37,7 @@ export const runCommand = (
       },
       cwd: options?.cwd,
     });
+    subprocess = childProc;
 
     let stdOut = '';
     let stdErr = '';
@@ -39,6 +53,7 @@ export const runCommand = (
     }
 
     childProc.on('close', (code) => {
+      subprocess = null;
       if (code === 0) {
         resolve({ stdout: stdOut });
       } else {
@@ -49,10 +64,13 @@ export const runCommand = (
     });
 
     childProc.on('error', (error) => {
+      subprocess = null;
       reject(error);
     });
 
-    childProc.on('exit', () => {});
+    childProc.on('exit', () => {
+      subprocess = null;
+    });
   });
 };
 
