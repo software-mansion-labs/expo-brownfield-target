@@ -1,9 +1,6 @@
 import { infoMessage, successMessage, errorMessage, Loader } from './output';
 import { BUILD_ANDROID_HELP_MESSAGE } from './messages';
-import type {
-  BuildConfigAndroid,
-  BuildConfigCommon,
-} from './types';
+import type { BuildConfigAndroid, BuildConfigCommon } from './types';
 import fs from 'node:fs/promises';
 import {
   getCommonConfig,
@@ -120,16 +117,13 @@ const maybePublishAAR = async (config: BuildConfigAndroid) => {
 
   const androidPath = path.join(process.cwd(), 'android');
 
-  const taskExists = await runCommand(
+  const { stdout } = await runCommand(
     './gradlew',
     [`:${config.libraryName}:tasks`],
     {
       cwd: androidPath,
     },
   );
-  // TODO: Fix return type
-  // @ts-expect-error
-  const { stdout } = taskExists;
   const hasDefaultPublishTask = stdout.includes(
     'publishMavenAarPublicationToMavenLocal',
   );

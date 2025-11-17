@@ -6,7 +6,12 @@ import readline from 'node:readline/promises';
 import chalk from 'chalk';
 
 import { errorMessage, Loader, successMessage, warningMessage } from './output';
-import type { BuildConfigCommon, BuildType, RunCommandOptions } from './types';
+import type {
+  BuildConfigCommon,
+  BuildType,
+  RunCommandOptions,
+  RunCommandResult,
+} from './types';
 
 let subprocess: ChildProcess | null = null;
 let isExiting = false;
@@ -40,8 +45,7 @@ export const runCommand = (
   command: string,
   args: string[] = [],
   options?: RunCommandOptions,
-  // TODO; Fix return type
-): Promise<object> => {
+): Promise<RunCommandResult> => {
   return new Promise((resolve, reject) => {
     const stdio = options?.verbose ? 'inherit' : 'pipe';
 
