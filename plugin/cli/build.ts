@@ -1,23 +1,40 @@
 import { ChildProcess, spawn } from 'node:child_process';
 import fs from 'node:fs/promises';
+import path from 'node:path';
 import readline from 'node:readline/promises';
+
+import chalk from 'chalk';
+
 import { errorMessage, Loader, successMessage, warningMessage } from './output';
 import type { BuildConfigCommon, BuildType, RunCommandOptions } from './types';
-import chalk from 'chalk';
-import path from 'node:path';
 
 let subprocess: ChildProcess | null = null;
+let isExiting = false;
+
 const killChildProcess = () => {
-  if (subprocess != null) {
-    subprocess.kill('SIGINT');
+  if (subprocess != null && !subprocess.killed && !isExiting) {
+    isExiting = true;
+    console.log('\n');
+    errorMessage('Command interrupted');
+    subprocess.kill('SIGTERM');
+
+    const forceKillTimeout = setTimeout(() => {
+      if (subprocess != null && !subprocess.killed) {
+        subprocess.kill('SIGKILL');
+      }
+      process.exit(130);
+    }, 2000);
+
+    subprocess.once('exit', () => {
+      clearTimeout(forceKillTimeout);
+      process.exit(130);
+    });
   }
-  errorMessage('Command interrupted');
 };
 
 process.on('SIGINT', killChildProcess);
 process.on('SIGTERM', killChildProcess);
 process.on('SIGQUIT', killChildProcess);
-process.on('exit', killChildProcess);
 
 export const runCommand = (
   command: string,
@@ -54,8 +71,13 @@ export const runCommand = (
 
     childProc.on('close', (code) => {
       subprocess = null;
+      if (isExiting) {
+        return;
+      }
       if (code === 0) {
         resolve({ stdout: stdOut });
+      } else if (code === null) {
+        process.exit(130);
       } else {
         const errorMessage = `Command '${command} ${args.join(' ')}' failed with code ${code}
         \n${stdErr.substring(0, 300)}`;
@@ -65,6 +87,9 @@ export const runCommand = (
 
     childProc.on('error', (error) => {
       subprocess = null;
+      if (isExiting) {
+        return;
+      }
       reject(error);
     });
 
