@@ -51,12 +51,18 @@ const getFullConfig = async (
     getOptionValue(options, ['--tasks', '-t']),
   );
 
+  let verbose = false;
+  if (options.includes('--verbose')) {
+    verbose = true;
+  }
+
   return {
     ...basicConfig,
     configuration,
     libraryName,
     publish,
     customTasks,
+    verbose
   };
 };
 
@@ -87,6 +93,7 @@ const compileLibrary = async (config: BuildConfigAndroid) => {
   Loader.shared.start(`Running ${cleanTask}...`);
   await runCommand('./gradlew', [cleanTask], {
     cwd: androidPath,
+    verbose: config.verbose,
   });
   Loader.shared.stop();
   successMessage(`Successfully ran ${cleanTask}...`);
@@ -96,6 +103,7 @@ const compileLibrary = async (config: BuildConfigAndroid) => {
   Loader.shared.start(`Running ${gradlewTask}...`);
   await runCommand('./gradlew', [gradlewTask], {
     cwd: androidPath,
+    verbose: config.verbose,
   });
   Loader.shared.stop();
   successMessage(`Successfully ran ${gradlewTask}...`);
@@ -157,6 +165,7 @@ const maybePublishAAR = async (config: BuildConfigAndroid) => {
   Loader.shared.start(`Running ${publishTask}...`);
   await runCommand('./gradlew', [publishTask], {
     cwd: androidPath,
+    verbose: config.verbose,
   });
   Loader.shared.stop();
   successMessage(`Successfully published AAR to local Maven repo`);
@@ -175,6 +184,7 @@ const maybeRunCustomTasks = async (config: BuildConfigAndroid) => {
     Loader.shared.start(`Running ${taskCommand}...`);
     await runCommand('./gradlew', [taskCommand], {
       cwd: androidPath,
+      verbose: config.verbose,
     });
     Loader.shared.stop();
     successMessage(`Successfully ran ${taskCommand}...`);

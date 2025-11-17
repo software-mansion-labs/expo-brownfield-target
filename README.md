@@ -295,6 +295,7 @@ npx expo-brownfield-target build-android [options]
 | --tasks | -t | Enables running specified custom tasks sequentially after `assembleDebug`/`assembleRelease` (e.g. for custom Maven publishing flow). List should be specified in the following format: `task1,task2,task3,task4` | - |
 | --debug | -d | Specifies to build the framework with **Debug** configuration. If both `--debug` and `--release` are passed `--release` takes precedence | If no option for configuration is passed framework will be built in **Release** |
 | --release | -r | Specifies to build the framework with **Release** configuration. If both options are passed `--release` takes precedence over `--debug` | If no option for configuration is passed framework will be built in **Release** |
+| --verbose | - | Output of all commands ran by the CLI (e.g. `./gradlew assembleRelease`) will be printed in the terminal | - |
 
 #### `build-ios`
 
