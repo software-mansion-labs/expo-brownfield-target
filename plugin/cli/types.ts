@@ -23,8 +23,13 @@ export interface BuildConfigAndroid extends BuildConfigCommon {
   customTasks: string[];
 }
 
+/* Command execution */
 export interface RunCommandOptions {
   cwd?: string;
   env?: Record<string, string>;
   verbose?: boolean;
+}
+
+export interface RunCommandResult {
+  stdout: string;
 }
