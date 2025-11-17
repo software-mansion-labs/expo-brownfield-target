@@ -76,9 +76,10 @@ export const createFileFromTemplateAs = (
 
 export const readFromTemplate = (
   template: string,
+  platform?: PlatformString,
   variables?: Record<string, unknown>,
 ): string => {
-  let templateContents = readTemplate(template);
+  let templateContents = readTemplate(template, platform);
   if (variables) {
     templateContents = interpolateVariables(templateContents, variables);
   }

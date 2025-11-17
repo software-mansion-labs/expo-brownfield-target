@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import {
   createFileFromTemplate as createFileFromTemplateCommon,
   createFileFromTemplateAs as createFileFromTemplateAsCommon,
+  readFromTemplate as readFromTemplateCommon,
 } from '../../common/filesystem';
 
 export const mkdir = (path: string, recursive: boolean = false) => {
@@ -25,4 +26,11 @@ export const createFileFromTemplateAs = (
   variables?: Record<string, unknown>,
 ) => {
   createFileFromTemplateAsCommon(template, at, as, 'ios', variables);
+};
+
+export const readFromTemplate = (
+  template: string,
+  variables?: Record<string, unknown>,
+) => {
+  return readFromTemplateCommon(template, 'ios', variables);
 };
