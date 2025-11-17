@@ -29,8 +29,10 @@ const interpolateVariables = (
   return str;
 };
 
-const readTemplate = (template: string, platform?: PlatformString): string => {
-  // First check if the template exists in the .brownfield-templates directory
+const maybeReadOverwrittenTemplate = (
+  template: string,
+  platform?: PlatformString,
+): string => {
   try {
     accessSync(path.join(process.cwd(), '.brownfield-templates'));
     if (
@@ -61,6 +63,16 @@ const readTemplate = (template: string, platform?: PlatformString): string => {
       ).toString();
     }
   } catch (error) {}
+
+  return '';
+};
+
+const readTemplate = (template: string, platform?: PlatformString): string => {
+  // First check if the template exists in the .brownfield-templates directory
+  const overwrittenTemplate = maybeReadOverwrittenTemplate(template, platform);
+  if (overwrittenTemplate) {
+    return overwrittenTemplate;
+  }
 
   // If not use the default template
   const templatesPath = path.join(
