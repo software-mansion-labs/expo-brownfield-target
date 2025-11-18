@@ -184,11 +184,12 @@ class MainActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
 ### iOS (SwiftUI)
 
 ```swift
+// MyApp.swift
 import SwiftUI
 import MyBrownfieldApp
 
 @main
-struct ios_swiftuiApp: App {
+struct MyApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var body: some Scene {
@@ -207,6 +208,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 ```
 
 ```swift
+// ContentView.swift
 import SwiftUI
 import MyBrownfieldApp
 
@@ -226,6 +228,7 @@ struct ContentView: View {
 ### iOS (UIKit)
 
 ```swift
+// ViewController.swift
 import MyBrownfieldApp
 import UIKit
 
@@ -256,6 +259,7 @@ class ViewController: UIViewController {
 ```
 
 ```swift
+// AppDelegate.swift
 import MyBrownfieldApp
 import UIKit
 
