@@ -8,6 +8,7 @@
 `expo-brownfield-target` is an Expo config plugin which enables you to effortlessly extend your Expo app with additional native targets for building and shipping it as a brownfield
 
 ### Table of contents
+- [Motivation](#motivation)
 - [Features](#features)
 - [Platform & Expo SDK compatibility](#compat)
 - [Usage](#usage)
@@ -26,6 +27,11 @@
   - [Android](#configuration-android)
   - [iOS](#configuration-ios)
   - [File templates](#file-templates)
+
+<a name="motivation"></a>
+## Motivation
+
+Brownfield approach enables integrating React Native apps into native Android and iOS projects, but setting it up, especially in Expo projects using Continuous Native Generation is a manual, repetitive and pretty complex task. This plugin aims to fully automate this process on every prebuild and provides a set of configurable file templates and a CLI which streamlines brownfield distribution. Additionally such setup of brownfield allows for easy packaging it as a fat-AAR, XCFramework or Swift Package which simplifies its shipping and enables e.g. simple and more independent cooperation of native and RN teams
 
 <a name="features"></a>
 ## Features
