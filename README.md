@@ -292,6 +292,7 @@ npx expo-brownfield-target build-android [options]
 | --release | -r | Specifies to build the framework with **Release** configuration. If both options are passed `--release` takes precedence over `--debug` | If no option for configuration is passed framework will be built in **Release** |
 | --verbose | - | Output of all commands ran by the CLI (e.g. `./gradlew assembleRelease`) will be printed in the terminal | - |
 | --artifacts | -a | Directory where built artifacts (XCFrameworks and AAR) should be placed | `./artifacts` (relative to the Expo project root) |
+| --library | -l | The name of the Android library for brownfield | `brownfield` |
 
 #### `build-ios`
 
@@ -319,6 +320,7 @@ npx expo-brownfield-target build-ios [options]
 
 | Property | Description | Default value |
 | --- | --- | --- |
+| `library` | Name of the Android library used for the brownfield | `brownfield` |
 | `package` | Package identifier for the brownfield library | `android.package` appended with `.brownfield` or `com.example.brownfield` if `android.package` is undefined  |
 
 <a name="configuration-ios"></a>
