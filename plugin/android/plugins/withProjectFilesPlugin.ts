@@ -33,17 +33,9 @@ const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (
 
     // Add ReactNativeFragment.kt to the brownfield target:
     // TODO: Consider inclusion of below
-    // createFileFromTemplate(
-    //   'ReactNativeFragment.kt',
-    //   path.join(
-    //     pluginConfig.projectRoot,
-    //     'android/brownfield/src/main/',
-    //     packagePath,
-    //   ),
-    //   {
-    //     packageId: pluginConfig.package,
-    //   },
-    // );
+    createFileFromTemplate('ReactNativeFragment.kt', brownfieldSourcesPath, {
+      packageId: pluginConfig.package,
+    });
 
     // Add files from templates to the brownfield target:
     // - AndroidManifest.xml
