@@ -14,6 +14,7 @@
 - [Usage](#usage)
   - [Installation](#installation)
   - [Plugin setup](#plugin-setup)
+  - [Manual setup](#manual-setup)
   - [Adding brownfield targets](#generating-brownfield-targets)
   - [Building with CLI](#with-cli)
   - [Building manually](#with-manually)
@@ -100,6 +101,12 @@ If you want to pass any configuration options make sure to add the plugin as an 
   }
 }
 ```
+
+
+<a name="manual-setup"></a>
+### Manual setup
+
+All steps performed by the plugin can also be performed manually. Please refer to [MANUAL-SETUP.MD](./MANUAL-SETUP.md) for a full guide for manual setup
 
 <a name="generating-brownfield-targets"></a>
 ### Adding brownfield targets
