@@ -28,7 +28,7 @@ const getFullConfig = async (
     publish = false;
   }
 
-  let libraryName = getOptionValue(options, ['--library-name', '-l']);
+  let libraryName = getOptionValue(options, ['--library', '-l']);
   if (!libraryName) {
     libraryName = 'brownfield';
   }
