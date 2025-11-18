@@ -1,13 +1,15 @@
 import { type ConfigPlugin, withProjectBuildGradle } from 'expo/config-plugins';
 
+const BROWNFIELD_PLUGIN = {
+  name: 'com.callstack.react:brownfield-gradle-plugin',
+  version: '0.5.0',
+} as const;
+
 const withProjectBuildGradlePlugin: ConfigPlugin = (config) => {
-  // TODO: Move to constants
-  const brownfieldPluginName = 'com.callstack.react:brownfield-gradle-plugin';
-  const brownfieldPluginVersion = '0.5.0';
-  const dependencyLine = `    classpath("${brownfieldPluginName}:${brownfieldPluginVersion}")`;
+  const dependencyLine = `    classpath("${BROWNFIELD_PLUGIN.name}:${BROWNFIELD_PLUGIN.version}")`;
 
   return withProjectBuildGradle(config, (config) => {
-    if (config.modResults.contents.includes(brownfieldPluginName)) {
+    if (config.modResults.contents.includes(BROWNFIELD_PLUGIN.name)) {
       return config;
     }
 

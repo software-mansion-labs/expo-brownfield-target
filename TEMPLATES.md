@@ -74,9 +74,6 @@ Note: `.brownfield-templates` supports both flat and per-platform directory stru
 | groupId | Package identifier stripped of the last component. Used for publihsing artifacts to Maven | `com.swmansion.brownfield-project` |
 | artifactId | Artifact identifier. Last component of the package identifier. Used for publihsing artifacts to Maven | `brownfield` |
 
-<!-- TODO: Maybe add -->
-<!-- | ReactNativeFragment.kt | -->
-
 <a name="ios"></a>
 ## iOS
 

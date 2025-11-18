@@ -2,8 +2,6 @@ import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import expo.modules.plugin.ExpoGradleExtension
 
-// TODO: Cleanup comments
-
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
@@ -13,10 +11,6 @@ plugins {
 }
 
 reactBrownfield {
-    /**
-     * This will be available from `com.callstack.react.brownfield` version > 3.0.0
-     * It takes care of linking expo dependencies like expo-image with your AAR module.
-     */
     isExpo = true
 }
 
@@ -39,7 +33,6 @@ android {
         consumerProguardFiles("consumer-rules.pro")
         buildConfigField("boolean", "IS_NEW_ARCHITECTURE_ENABLED", properties["newArchEnabled"].toString())
         buildConfigField("boolean", "IS_HERMES_ENABLED", properties["hermesEnabled"].toString())
-        // TODO: Examine this var in more detail
         buildConfigField("boolean", "IS_EDGE_TO_EDGE_ENABLED", "false")
         buildConfigField("String", "REACT_NATIVE_RELEASE_LEVEL", "\"${findProperty("reactNativeReleaseLevel") ?: "stable"}\"")
     }
@@ -63,16 +56,6 @@ android {
 
     packaging {
       jniLibs {
-        //TODO: cleanup this section
-        // if (!hermesEnabled) {
-        //   excludes += "lib/x86/libjsctooling.so"
-        //   excludes += "lib/x86_64/libjsctooling.so"
-        //   excludes += "lib/armeabi-v7a/libjsctooling.so"
-        //   excludes += "lib/arm64-v8a/libjsctooling.so"
-        // }
-
-        // Pick first libworklets.so to resolve conflicts between
-        // react-native-reanimated and react-native-worklets
         pickFirsts += "lib/armeabi-v7a/libworklets.so"
         pickFirsts += "lib/arm64-v8a/libworklets.so"
         pickFirsts += "lib/x86/libworklets.so"
@@ -158,15 +141,6 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 }
 
-/**
- * This function is used in the places where we:
- *
- * Remove the `expo` dependency from the `module.json` and `pom.xml file. Otherwise, the
- * gradle will try to resolve this and will throw an error, since this dependency won't
- * be available from a remote repository.
- *
- * Your AAR does not need this dependency.
- */
 fun isExpoDep(group: String, artifactId: String): Boolean {
     return group == "host.exp.exponent" && artifactId == "expo"
 }
@@ -183,11 +157,6 @@ publishing {
 
             pom {
                 withXml {
-                    /**
-                     * As a result of `from(components.getByName("release")` all of the project
-                     * dependencies are added to `pom.xml` file. We do not need the react-native
-                     * third party dependencies to be a part of it as we embed those dependencies.
-                     */
                     val dependenciesNode = (asNode().get("dependencies") as groovy.util.NodeList).first() as groovy.util.Node
                     dependenciesNode.children()
                         .filterIsInstance<groovy.util.Node>()
@@ -204,17 +173,12 @@ publishing {
     }
 
     repositories {
-        mavenLocal() // Publishes to the local Maven repository (~/.m2/repository by default)
+        mavenLocal()
     }
 }
 
 val moduleBuildDir: Directory = layout.buildDirectory.get()
 
-/**
- * As a result of `from(components.getByName("default")` all of the project
- * dependencies are added to `module.json` file. We do not need the react-native
- * third party dependencies to be a part of it as we embed those dependencies.
- */
 tasks.register("removeDependenciesFromModuleFile") {
     doLast {
         file("$moduleBuildDir/publications/mavenAar/module.json").run {
@@ -240,10 +204,7 @@ afterEvaluate {
   listOf("mergeReleaseJniLibFolders", "mergeDebugJniLibFolders").forEach { taskName ->
     tasks.named(taskName) {
       doFirst {
-        // Remove duplicate libworklets.so from react-native-worklets to avoid conflicts
-        // with react-native-reanimated which also provides the same library
-        // TODO: Fix this to use dynamic path (rootProject.name)
-        fileTree("$buildDir/intermediates/exploded-aar/expo-brownfield-target-example/react-native-worklets") {
+        fileTree("$buildDir/intermediates/exploded-aar/${rootProject.name}/react-native-worklets") {
           include("**/jni/**/libworklets.so")
         }.forEach { file ->
           println("Removing duplicate libworklets.so: ${file.path}")
