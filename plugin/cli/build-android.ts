@@ -28,9 +28,10 @@ const getFullConfig = async (
     publish = false;
   }
 
-  // TODO: Change?
-  // Hardcoded for now
-  const libraryName = 'brownfield';
+  let libraryName = getOptionValue(options, ['--library-name', '-l']);
+  if (!libraryName) {
+    libraryName = 'brownfield';
+  }
 
   const customTasks = splitOptionList(
     getOptionValue(options, ['--tasks', '-t']),
