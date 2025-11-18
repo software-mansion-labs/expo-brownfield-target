@@ -14,7 +14,7 @@ const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (
     // Define paths for the brownfield target
     const brownfieldPath = path.join(
       pluginConfig.projectRoot,
-      'android/brownfield',
+      `android/${pluginConfig.libraryName}`,
     );
     const brownfieldMainPath = path.join(brownfieldPath, 'src/main/');
     const brownfieldSourcesPath = path.join(
