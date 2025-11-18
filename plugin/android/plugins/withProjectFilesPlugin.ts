@@ -27,20 +27,15 @@ const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (
     const groupId = pluginConfig.package.substring(0, lastDotIndex);
     const artifactId = pluginConfig.package.substring(lastDotIndex + 1);
 
-    // Create directory for brownfield target sources
-    // and all intermediate directories
+    // Create directory for the brownfield library sources
+    // (and all intermediate directories)
     mkdir(brownfieldSourcesPath, true);
 
-    // Add ReactNativeFragment.kt to the brownfield target:
-    // TODO: Consider inclusion of below
-    createFileFromTemplate('ReactNativeFragment.kt', brownfieldSourcesPath, {
-      packageId: pluginConfig.package,
-    });
-
-    // Add files from templates to the brownfield target:
+    // Add files from templates to the brownfield library:
     // - AndroidManifest.xml
     // - ReactNativeHostManager.kt
     // - ReactNativeViewFactory.kt
+    // - ReactNativeFragment.kt
     // - build.gradle.kts
     // - proguard-rules.pro
     // - consumer-rules.pro
@@ -49,6 +44,9 @@ const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (
       packageId: pluginConfig.package,
     });
     createFileFromTemplate('ReactNativeViewFactory.kt', brownfieldSourcesPath, {
+      packageId: pluginConfig.package,
+    });
+    createFileFromTemplate('ReactNativeFragment.kt', brownfieldSourcesPath, {
       packageId: pluginConfig.package,
     });
     createFileFromTemplate('build.gradle.kts', brownfieldPath, {
