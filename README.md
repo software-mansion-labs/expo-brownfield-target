@@ -33,7 +33,7 @@
 - Automatically extends native projects in your Expo app with targets for building brownfield during each prebuild
 - Simple integration with the Expo project and customization via the config plugin interface
 - Enables building the brownfield as an XCFramework or an AAR which simplifies later usage in the native projects
-- Customizability
+- Customizability through file templates and the config plugin interface
 
 **Note:** Our goal is maximum customizability, so if you feel like anything else needs to be customizable, please feel free to cut an issue
 
