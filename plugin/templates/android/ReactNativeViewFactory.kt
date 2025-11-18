@@ -9,7 +9,6 @@ import androidx.lifecycle.LifecycleOwner
 import com.facebook.react.ReactDelegate
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
-import com.pmleczek.expobrownfieldtargetexample.brownfield.ReactNativeHostManager
 
 enum class RootComponent(val key: String) {
     Main("main")
