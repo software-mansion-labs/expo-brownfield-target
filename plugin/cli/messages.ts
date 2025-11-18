@@ -23,7 +23,7 @@ ${chalk.bold('Options:')}
   -r, --release        build AAR in release configuration
   --verbose            output all subcommands output to the terminal
   --artifacts, -a      path to artifacts directory
-  --library-name, -l   name of the brownfield library
+  --library, -l   name of the brownfield library
 `;
 
 export const BUILD_IOS_HELP_MESSAGE = `
