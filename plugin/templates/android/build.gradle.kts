@@ -121,16 +121,16 @@ dependencies {
     api("com.github.penfeizhou.android.animation:glide-plugin:3.0.5")
     api("com.caverock:androidsvg-aar:1.4")
 
-    // Embed the subproject Expo packages
+    // Add Expo packages as api dependencies (will be listed and can be merged into fat-AAR later)
     projects.forEach { proj ->
       project.evaluationDependsOn(":${proj.name}")
-      embed(project(":${proj.name}"))
+      api(project(":${proj.name}"))
     }
 
-    // Embed the prebuilt Expo packages
+    // Add prebuilt Expo packages as api dependencies
     prebuiltProjects.forEach { proj ->
       val publication = requireNotNull(proj.publication)
-      embed("${publication.groupId}:${publication.artifactId}:${publication.version}")
+      api("${publication.groupId}:${publication.artifactId}:${publication.version}")
     }
 
     // We need to explicitly include Coil 

@@ -11,9 +11,9 @@ class ExpoBrownfieldPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         project.evaluationDependsOn(":expo")
         setupSourceSets(project)
-        setupConfigurations(project)
+        
         project.afterEvaluate {
-          afterEvaluate(project)
+            listEmbedDependencies(project)
         }
     }
 
@@ -89,54 +89,77 @@ class ExpoBrownfieldPlugin : Plugin<Project> {
       return root.allprojects.firstOrNull { it.plugins.hasPlugin("com.android.application") }
     }
 
+    private fun listEmbedDependencies(project: Project) {
+        println("========================================")
+        println("Listing dependencies for: ${project.name}")
+        println("========================================")
 
-    private fun createConfiguration(project: Project, configName: String) {
-        val configuration = project.configurations.create(configName)
-        configuration.isVisible = false
-        configuration.isTransitive = false
-        // project.gradle.addListener(CustomDependencyResolver(project, configuration))
-        // Configuration is automatically added to project.configurations when created
-    }
-
-    private fun setupConfigurations(project: Project) {
-      createConfiguration(project, "embed")
-      val androidExtension = project.extensions.getByType(LibraryExtension::class.java)
-      androidExtension.buildTypes.all {
-        createConfiguration(project, "${name}Embed")
-      }
-      androidExtension.productFlavors.all {
-        val flavorName = name
-        createConfiguration(project, "${flavorName}Embed")
-        androidExtension.buildTypes.all {
-          val variantName = "${flavorName}${name.replaceFirstChar(Char::titlecase)}Embed"
-          createConfiguration(project, variantName)
+        val config =  project.configurations.findByName("implementation")
+        val defaultDependencies = config?.dependencies?.filterIsInstance<DefaultProjectDependency>()
+        println("    - Default Dependencies:")
+        defaultDependencies?.forEach { dependency ->
+            println("    - ${dependency.group}:${dependency.name}:${dependency.version}")
+            println("      Type: ${dependency::class.simpleName}")
         }
-      }
-    }
+        println("========================================")
 
-    private fun embedExpoDependencies(project: Project) {
-      val expoProject = project.rootProject.project("expo")
-      val expoConfig = expoProject.configurations.findByName("api")
-      expoConfig?.dependencies?.forEach { dependency ->
-        // TODO: Move it to some constants (?)
-        if (true) {
-          if (dependency is DefaultProjectDependency) {
-            project.dependencies.add("embed", expoProject.dependencies.project(mapOf("path" to ":${dependency.name}")))
-          } else {
-            project.dependencies.add("embed", dependency)
-          }
+        println("    - Expo Dependencies:")
+        val expoProject = project.rootProject.project("expo")
+        val expoConfig = expoProject.configurations.findByName("api")
+        expoConfig?.dependencies?.forEach { dependency ->
+            println("    - ${dependency.group}:${dependency.name}:${dependency.version}")
+            println("      Type: ${dependency::class.simpleName}")
         }
-      }
-    } 
-    private fun processArtifacts(project: Project) {
-      embedExpoDependencies(project)
-    }
+        println("========================================")
 
-    private fun afterEvaluate(project: Project) {
-      println("--------------------------------")
-      println("After evaluate: ${project.name}")
-      processArtifacts(project)
-      // TODO: Maybe set transitive to true for all configurations?
-      println("--------------------------------")
+        // Try to resolve from api and implementation configurations
+        val configsToCheck = listOf("api", "implementation", "releaseApi", "releaseImplementation", "runtimeClasspath", "compileClasspath")
+        
+        configsToCheck.forEach { configName ->
+            val config = project.configurations.findByName(configName)
+            if (config != null) {
+                println("\n--- Configuration: $configName ---")
+                config.setCanBeResolved(true)
+                
+                println("\n  Unresolved Dependencies (${config.dependencies.size}):")
+                config.dependencies.forEach { dependency ->
+                    println("    - ${dependency.group}:${dependency.name}:${dependency.version}")
+                    println("      Type: ${dependency::class.simpleName}")
+                }
+                
+                println("\n  Resolving...")
+                try {
+                    config.resolve()
+                    val resolvedArtifacts = config.resolvedConfiguration.resolvedArtifacts
+                    
+                    println("  Resolved Artifacts (${resolvedArtifacts.size} total):")
+                    resolvedArtifacts.forEachIndexed { index, artifact ->
+                        println("\n    [${index + 1}] ${artifact.name}")
+                        println("      Type: ${artifact.type}")
+                        println("      Group: ${artifact.moduleVersion.id.group}")
+                        println("      Version: ${artifact.moduleVersion.id.version}")
+                        println("      File: ${artifact.file.absolutePath}")
+                        println("      File exists: ${artifact.file.exists()}")
+                        if (artifact.file.exists()) {
+                            println("      File size: ${artifact.file.length()} bytes")
+                        }
+                    }
+                    
+                    // Summary by type
+                    val byType = resolvedArtifacts.groupBy { it.type }
+                    println("\n  Summary by Type:")
+                    byType.forEach { (type, artifacts) ->
+                        println("    $type: ${artifacts.size} artifact(s)")
+                    }
+                    
+                } catch (e: Exception) {
+                    println("  ERROR resolving $configName: ${e.message}")
+                }
+            } else {
+                println("\n--- Configuration: $configName (not found) ---")
+            }
+        }
+        
+        println("\n========================================")
     }
 }
