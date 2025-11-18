@@ -5,7 +5,7 @@
 
 # expo-brownfield-target
 
-`expo-brownfield-target` is an Expo config plugin which enables you to effortlessly extend your Expo app with additional native targets for building and shipping it as a brownfield
+`expo-brownfield-target` is an Expo config plugin that allows you to easily extend your Expo app with additional native targets, enabling you to build and distribute it as a brownfield project.
 
 ### Table of contents
 - [Motivation](#motivation)
@@ -32,22 +32,22 @@
 <a name="motivation"></a>
 ## Motivation
 
-Brownfield approach enables integrating React Native apps into native Android and iOS projects, but setting it up, especially in Expo projects using Continuous Native Generation is a manual, repetitive and pretty complex task. This plugin aims to fully automate this process on every prebuild and provides a set of configurable file templates and a CLI which streamlines brownfield distribution. Additionally such setup of brownfield allows for easy packaging it as a fat-AAR, XCFramework or Swift Package which simplifies its shipping and enables e.g. simple and more independent cooperation of native and RN teams
+Brownfield approach enables integrating React Native apps into native Android and iOS projects, but setting it up, especially in Expo projects using Continuous Native Generation is a manual, repetitive and pretty complex task. This plugin aims to fully automate this process on every prebuild and provides a set of configurable file templates and a CLI which streamlines brownfield distribution. Additionally such setup of brownfield allows for easy packaging it as a fat-AAR, XCFramework or Swift Package which simplifies its shipping and enables e.g. simple and more independent cooperation of native and RN teams.
 
 <a name="features"></a>
 ## Features
 
-- Automatically extends native projects in your Expo app with targets for building brownfield during each prebuild
-- Simple integration with the Expo project and customization via the config plugin interface
-- Enables building the brownfield as an XCFramework or an AAR which simplifies later usage in the native projects
-- Customizability through file templates and the config plugin interface
+- Automatically adds native projects for building brownfield to your Expo app during prebuilds
+- Enables easy integration with the Expo project via config plugin interface
+- Enables building the brownfield as an XCFramework or an AAR which simplifies usage in the native projects
+- Customizable through file templates and the config plugin options
 
-**Note:** Our goal is maximum customizability, so if you feel like anything else needs to be customizable, please feel free to cut an issue
+**Note:** Our goal is maximum customizability, so if you feel like anything else needs to be customizable, please feel free to cut an issue.
 
 <a name="compat"></a>
 ## Platform & Expo SDK compatibility
 
-The plugin supports both Android and iOS. As of now we only support Expo SDK 54
+The plugin supports both Android and iOS. As of now we only support Expo SDK 54.
 
 <a name="usage"></a>
 ## Usage
@@ -106,12 +106,12 @@ If you want to pass any configuration options make sure to add the plugin as an 
 <a name="manual-setup"></a>
 ### Manual setup
 
-All steps performed by the plugin can also be performed manually. Please refer to [MANUAL-SETUP.MD](./MANUAL-SETUP.md) for a full guide for manual setup
+All steps performed by the plugin can also be performed manually. Please refer to [MANUAL-SETUP.MD](./MANUAL-SETUP.md) for a full guide for manual setup.
 
 <a name="generating-brownfield-targets"></a>
 ### Adding brownfield targets
 
-The additional targets for brownfield will be added automatically every time you prebuild the native projects
+The additional targets for brownfield will be added automatically every time you prebuild the native projects:
 
 ```sh
 npx expo prebuild --clean
@@ -127,17 +127,17 @@ npx expo-brownfield-target build-android
 npx expo-brownfield-target build-ios
 ```
 
-More details and full reference of the CLI commands can be found below in the [CLI Reference](#cli) section
+More details and full reference of the CLI commands can be found below in the [CLI Reference](#cli) section.
 
 <a name="with-manually"></a>
 ### Building manually
 
-Brownfields can be also built manually using the `xcodebuild` and `./gradlew` commands. Please see [build-xcframework.sh](#./example/scripts/build-xcframework.sh) and [build-aar.sh](#./example/scripts/build-aar.sh) for an example reference of manual building
+Brownfields can be also built manually using the `xcodebuild` and `./gradlew` commands. Please see [build-xcframework.sh](#./example/scripts/build-xcframework.sh) and [build-aar.sh](#./example/scripts/build-aar.sh) for an example reference of manual building.
 
 <a name="using-built-artifacts"></a>
 ### Using built artifacts in native projects
 
-Below snippets are taken from the examples of using brownfields inside native apps at: [/examples/android](./example/android/), [/examples/ios](./example/ios/) and [/examples/ios-swiftui](./example/ios-swiftui/)
+Below snippets are taken from the examples of using brownfields inside native apps at: [/examples/android](./example/android/), [/examples/ios](./example/ios/) and [/examples/ios-swiftui](./example/ios-swiftui/).
 
 <a name="using-android"></a>
 ### Android
@@ -296,7 +296,7 @@ npx expo-brownfield-target build-android [options]
 
 #### `build-ios`
 
-Builds the iOS framework, packages it as an XCFramework and places it in the artifacts directory (`artifacts/`) along with the `hermes.xcframework` copied from Pods
+Builds the iOS framework, packages it as an XCFramework and places it in the artifacts directory (`artifacts/`) along with the `hermes.xcframework` copied from Pods.
 
 ```
 npx expo-brownfield-target build-ios [options]
@@ -334,7 +334,7 @@ npx expo-brownfield-target build-ios [options]
 <a name="file-templates"></a>
 ### File templates
 
-You can also overwrite the templates which are used to generate the files to even better suit the plugin behavior to your requirements. More information about overwriting the templates can be found in [TEMPLATES.md](./TEMPLATES.md)
+You can also overwrite the templates which are used to generate the files to even better suit the plugin behavior to your requirements. More information about overwriting the templates can be found in [TEMPLATES.md](./TEMPLATES.md).
 
 ## expo-brownfield-target is created by Software Mansion
 
