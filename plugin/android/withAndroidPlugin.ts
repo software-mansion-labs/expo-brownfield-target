@@ -12,7 +12,7 @@ const withAndroidPlugin: ConfigPlugin<PluginProps> = (config, props) => {
   const pluginConfig = getPluginConfig(props, config);
 
   config = withProjectFilesPlugin(config, pluginConfig);
-  config = withSettingsGradlePlugin(config);
+  config = withSettingsGradlePlugin(config, pluginConfig);
   config = withProjectBuildGradlePlugin(config);
 
   return config;
