@@ -264,7 +264,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 #### `build-android`
 
-Builds the Android library as a fat-AAR and copies it to the artifacts directory. By default also publishes the AAR to the local Maven repository.
+Builds the Android library as a fat-AAR and copies it to the artifacts directory. By default it also publishes the AAR to local Maven repository.
 
 ```
 npx expo-brownfield-target build-android [options]
