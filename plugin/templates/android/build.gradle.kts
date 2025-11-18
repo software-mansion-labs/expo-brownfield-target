@@ -242,7 +242,7 @@ afterEvaluate {
       doFirst {
         // Remove duplicate libworklets.so from react-native-worklets to avoid conflicts
         // with react-native-reanimated which also provides the same library
-        // TODO: Fix this to use dynamic path
+        // TODO: Fix this to use dynamic path (rootProject.name)
         fileTree("$buildDir/intermediates/exploded-aar/expo-brownfield-target-example/react-native-worklets") {
           include("**/jni/**/libworklets.so")
         }.forEach { file ->
