@@ -63,6 +63,7 @@ Note: `.brownfield-templates` supports both flat and per-platform directory stru
 | proguard-rules.pro | [proguard-rules.pro](./plugin/templates/android/proguard-rules.pro) | Default set of Proguard rules for the brownfield library | - |
 | ReactNativeHostManager.kt | [ReactNativeHostManager.kt](./plugin/templates/android/ReactNativeHostManager.kt) | React Native host manager used to initialize and intergrate RN app with the native app lifecycle | `${{packageId}}` |
 | ReactNativeViewFactory.kt | [ReactNativeViewFactory.kt](./plugin/templates/android/ReactNativeViewFactory.kt) | React Native view factory used to create views hosting the React Native app | `${{packageId}}` |
+| ReactNativeFragment.kt | [ReactNativeFragment.kt](./plugin/templates/android/ReactNativeFragment.kt) | Android fragment used to display the React Native app | `${{packageId}}` |
 
 <a name="android-variables"></a>
 ### Variables

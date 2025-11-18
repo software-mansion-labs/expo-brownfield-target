@@ -124,52 +124,34 @@ Brownfields can be also built manually using the `xcodebuild` and `./gradlew` co
 <a name="using-built-artifacts"></a>
 ### Using built artifacts in native projects
 
+Below snippets are taken from the examples of using brownfields inside native apps at: [/examples/android](./example/android/), [/examples/ios](./example/ios/) and [/examples/ios-swiftui](./example/ios-swiftui/)
+
 <a name="using-android"></a>
 ### Android
 
-```kotlin
-package com.swmansion.example
-
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import android.widget.FrameLayout
-import androidx.fragment.app.Fragment
-import com.pmleczek.expobrownfieldtargetexample.brownfield.ReactNativeViewFactory
-import com.pmleczek.expobrownfieldtargetexample.brownfield.RootComponent
-
-class ReactNativeFragment : Fragment() {
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): FrameLayout {
-        return ReactNativeViewFactory.createFrameLayout(
-            requireContext(),
-            requireActivity(),
-            RootComponent.Main
-        )
-    }
-}
+```
+<!--activity_main.xml-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/reactFragment"
+        android:name="com.pmleczek.expobrownfieldtargetexample.brownfield.ReactNativeFragment"
+        android:label="@string/react_native_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</FrameLayout>
 ```
 
 ```kotlin
+// MainActivity.kt
 package com.swmansion.example
 
 import android.os.Bundle
-import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
-import com.pmleczek.android.ui.theme.AndroidTheme
 import com.pmleczek.expobrownfieldtargetexample.brownfield.ReactNativeHostManager
-import com.pmleczek.expobrownfieldtargetexample.brownfield.ReactNativeViewFactory
 
 class MainActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -180,10 +162,9 @@ class MainActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
     }
 
     override fun invokeDefaultOnBackPressed() {
-        ...
+        // ...
     }
 }
-
 ```
 
 <a name="using-swiftui"></a>
