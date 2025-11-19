@@ -1,6 +1,6 @@
 import { readdirSync } from 'node:fs';
 
-import type { XcodeProject } from '@expo/config-plugins';
+import type { XcodeProject } from 'expo/config-plugins';
 
 import type { Group, PbxGroup, Target } from '../types';
 import { readFromTemplate } from '../utils';
