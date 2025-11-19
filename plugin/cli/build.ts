@@ -5,7 +5,7 @@ import readline from 'node:readline/promises';
 
 import chalk from 'chalk';
 
-import { errorMessage, Loader, successMessage, warningMessage, warningSymbol } from './output';
+import { errorMessage, Loader, successMessage, warningSymbol } from './output';
 import type {
   BuildConfigCommon,
   BuildType,
