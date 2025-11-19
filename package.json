@@ -1,6 +1,6 @@
 {
   "name": "expo-brownfield-target",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "license": "MIT",
   "description": "Expo config plugin extending native projects for building app as a brownfield.",
   "keywords": [
@@ -49,8 +49,7 @@
     "url": "https://github.com/software-mansion-labs/expo-brownfield-target/issues"
   },
   "dependencies": {
-    "chalk": "^5.6.2",
-    "expo-build-properties": "^1.0.9"
+    "chalk": "^5.6.2"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
@@ -69,7 +68,9 @@
     "typescript-eslint": "^8.24.1"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "expo-build-properties": ">=1.0.0",
+    "@expo/config-plugins": "*"
   },
   "react-native-builder-bob": {
     "source": "./plugin",
