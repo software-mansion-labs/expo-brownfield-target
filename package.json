@@ -69,8 +69,7 @@
   },
   "peerDependencies": {
     "expo": "*",
-    "expo-build-properties": ">=1.0.0",
-    "@expo/config-plugins": "*"
+    "expo-build-properties": ">=1.0.0"
   },
   "react-native-builder-bob": {
     "source": "./plugin",
