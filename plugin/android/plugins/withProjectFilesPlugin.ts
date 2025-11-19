@@ -133,6 +133,7 @@ const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (
     );
 
     // Add build.gradle.kts file for the plugin
+    console.log(path.join(pluginConfig.projectRoot, 'android/buildSrc'));
     createFileFromTemplateAs(
       'build.gradle.plugin.kts',
       path.join(pluginConfig.projectRoot, 'android/buildSrc'),

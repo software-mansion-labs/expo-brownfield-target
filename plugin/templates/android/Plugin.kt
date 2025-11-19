@@ -10,6 +10,16 @@ import java.io.File
 class ExpoBrownfieldPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         project.evaluationDependsOn(":expo")
+
+        val configurations = listOf("releaseImplementation", "releaseApi")
+        configurations.forEach { configurationName ->
+          val configuration = project.configurations.findByName(configurationName)
+          if (configuration == null) {
+            throw IllegalStateException("Configuration with name '$configurationName' not found")
+          }
+          configuration.setCanBeResolved(true)
+        }
+
         setupSourceSets(project)
         
         project.afterEvaluate {
@@ -94,72 +104,175 @@ class ExpoBrownfieldPlugin : Plugin<Project> {
         println("Listing dependencies for: ${project.name}")
         println("========================================")
 
-        val config =  project.configurations.findByName("implementation")
-        val defaultDependencies = config?.dependencies?.filterIsInstance<DefaultProjectDependency>()
-        println("    - Default Dependencies:")
-        defaultDependencies?.forEach { dependency ->
-            println("    - ${dependency.group}:${dependency.name}:${dependency.version}")
-            println("      Type: ${dependency::class.simpleName}")
-        }
-        println("========================================")
 
-        println("    - Expo Dependencies:")
-        val expoProject = project.rootProject.project("expo")
-        val expoConfig = expoProject.configurations.findByName("api")
-        expoConfig?.dependencies?.forEach { dependency ->
-            println("    - ${dependency.group}:${dependency.name}:${dependency.version}")
-            println("      Type: ${dependency::class.simpleName}")
-        }
-        println("========================================")
+        // processExpoDependencies(project)
+        processThirdPartyRNDependencies(project)
+        processCoreRNDependencies(project)
+
+        // println("    - Expo Dependencies:")
+        // val expoProject = project.rootProject.project("expo")
+        // val expoConfig = expoProject.configurations.findByName("api")
+        // expoConfig?.dependencies?.forEach { dependency ->
+        //     println("    - ${dependency.group}:${dependency.name}:${dependency.version}")
+        //     println("      Type: ${dependency::class.simpleName}")
+        // }
+        // println("========================================")
 
         // Try to resolve from api and implementation configurations
-        val configsToCheck = listOf("api", "implementation", "releaseApi", "releaseImplementation", "runtimeClasspath", "compileClasspath")
+        // val configsToCheck = listOf("api", "implementation", "releaseApi", "releaseImplementation", "runtimeClasspath", "compileClasspath")
         
-        configsToCheck.forEach { configName ->
-            val config = project.configurations.findByName(configName)
-            if (config != null) {
-                println("\n--- Configuration: $configName ---")
-                config.setCanBeResolved(true)
+        //configsToCheck.forEach { configName ->
+            //val config = project.configurations.findByName(configName)
+            //if (config != null) {
+                //println("\n--- Configuration: $configName ---")
+                //config.setCanBeResolved(true)
                 
-                println("\n  Unresolved Dependencies (${config.dependencies.size}):")
-                config.dependencies.forEach { dependency ->
-                    println("    - ${dependency.group}:${dependency.name}:${dependency.version}")
-                    println("      Type: ${dependency::class.simpleName}")
-                }
+                //println("\n  Unresolved Dependencies (${config.dependencies.size}):")
+                //config.dependencies.forEach { dependency ->
+                    //println("    - ${dependency.group}:${dependency.name}:${dependency.version}")
+                    //println("      Type: ${dependency::class.simpleName}")
+                // }
                 
-                println("\n  Resolving...")
-                try {
-                    config.resolve()
-                    val resolvedArtifacts = config.resolvedConfiguration.resolvedArtifacts
-                    
-                    println("  Resolved Artifacts (${resolvedArtifacts.size} total):")
-                    resolvedArtifacts.forEachIndexed { index, artifact ->
-                        println("\n    [${index + 1}] ${artifact.name}")
-                        println("      Type: ${artifact.type}")
-                        println("      Group: ${artifact.moduleVersion.id.group}")
-                        println("      Version: ${artifact.moduleVersion.id.version}")
-                        println("      File: ${artifact.file.absolutePath}")
-                        println("      File exists: ${artifact.file.exists()}")
-                        if (artifact.file.exists()) {
-                            println("      File size: ${artifact.file.length()} bytes")
-                        }
-                    }
-                    
+                //println("  Resolved Artifacts (${resolvedArtifacts.size} total):")
+                //resolvedArtifacts.forEachIndexed { index, artifact ->
+                    //println("\n    [${index + 1}] ${artifact.name}")
+                    //println("      Type: ${artifact.type}")
+                    //println("      Group: ${artifact.moduleVersion.id.group}")
+                    //println("      Version: ${artifact.moduleVersion.id.version}")
+                    //println("      File: ${artifact.file.absolutePath}")
+                    //println("      File exists: ${artifact.file.exists()}")
+                    //if (artifact.file.exists()) {
                     // Summary by type
-                    val byType = resolvedArtifacts.groupBy { it.type }
-                    println("\n  Summary by Type:")
-                    byType.forEach { (type, artifacts) ->
-                        println("    $type: ${artifacts.size} artifact(s)")
-                    }
+                    //val byType = resolvedArtifacts.groupBy { it.type }
+                    //println("\n  Summary by Type:")
+                    //byType.forEach { (type, artifacts) ->
+                    //    println("    $type: ${artifacts.size} artifact(s)")
+                    //}
                     
-                } catch (e: Exception) {
-                    println("  ERROR resolving $configName: ${e.message}")
-                }
+                //} catch (e: Exception) {
+                //    println("  ERROR resolving $configName: ${e.message}")
+                //}
+            //} else {
+            //    println("\n--- Configuration: $configName (not found) ---")
+            //}
+        // }
+        // println("\n========================================")
+    }
+
+    /*
+     * Returns Expo dependencies.
+     * 
+     * @param project The project to process
+     * @return List of dependencies
+     */
+    private fun getExpoDependencies(project: Project): List<DefaultProjectDependency> {
+      val expoProject = project.rootProject.project("expo")
+      val apiConfiguration = expoProject.configurations.findByName("api")
+      return apiConfiguration?.dependencies?.filterIsInstance<DefaultProjectDependency>() ?: emptyList()
+    }
+
+    /*
+     * Process Expo dependencies.
+     * 
+     * @param project The project to process
+     */
+    private fun processExpoDependencies(project: Project) {
+      val dependencies = getExpoDependencies(project)
+      dependencies.forEach { dependency ->
+        println("    - ${dependency.group}:${dependency.name}:${dependency.version}")
+        println("      Type: ${dependency::class.simpleName}")
+      }
+      println("----------------------------------------")
+    }
+
+    /*
+     * Returns third party RN dependencies (like e.g. react-native-screens).
+     * This doesn't include Expo dependencies.
+     * 
+     * @param project The project to process
+     * @return List of dependencies
+     */
+    private fun getThirdPartyRNDependencies(project: Project): List<DefaultProjectDependency> {
+      val implementationConfiguration = project.configurations.findByName("implementation")
+      val defaultDependencies = implementationConfiguration?.dependencies?.filterIsInstance<DefaultProjectDependency>()
+      return defaultDependencies?.filter { it.name != "expo" } ?: emptyList()
+    }
+
+    /*
+     * Process third party RN dependencies (like e.g. react-native-screens).
+     * This doesn't cover Expo dependencies.
+     * 
+     * @param project The project to process
+     */
+    private fun processThirdPartyRNDependencies(project: Project) {
+      val dependencies = getThirdPartyRNDependencies(project)
+        dependencies.forEach { dependency ->
+          println("    - ${dependency.group}:${dependency.name}:${dependency.version}")
+          println("      Type: ${dependency::class.simpleName}")
+          val depProject = project.rootProject.project(":${dependency.name}")
+          project.evaluationDependsOn(":${dependency.name}")
+          project.tasks.named("assembleRelease").configure {
+            dependsOn(":${dependency.name}:bundleReleaseAar")
+          }
+          
+          println("      Dependency project found: ${depProject.name}")
+          val buildDirectory = depProject.layout.buildDirectory.get().asFile
+          if (buildDirectory.exists()) {
+            println("      Build directory: ${buildDirectory.absolutePath}")
+          } else {
+            println("      Build directory not found: ${buildDirectory.absolutePath}")
+          }
+
+          val bundleTask = depProject.tasks.findByName("bundleReleaseAar")
+          if (bundleTask != null) {
+            println("      Bundle task: ${bundleTask.name}")
+            val aarFile = bundleTask.outputs.files.singleFile
+            if (aarFile.exists()) {
+              println("      AAR file: ${aarFile.absolutePath}")
             } else {
-                println("\n--- Configuration: $configName (not found) ---")
+              println("      AAR file not found: ${aarFile.absolutePath}")
             }
+          }
+          println("----------------------------------------")
         }
-        
-        println("\n========================================")
+    }
+
+    private fun getCoreRNDependencies(project: Project): List<DefaultProjectDependency> {
+      val configurations = listOf("releaseImplementation", "releaseApi")
+      configurations.forEach { configurationName ->
+        val configuration = project.configurations.findByName(configurationName)
+        if (configuration == null) {
+          throw IllegalStateException("Configuration with name '$configurationName' not found")
+        }
+
+        val resolvedArtifacts = configuration.resolvedConfiguration.resolvedArtifacts
+        resolvedArtifacts.forEachIndexed { index, artifact ->
+          println("\n    [${index + 1}] ${artifact.name}")
+          println("      Type: ${artifact.type}")
+          println("      Group: ${artifact.moduleVersion.id.group}")
+          println("      Version: ${artifact.moduleVersion.id.version}")
+          println("      File: ${artifact.file.absolutePath}")
+          println("      File exists: ${artifact.file.exists()}")
+          if (artifact.file.exists()) {
+            val byType = resolvedArtifacts.groupBy { it.type }
+            println("\n  Summary by Type:")
+            byType.forEach { (type, artifacts) ->
+              println("    $type: ${artifacts.size} artifact(s)")
+            }
+          }
+        }
+      }
+      
+      // TODO: continue
+      return emptyList()
+    }
+
+    private fun processCoreRNDependencies(project: Project) {
+      val dependencies = getCoreRNDependencies(project)
+      dependencies.forEach { dependency ->
+        println("    - ${dependency.group}:${dependency.name}:${dependency.version}")
+        println("      Type: ${dependency::class.simpleName}")
+      }
+      println("----------------------------------------")
     }
 }

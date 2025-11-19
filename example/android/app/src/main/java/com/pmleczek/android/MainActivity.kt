@@ -1,5 +1,6 @@
 package com.pmleczek.android
 
+import android.app.Activity
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -15,9 +16,23 @@ import com.pmleczek.android.ui.theme.AndroidTheme
 import com.pmleczek.expobrownfieldtargetexample.brownfield.ReactNativeHostManager
 import com.pmleczek.expobrownfieldtargetexample.brownfield.ReactNativeViewFactory
 
+object ReactNativeHostManager2 {
+    fun Activity.createFragment() {
+
+    }
+
+}
+
+//fun Activity.create() {
+//
+//}
+
 class MainActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+        val layout = with(ReactNativeHostManager2) { createFragment() }
 
         ReactNativeHostManager.shared.initialize(this.application)
 
