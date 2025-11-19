@@ -5,7 +5,7 @@ import readline from 'node:readline/promises';
 
 import chalk from 'chalk';
 
-import { errorMessage, Loader, successMessage, warningMessage } from './output';
+import { errorMessage, Loader, successMessage, warningMessage, warningSymbol } from './output';
 import type {
   BuildConfigCommon,
   BuildType,
@@ -124,7 +124,7 @@ export const validatePrebuild = async (
     });
 
     let response = await rl.question(
-      `${chalk.yellow(warningMessage)} Project seems to be missing prebuild for ${platform}. Do you want to prebuild now? [Y/n] `,
+      `${chalk.yellow(warningSymbol)} Project seems to be missing prebuild for ${platform}. Do you want to prebuild now? [Y/n] `,
     );
     response = response.toLowerCase();
 
