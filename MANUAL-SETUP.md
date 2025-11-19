@@ -133,6 +133,12 @@ Or with `expo-brownfield-target` CLI. Please see [README.md](./README.md) for fu
 npx expo-brownfield-target build-android
 ```
 
+**Note:** If your library name is different than `brownfield` please make sure to use `build-android` with `-l` / `--library` flag:
+
+```sh
+npx expo-brownfield-target build-android -l mybrownfield
+```
+
 When the build succeeds a **fat-AAR** (i.e. AAR which includes all) with and (optionally) published to the local Maven repo
 
 <!-- END SECTION: ANDROID STUDIO -->
@@ -260,6 +266,12 @@ Or with `expo-brownfield-target` CLI. Please see [README.md](./README.md) for fu
 
 ```sh
 npx expo-brownfield-target build-android
+```
+
+**Note:** If your library name is different than `brownfield` please make sure to use `build-android` with `-l` / `--library` flag:
+
+```sh
+npx expo-brownfield-target build-android -l mybrownfield
 ```
 
 When the build succeeds a **fat-AAR** (i.e. AAR which includes all) with and (optionally) published to the local Maven repo
