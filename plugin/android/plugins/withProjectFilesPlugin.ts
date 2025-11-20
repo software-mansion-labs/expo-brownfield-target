@@ -113,6 +113,15 @@ const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (
       'com.pmleczek.expo-brownfield.properties',
       'android',
     );
+    createFileFromTemplateAs(
+      'publish-plugin.properties',
+      path.join(
+        pluginConfig.projectRoot,
+        'android/buildSrc/src/main/resources/META-INF/gradle-plugins',
+      ),
+      'com.pmleczek.expo-brownfield-publish.properties',
+      'android',
+    );
 
     // Add ExpoBrownfieldPlugin.kt file
     mkdir(
@@ -129,6 +138,15 @@ const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (
         'android/buildSrc/src/main/kotlin/com/pmleczek/plugin',
       ),
       'ExpoBrownfieldPlugin.kt',
+      'android',
+    );
+    createFileFromTemplateAs(
+      'PublishPlugin.kt',
+      path.join(
+        pluginConfig.projectRoot,
+        'android/buildSrc/src/main/kotlin/com/pmleczek/plugin',
+      ),
+      'ExpoBrownfieldPublishPlugin.kt',
       'android',
     );
 
