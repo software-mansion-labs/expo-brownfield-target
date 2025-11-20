@@ -8,6 +8,8 @@ import org.gradle.api.artifacts.Dependency
 import com.android.build.gradle.LibraryExtension
 import org.gradle.api.internal.artifacts.dependencies.DefaultProjectDependency
 import java.io.File
+import expo.modules.plugin.ExpoGradleExtension
+import expo.modules.plugin.configuration.GradleProject
 
 class ExpoBrownfieldPlugin : Plugin<Project> {
     override fun apply(project: Project) {
@@ -133,10 +135,11 @@ class ExpoBrownfieldPlugin : Plugin<Project> {
      * @param project The project to process
      * @return List of dependencies
      */
-    private fun getExpoDependencies(project: Project): List<Dependency> {
-      val expoProject = project.rootProject.project("expo")
-      val apiConfiguration = expoProject.configurations.findByName("api")
-      return apiConfiguration?.dependencies?.toList() ?: emptyList()
+    private fun getExpoDependencies(project: Project): List<GradleProject> {
+      val gradleExtension = project.gradle.extensions.findByType(ExpoGradleExtension::class.java)
+        ?: throw IllegalStateException("`ExpoGradleExtension` not found. Please, make sure that `useExpoModules` was called in `settings.gradle`.")
+      val config = gradleExtension.config
+      return config.allProjects
     }
 
     /*
@@ -146,7 +149,13 @@ class ExpoBrownfieldPlugin : Plugin<Project> {
      */
     private fun processExpoDependencies(project: Project) {
       val dependencies = getExpoDependencies(project)
-      println("Processing Expo dependencies: ${dependencies.size}")
+      val (prebuiltDependencies, projectDependencies) = dependencies.partition { it.usePublication }
+      projectDependencies.forEach { dependency ->
+        val dependencyProject = project.rootProject.project(":${dependency.name}")
+        applyOnce(dependencyProject, ExpoBrownfieldPublishPlugin::class.java)
+      }
+
+      println("Processing ${prebuiltDependencies.size} prebuilt Expo dependencies")
     }
 
     /*
