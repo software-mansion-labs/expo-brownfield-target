@@ -146,11 +146,7 @@ class ExpoBrownfieldPlugin : Plugin<Project> {
      */
     private fun processExpoDependencies(project: Project) {
       val dependencies = getExpoDependencies(project)
-      dependencies.forEach { dependency ->
-        println("    - ${dependency.group}:${dependency.name}:${dependency.version}")
-        println("      Type: ${dependency::class.simpleName}")
-      }
-      println("----------------------------------------")
+      println("Processing Expo dependencies: ${dependencies.size}")
     }
 
     /*
@@ -175,33 +171,8 @@ class ExpoBrownfieldPlugin : Plugin<Project> {
     private fun processThirdPartyRNDependencies(project: Project) {
       val dependencies = getThirdPartyRNDependencies(project)
         dependencies.forEach { dependency ->
-          println("    - ${dependency.group}:${dependency.name}:${dependency.version}")
-          println("      Type: ${dependency::class.simpleName}")
-          val depProject = project.rootProject.project(":${dependency.name}")
-          project.evaluationDependsOn(":${dependency.name}")
-          project.tasks.named("assembleRelease").configure {
-            dependsOn(":${dependency.name}:bundleReleaseAar")
-          }
-          
-          println("      Dependency project found: ${depProject.name}")
-          val buildDirectory = depProject.layout.buildDirectory.get().asFile
-          if (buildDirectory.exists()) {
-            println("      Build directory: ${buildDirectory.absolutePath}")
-          } else {
-            println("      Build directory not found: ${buildDirectory.absolutePath}")
-          }
-
-          val bundleTask = depProject.tasks.findByName("bundleReleaseAar")
-          if (bundleTask != null) {
-            println("      Bundle task: ${bundleTask.name}")
-            val aarFile = bundleTask.outputs.files.singleFile
-            if (aarFile.exists()) {
-              println("      AAR file: ${aarFile.absolutePath}")
-            } else {
-              println("      AAR file not found: ${aarFile.absolutePath}")
-            }
-          }
-          println("----------------------------------------")
+          val dependencyProject = project.rootProject.project(":${dependency.name}")
+          applyOnce(dependencyProject, ExpoBrownfieldPublishPlugin::class.java)
         }
     }
 
@@ -229,12 +200,19 @@ class ExpoBrownfieldPlugin : Plugin<Project> {
      */
     private fun processCoreRNDependencies(project: Project) {
       val dependencies = getCoreRNArtifacts(project)
-      dependencies.forEach { dependency ->
-        println("    - ${dependency.moduleVersion.id.group}:${dependency.moduleVersion.id.name}:${dependency.moduleVersion.id.version}")
-        println("      Type: ${dependency.type}")
-        println("      File: ${dependency.file.absolutePath}")
-        println("      File exists: ${dependency.file.exists()}")
+      println("Processing core RN artifacts: ${dependencies.size}")
+    }
+
+    /*
+     *  Applies a plugin to a project.
+     * If the plugin is already applied, it will not be applied again.
+     * 
+     * @param project The project to process
+     * @param plugin The plugin to apply
+     */
+    private fun applyOnce(project: Project, plugin: Class<out Plugin<Project>>) {
+      if (!project.plugins.hasPlugin(plugin)) {
+        project.plugins.apply(plugin)
       }
-      println("----------------------------------------")
     }
 }
