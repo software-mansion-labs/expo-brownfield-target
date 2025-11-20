@@ -346,9 +346,9 @@ You can also overwrite the templates which are used to generate the files to eve
 
 Huge thanks to:
 
-- @hurali97 for shipping some of the work we built this on
+- [@hurali97](https://www.github.com/hurali97) for shipping some of the work we built this on
 
-- @lukmccall, @aleqsio and @dawidmatyjasik for research and support during the plugin development
+- [@lukmccall](https://www.github.com/lukmccall), [@aleqsio](https://www.github.com/aleqsio) and [@dawidmatyjasik](https://www.github.com/dawidmatyjasik) for research and support during the plugin development
 
 ## expo-brownfield-target is created by Software Mansion
 
