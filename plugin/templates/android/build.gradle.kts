@@ -1,6 +1,5 @@
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import expo.modules.plugin.ExpoGradleExtension
 
 plugins {
     id("com.android.library")
@@ -77,12 +76,6 @@ android {
     }
 }
 
-val gradleExtension = project.gradle.extensions.findByType(ExpoGradleExtension::class.java)
-    ?: throw IllegalStateException("`ExpoGradleExtension` not found. Please, make sure that `useExpoModules` was called in `settings.gradle`.")
-val config = gradleExtension.config
-val (prebuiltProjects, projects) = config.allProjects.partition { it.usePublication }
-
-
 dependencies {
    debugApi("com.facebook.react:react-android:0.81.5") {
         artifact {
@@ -120,18 +113,6 @@ dependencies {
     api("com.github.bumptech.glide:okhttp3-integration:4.11.0")
     api("com.github.penfeizhou.android.animation:glide-plugin:3.0.5")
     api("com.caverock:androidsvg-aar:1.4")
-
-    // Add Expo packages as api dependencies (will be listed and can be merged into fat-AAR later)
-    projects.forEach { proj ->
-      project.evaluationDependsOn(":${proj.name}")
-      api(project(":${proj.name}"))
-    }
-
-    // Add prebuilt Expo packages as api dependencies
-    prebuiltProjects.forEach { proj ->
-      val publication = requireNotNull(proj.publication)
-      api("${publication.groupId}:${publication.artifactId}:${publication.version}")
-    }
 
     // We need to explicitly include Coil 
     // because of issues related to it in Screens
