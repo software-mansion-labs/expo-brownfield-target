@@ -28,6 +28,7 @@
   - [Android](#configuration-android)
   - [iOS](#configuration-ios)
   - [File templates](#file-templates)
+- [Acknowledgments](#acknowledgments)
 
 <a name="motivation"></a>
 ## Motivation
@@ -339,6 +340,15 @@ npx expo-brownfield-target build-ios [options]
 ### File templates
 
 You can also overwrite the templates which are used to generate the files to even better suit the plugin behavior to your requirements. More information about overwriting the templates can be found in [TEMPLATES.md](./TEMPLATES.md).
+
+<a name="acknowledgments"></a>
+### Acknowledgments
+
+Huge thanks to:
+
+- @hurali97 for shipping some of the work we built this on
+
+- @lukmccall, @aleqsio and @dawidmatyjasik for research and support during the plugin development
 
 ## expo-brownfield-target is created by Software Mansion
 
