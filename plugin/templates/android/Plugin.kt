@@ -8,8 +8,11 @@ import org.gradle.api.artifacts.Dependency
 import com.android.build.gradle.LibraryExtension
 import org.gradle.api.internal.artifacts.dependencies.DefaultProjectDependency
 import java.io.File
+import java.nio.file.Paths
 import expo.modules.plugin.ExpoGradleExtension
 import expo.modules.plugin.configuration.GradleProject
+import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.publish.maven.MavenPublication
 
 class ExpoBrownfieldPlugin : Plugin<Project> {
     override fun apply(project: Project) {
@@ -155,7 +158,9 @@ class ExpoBrownfieldPlugin : Plugin<Project> {
         applyOnce(dependencyProject, ExpoBrownfieldPublishPlugin::class.java)
       }
 
-      println("Processing ${prebuiltDependencies.size} prebuilt Expo dependencies")
+      prebuiltDependencies.forEach { dependency ->
+        configurePublishing(project, dependency)
+      }
     }
 
     /*
@@ -224,4 +229,62 @@ class ExpoBrownfieldPlugin : Plugin<Project> {
         project.plugins.apply(plugin)
       }
     }
+
+    private fun configurePublishing(project: Project, dependency: GradleProject) {
+      var publishing = project.extensions.getByType(PublishingExtension::class.java)
+
+      val aarFile = File(makeAarPath(project, dependency))
+      if (!aarFile.exists()) {
+        throw IllegalStateException("AAR file not found: ${aarFile.absolutePath}")
+      }
+
+      val publicationName = "mavenAar-${dependency.publication?.artifactId}-${dependency.publication?.version}"
+      publishing.publications.create(publicationName, MavenPublication::class.java) {
+        groupId = dependency.publication?.groupId
+        artifactId = dependency.publication?.artifactId
+        version = dependency.publication?.version
+
+        artifact(aarFile) {
+          extension = "aar"
+        }
+      }
+
+      publishing.repositories{
+        mavenLocal()
+      }
+
+      project.gradle.projectsEvaluated {
+          val publishTask = project.tasks.findByName("publish${publicationName.capitalize()}PublicationToMavenLocal")
+          if (publishTask != null) {
+              project.tasks.named("assembleRelease").configure {
+                  finalizedBy(publishTask)
+              }
+          }
+      }
+    }
+
+    private fun configurePublishing(project: Project, dependency: ResolvedArtifact) {
+      // val publishing = project.extensions.getByType(PublishingExtension::class.java)
+
+      // publishing.publications.create<MavenPublication>("mavenAar") {
+      //   groupId = dependency.moduleVersion.id.group
+      //   artifactId = dependency.moduleVersion.id.name
+      //   version = dependency.moduleVersion.id.version
+
+      // }
+    }
+
+    private fun makeAarPath(project: Project, dependency: GradleProject): String {
+      return Paths.get(
+          project.rootDir.absolutePath,
+          "..",
+          "node_modules",
+          dependency.name,
+          dependency.publication?.repository,
+          dependency.publication?.groupId?.replace(".", "/"),
+          dependency.publication?.artifactId,
+          dependency.publication?.version,
+          "${dependency.publication?.artifactId}-${dependency.publication?.version}.aar"
+      ).normalize().toString()
+  }
 }
