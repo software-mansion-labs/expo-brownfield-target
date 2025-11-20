@@ -2,7 +2,9 @@ package com.pmleczek.plugin
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.tasks.Copy
+import org.gradle.api.artifacts.Dependency
 import com.android.build.gradle.LibraryExtension
 import org.gradle.api.internal.artifacts.dependencies.DefaultProjectDependency
 import java.io.File
@@ -11,20 +13,28 @@ class ExpoBrownfieldPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         project.evaluationDependsOn(":expo")
 
-        val configurations = listOf("releaseImplementation", "releaseApi")
-        configurations.forEach { configurationName ->
-          val configuration = project.configurations.findByName(configurationName)
-          if (configuration == null) {
-            throw IllegalStateException("Configuration with name '$configurationName' not found")
-          }
-          configuration.setCanBeResolved(true)
-        }
-
+        setupConfigurations(project)
         setupSourceSets(project)
         
         project.afterEvaluate {
-            listEmbedDependencies(project)
+          processDependencies(project)
         }
+    }
+
+    /*
+     * Setup configurations to be resolvable.
+     * 
+     * @param project The project to setup configurations for.
+     */
+    private fun setupConfigurations(project: Project) {
+      val configurations = listOf("releaseImplementation", "releaseApi")
+      configurations.forEach { configurationName ->
+        val configuration = project.configurations.findByName(configurationName)
+        if (configuration == null) {
+          throw IllegalStateException("Configuration with name '$configurationName' not found")
+        }
+        configuration.setCanBeResolved(true)
+      }
     }
 
     private fun setupSourceSets(project: Project) {
@@ -78,6 +88,7 @@ class ExpoBrownfieldPlugin : Plugin<Project> {
       }
     }
 
+
     private fun configureTasks(project: Project, appProject: Project, appBuildDir: File, moduleBuildDir: File) {
       val appProjectName = appProject.name
 
@@ -95,68 +106,25 @@ class ExpoBrownfieldPlugin : Plugin<Project> {
       }
     }
 
+    /*
+     * Finds the app project in the root project.
+     * 
+     * @param root The root project
+     * @return The app project
+     */
     private fun findAppProject(root: Project): Project? {
       return root.allprojects.firstOrNull { it.plugins.hasPlugin("com.android.application") }
     }
 
-    private fun listEmbedDependencies(project: Project) {
-        println("========================================")
-        println("Listing dependencies for: ${project.name}")
-        println("========================================")
-
-
-        // processExpoDependencies(project)
+    /*
+     * Process dependencies.
+     * 
+     * @param project The project to process
+     */
+    private fun processDependencies(project: Project) {
+        processExpoDependencies(project)
         processThirdPartyRNDependencies(project)
         processCoreRNDependencies(project)
-
-        // println("    - Expo Dependencies:")
-        // val expoProject = project.rootProject.project("expo")
-        // val expoConfig = expoProject.configurations.findByName("api")
-        // expoConfig?.dependencies?.forEach { dependency ->
-        //     println("    - ${dependency.group}:${dependency.name}:${dependency.version}")
-        //     println("      Type: ${dependency::class.simpleName}")
-        // }
-        // println("========================================")
-
-        // Try to resolve from api and implementation configurations
-        // val configsToCheck = listOf("api", "implementation", "releaseApi", "releaseImplementation", "runtimeClasspath", "compileClasspath")
-        
-        //configsToCheck.forEach { configName ->
-            //val config = project.configurations.findByName(configName)
-            //if (config != null) {
-                //println("\n--- Configuration: $configName ---")
-                //config.setCanBeResolved(true)
-                
-                //println("\n  Unresolved Dependencies (${config.dependencies.size}):")
-                //config.dependencies.forEach { dependency ->
-                    //println("    - ${dependency.group}:${dependency.name}:${dependency.version}")
-                    //println("      Type: ${dependency::class.simpleName}")
-                // }
-                
-                //println("  Resolved Artifacts (${resolvedArtifacts.size} total):")
-                //resolvedArtifacts.forEachIndexed { index, artifact ->
-                    //println("\n    [${index + 1}] ${artifact.name}")
-                    //println("      Type: ${artifact.type}")
-                    //println("      Group: ${artifact.moduleVersion.id.group}")
-                    //println("      Version: ${artifact.moduleVersion.id.version}")
-                    //println("      File: ${artifact.file.absolutePath}")
-                    //println("      File exists: ${artifact.file.exists()}")
-                    //if (artifact.file.exists()) {
-                    // Summary by type
-                    //val byType = resolvedArtifacts.groupBy { it.type }
-                    //println("\n  Summary by Type:")
-                    //byType.forEach { (type, artifacts) ->
-                    //    println("    $type: ${artifacts.size} artifact(s)")
-                    //}
-                    
-                //} catch (e: Exception) {
-                //    println("  ERROR resolving $configName: ${e.message}")
-                //}
-            //} else {
-            //    println("\n--- Configuration: $configName (not found) ---")
-            //}
-        // }
-        // println("\n========================================")
     }
 
     /*
@@ -165,10 +133,10 @@ class ExpoBrownfieldPlugin : Plugin<Project> {
      * @param project The project to process
      * @return List of dependencies
      */
-    private fun getExpoDependencies(project: Project): List<DefaultProjectDependency> {
+    private fun getExpoDependencies(project: Project): List<Dependency> {
       val expoProject = project.rootProject.project("expo")
       val apiConfiguration = expoProject.configurations.findByName("api")
-      return apiConfiguration?.dependencies?.filterIsInstance<DefaultProjectDependency>() ?: emptyList()
+      return apiConfiguration?.dependencies?.toList() ?: emptyList()
     }
 
     /*
@@ -237,41 +205,35 @@ class ExpoBrownfieldPlugin : Plugin<Project> {
         }
     }
 
-    private fun getCoreRNDependencies(project: Project): List<DefaultProjectDependency> {
+    /*
+     * Returns core RN artifacts (like e.g. react-android, hermes-android).
+     * 
+     * @param project The project to process
+     * @return List of artifacts
+     */
+    private fun getCoreRNArtifacts(project: Project): List<ResolvedArtifact> {
       val configurations = listOf("releaseImplementation", "releaseApi")
-      configurations.forEach { configurationName ->
+      return configurations.flatMap { configurationName ->
         val configuration = project.configurations.findByName(configurationName)
         if (configuration == null) {
-          throw IllegalStateException("Configuration with name '$configurationName' not found")
+          return emptyList()
         }
-
-        val resolvedArtifacts = configuration.resolvedConfiguration.resolvedArtifacts
-        resolvedArtifacts.forEachIndexed { index, artifact ->
-          println("\n    [${index + 1}] ${artifact.name}")
-          println("      Type: ${artifact.type}")
-          println("      Group: ${artifact.moduleVersion.id.group}")
-          println("      Version: ${artifact.moduleVersion.id.version}")
-          println("      File: ${artifact.file.absolutePath}")
-          println("      File exists: ${artifact.file.exists()}")
-          if (artifact.file.exists()) {
-            val byType = resolvedArtifacts.groupBy { it.type }
-            println("\n  Summary by Type:")
-            byType.forEach { (type, artifacts) ->
-              println("    $type: ${artifacts.size} artifact(s)")
-            }
-          }
-        }
+        configuration.resolvedConfiguration.resolvedArtifacts.filter { it.moduleVersion.id.group.startsWith("com.facebook") }
       }
-      
-      // TODO: continue
-      return emptyList()
     }
 
+    /*
+     * Process core RN artifacts (like e.g. react-android, hermes-android).
+     * 
+     * @param project The project to process
+     */
     private fun processCoreRNDependencies(project: Project) {
-      val dependencies = getCoreRNDependencies(project)
+      val dependencies = getCoreRNArtifacts(project)
       dependencies.forEach { dependency ->
-        println("    - ${dependency.group}:${dependency.name}:${dependency.version}")
-        println("      Type: ${dependency::class.simpleName}")
+        println("    - ${dependency.moduleVersion.id.group}:${dependency.moduleVersion.id.name}:${dependency.moduleVersion.id.version}")
+        println("      Type: ${dependency.type}")
+        println("      File: ${dependency.file.absolutePath}")
+        println("      File exists: ${dependency.file.exists()}")
       }
       println("----------------------------------------")
     }
