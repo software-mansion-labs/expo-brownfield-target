@@ -13,10 +13,16 @@ import expo.modules.plugin.ExpoGradleExtension
 import expo.modules.plugin.configuration.GradleProject
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.Action
 
 class ExpoBrownfieldPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         project.evaluationDependsOn(":expo")
+
+        // TODO: Fix this more properly?
+        val expoProject = project.rootProject.project(":expo")
+        val releaseSourcesTask = expoProject.tasks.findByName("releaseSourcesJar")
+        releaseSourcesTask?.dependsOn(expoProject.tasks.named("generatePackagesList"))
 
         setupConfigurations(project)
         setupSourceSets(project)
@@ -92,7 +98,6 @@ class ExpoBrownfieldPlugin : Plugin<Project> {
         }
       }
     }
-
 
     private fun configureTasks(project: Project, appProject: Project, appBuildDir: File, moduleBuildDir: File) {
       val appProjectName = appProject.name
