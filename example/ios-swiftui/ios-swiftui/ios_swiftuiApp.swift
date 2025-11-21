@@ -21,7 +21,7 @@ struct ios_swiftuiApp: App {
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        MyBrownfieldApp.ReactNativeHostManager.shared.initialize()
+//        MyBrownfieldApp.ReactNativeHostManager.shared.initialize()
         return true
     }
 }

@@ -5,13 +5,13 @@
 //  Created by Patryk Mleczek on 10/30/25.
 //
 
-import MyBrownfieldApp
+//import MyBrownfieldApp
 import UIKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        MyBrownfieldApp.ReactNativeHostManager.shared.initialize()
+//        MyBrownfieldApp.ReactNativeHostManager.shared.initialize()
         return true
     }
 
