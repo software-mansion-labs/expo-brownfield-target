@@ -214,7 +214,9 @@ class ExpoBrownfieldPlugin : Plugin<Project> {
      */
     private fun processCoreRNDependencies(project: Project) {
       val dependencies = getCoreRNArtifacts(project)
-      println("Processing core RN artifacts: ${dependencies.size}")
+      dependencies.forEach { dependency ->
+        configurePublishing(project, dependency)
+      }
     }
 
     /*
@@ -264,14 +266,38 @@ class ExpoBrownfieldPlugin : Plugin<Project> {
     }
 
     private fun configurePublishing(project: Project, dependency: ResolvedArtifact) {
-      // val publishing = project.extensions.getByType(PublishingExtension::class.java)
+      val publishing = project.extensions.getByType(PublishingExtension::class.java)
 
-      // publishing.publications.create<MavenPublication>("mavenAar") {
-      //   groupId = dependency.moduleVersion.id.group
-      //   artifactId = dependency.moduleVersion.id.name
-      //   version = dependency.moduleVersion.id.version
+      val aarFile = File(dependency.file.absolutePath)
+      if (!aarFile.exists()) {
+        throw IllegalStateException("AAR file not found: ${aarFile.absolutePath}")
+      }
 
-      // }
+      val publicationName = "mavenAar-${dependency.moduleVersion.id.name}-${dependency.moduleVersion.id.version}"
+      if (publishing.publications.findByName(publicationName) == null) {
+        publishing.publications.create(publicationName, MavenPublication::class.java) {
+          groupId = dependency.moduleVersion.id.group
+          artifactId = dependency.moduleVersion.id.name
+          version = dependency.moduleVersion.id.version
+
+          artifact(aarFile) {
+            extension = "aar"
+          }
+        }
+      }
+
+      publishing.repositories{
+        mavenLocal()
+      }
+
+      project.gradle.projectsEvaluated {
+        val publishTask = project.tasks.findByName("publish${publicationName.capitalize()}PublicationToMavenLocal")
+        if (publishTask != null) {
+            project.tasks.named("assembleRelease").configure {
+                finalizedBy(publishTask)
+            }
+        }
+      }
     }
 
     private fun makeAarPath(project: Project, dependency: GradleProject): String {
