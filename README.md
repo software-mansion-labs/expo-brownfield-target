@@ -185,30 +185,6 @@ class MainActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
 ### iOS (SwiftUI)
 
 ```swift
-// MyApp.swift
-import SwiftUI
-import MyBrownfieldApp
-
-@main
-struct MyApp: App {
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-        }
-    }
-}
-
-class AppDelegate: NSObject, UIApplicationDelegate {
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        MyBrownfieldApp.ReactNativeHostManager.shared.initialize()
-        return true
-    }
-}
-```
-
-```swift
 // ContentView.swift
 import SwiftUI
 import MyBrownfieldApp
@@ -257,21 +233,6 @@ class ViewController: UIViewController {
         ])
     }
 }
-```
-
-```swift
-// AppDelegate.swift
-import MyBrownfieldApp
-import UIKit
-
-@main
-class AppDelegate: UIResponder, UIApplicationDelegate {
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        MyBrownfieldApp.ReactNativeHostManager.shared.initialize()
-        return true
-    }
-
-...
 ```
 
 <a name="cli"></a>

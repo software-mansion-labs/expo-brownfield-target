@@ -87,6 +87,7 @@ Note: `.brownfield-templates` supports both flat and per-platform directory stru
 | patch-expo.sh | [patch-expo.sh](./plugin/templates/ios/patch-expo.sh) | Script embedded within the build steps of the brownfield target. Used to patch Expo Modules | `${{projectName}}`, `${{targetName}}` |
 | ReactNativeView.swift | [ReactNativeView.swift](./plugin/templates/ios/ReactNativeView.swift) | Brownfield entrypoint for SwiftUI apps | - |
 | <target-name>.entitlements | [Target.entitlements](./plugin/templates/ios/Target.entitlements) | The `.entitlements` configuration file for the brownfield target. The name is dynamically set to match the brownfield target name | - |
+| ReactNativeLoader.m | [ReactNativeLoader.m](./plugin/templates/ios/ReactNativeLoader.m) | Automatically initializes React Native host manager on application load | - |
 
 <a name="ios-variables"></a>
 ### Variables
