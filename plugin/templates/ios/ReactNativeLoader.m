@@ -1,10 +1,3 @@
-//
-//  ReactNativeLoader.m
-//  ios
-//
-//  Created by Patryk Mleczek on 11/21/25.
-//
-
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
