@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import MyBrownfieldApp
 
 @main
 struct ios_swiftuiApp: App {
