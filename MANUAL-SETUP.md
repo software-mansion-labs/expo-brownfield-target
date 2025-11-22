@@ -313,6 +313,7 @@ Add the following files to the framework directory:
 - `ExpoApp.swift`
 - `Info.plist`
 - `ReactNativeView.swift` (if you want to include SwiftUI support)
+- `ReactNativeLoader.m` (automatic initialization of host manager)
 
 Copy the contents of `Template.entitlements` file to a new file named `<target-name>` (e.g. `MyBrownfield.entitlements`) at the framework directory
 

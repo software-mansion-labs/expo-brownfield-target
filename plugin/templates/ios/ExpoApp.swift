@@ -4,14 +4,15 @@ import Network
 internal import React
 internal import ReactAppDependencyProvider
 
-public class ReactNativeHostManager {
-  public static let shared = ReactNativeHostManager()
+@objc(ReactNativeHostManager)
+public class ReactNativeHostManager: NSObject {
+  @objc public static let shared = ReactNativeHostManager()
   
   private var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
   private var reactNativeFactory: RCTReactNativeFactory?
   private var expoDelegate: ExpoAppDelegate?
   
-  public func initialize() {
+  @objc public func initialize() {
     let delegate = ReactNativeDelegate()
     let factory = ExpoReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
