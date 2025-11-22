@@ -5,7 +5,6 @@
 //  Created by Patryk Mleczek on 10/30/25.
 //
 
-//import MyBrownfieldApp
 import UIKit
 
 @main

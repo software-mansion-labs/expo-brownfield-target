@@ -9,10 +9,6 @@ import SwiftUI
 import MyBrownfieldApp
 
 struct ContentView: View {
-    @State private var moduleName = "main"
-    private let initialProps: [AnyHashable: Any]? = [:]
-    private let launchOptions: [AnyHashable: Any]? = [:]
-    
     var body: some View {
         VStack {
             MyBrownfieldApp.ReactNativeView(
