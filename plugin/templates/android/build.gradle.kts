@@ -52,15 +52,6 @@ android {
 
     packaging {
       jniLibs {
-        // if (!hermesEnabled) {
-        //   excludes += "lib/x86/libjsctooling.so"
-        //   excludes += "lib/x86_64/libjsctooling.so"
-        //   excludes += "lib/armeabi-v7a/libjsctooling.so"
-        //   excludes += "lib/arm64-v8a/libjsctooling.so"
-        // }
-
-        // Pick first libworklets.so to resolve conflicts between
-        // react-native-reanimated and react-native-worklets
         pickFirsts += "lib/armeabi-v7a/libworklets.so"
         pickFirsts += "lib/arm64-v8a/libworklets.so"
         pickFirsts += "lib/x86/libworklets.so"
@@ -77,36 +68,9 @@ android {
 }
 
 dependencies {
-   debugApi("com.facebook.react:react-android:0.81.5") {
-        artifact {
-            classifier = "debug"
-            type = "aar"
-        }
-    }
+    api("com.facebook.react:react-android:0.81.5")
+    api("com.facebook.react:hermes-android:0.81.5")
     
-    debugApi("com.facebook.react:hermes-android:0.81.5") {
-        artifact {
-            classifier = "debug"
-            type = "aar"
-        }
-    }
-    
-    releaseApi("com.facebook.react:react-android:0.81.5") {
-        artifact {
-            classifier = "release"
-            type = "aar"
-        }
-    }
-    
-    releaseApi("com.facebook.react:hermes-android:0.81.5") {
-        artifact {
-            classifier = "release"
-            type = "aar"
-        }
-    }
-
-    api("org.jetbrains.kotlin:kotlin-reflect:2.0.21")
-    api("androidx.browser:browser:1.6.0")
     api("commons-io:commons-io:2.6")
     api("com.github.bumptech.glide:glide:4.16.0")
     api("com.github.bumptech.glide:avif-integration:4.16.0")
@@ -120,13 +84,6 @@ dependencies {
     implementation("io.coil-kt.coil3:coil:${COIL_VERSION}")
     implementation("io.coil-kt.coil3:coil-network-okhttp:${COIL_VERSION}")
     implementation("io.coil-kt.coil3:coil-svg:${COIL_VERSION}")
-
-    implementation("androidx.core:core-ktx:1.16.0")
-    implementation("androidx.appcompat:appcompat:1.7.1")
-    implementation("com.google.android.material:material:1.12.0")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 }
 
 publishing {

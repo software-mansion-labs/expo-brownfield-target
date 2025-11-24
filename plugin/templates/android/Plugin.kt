@@ -26,8 +26,12 @@ class ExpoBrownfieldPlugin : Plugin<Project> {
 
         setupConfigurations(project)
         setupSourceSets(project)
-        
+
         project.afterEvaluate {
+          val appProject = findAppProject(project.rootProject)
+          project.tasks.named("preBuild").configure {
+            dependsOn(appProject?.tasks?.named("createBundleReleaseJsAndAssets"))
+          }
           processDependencies(project)
         }
     }
