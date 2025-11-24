@@ -24,14 +24,20 @@ export class Loader {
     if (this.interval) {
       clearInterval(this.interval);
       this.interval = null;
-      process.stdout.write('\r');
+      if (process.stdout.isTTY) {
+        process.stdout.write('\r');
+      }
     }
 
-    process.stdout.write('\x1B[?25l');
+    if (process.stdout.isTTY) {
+      process.stdout.write('\x1B[?25l');
+    }
 
     this.index = 0;
     this.interval = setInterval(() => {
-      process.stdout.write(`\r${loaderSymbols[this.index]} ${message}`);
+      if (process.stdout.isTTY) {
+        process.stdout.write(`\r${loaderSymbols[this.index]} ${message}`);
+      }
       this.index = (this.index + 1) % loaderSymbols.length;
     }, 100);
   }
@@ -46,11 +52,12 @@ export class Loader {
       this.interval = null;
     }
 
-    process.stdout.clearLine(0);
-    process.stdout.cursorTo(0);
-    // TODO: Check this call
-    // process.stdout.write('\r');
-    process.stdout.write('\x1B[?25h');
+    if (process.stdout.isTTY) {
+      process.stdout.clearLine(0);
+      process.stdout.cursorTo(0);
+      process.stdout.write('\r');
+      process.stdout.write('\x1B[?25h');
+    }
   }
 }
 
