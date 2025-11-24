@@ -40,7 +40,9 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
     // Create the SwiftUI brownfield entrypoint based on the template
     createFileFromTemplate('ReactNativeView.swift', groupPath);
     // Add the brownfield host manager initializer based on the template
-    createFileFromTemplate('ReactNativeLoader.m', groupPath);
+    createFileFromTemplate('ReactNativeLoader.m', groupPath, {
+      targetName: pluginConfig.targetName,
+    });
     // Create and properly add a new group for the framework
     createGroup(xcodeProject, pluginConfig.targetName, groupPath, [
       'ExpoApp.swift',

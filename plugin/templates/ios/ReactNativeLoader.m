@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#import <MyBrownfieldApp/MyBrownfieldApp-Swift.h>
+#import <${{targetName}}/${{targetName}}-Swift.h>
 
 @interface ReactNativeHostManagerLoader : NSObject
 @end
@@ -16,7 +16,6 @@
             [[ReactNativeHostManager shared] initialize];
         } else {
             __block id<NSObject> observer = nil;
-            
             observer = [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidFinishLaunchingNotification
                                                                           object:nil
                                                                            queue:[NSOperationQueue mainQueue]
