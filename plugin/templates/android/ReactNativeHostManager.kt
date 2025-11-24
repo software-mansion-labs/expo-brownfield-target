@@ -1,5 +1,6 @@
 package ${{packageId}}
 
+import android.app.Activity
 import android.app.Application
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
@@ -63,4 +64,10 @@ class ReactNativeHostManager {
         reactNativeHost = reactApp.reactNativeHost
         reactHost = reactApp.reactHost
     }
+}
+
+fun Activity.showReactNativeFragment() {
+  ReactNativeHostManager.shared.initialize(this.application)
+  val fragment = ReactNativeFragment.createFragmentHost(this)
+  setContentView(fragment)
 }
