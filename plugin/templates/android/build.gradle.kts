@@ -106,6 +106,8 @@ dependencies {
         }
     }
 
+    compileOnly("androidx.fragment:fragment-ktx:1.6.1")
+
     api("org.jetbrains.kotlin:kotlin-reflect:2.0.21")
     api("androidx.browser:browser:1.6.0")
     api("commons-io:commons-io:2.6")
