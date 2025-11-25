@@ -33,6 +33,7 @@ class ExpoBrownfieldPlugin : Plugin<Project> {
             dependsOn(appProject?.tasks?.named("createBundleReleaseJsAndAssets"))
           }
           processDependencies(project)
+          configureCopyAppModulesLib(project)
         }
     }
 
@@ -321,5 +322,34 @@ class ExpoBrownfieldPlugin : Plugin<Project> {
           dependency.publication?.version,
           "${dependency.publication?.artifactId}-${dependency.publication?.version}.aar"
       ).normalize().toString()
+  }
+
+  private fun configureCopyAppModulesLib(project: Project) {
+    val mergeJniLibsTask = project.tasks.named("mergeReleaseJniLibFolders")
+    if (mergeJniLibsTask == null) {
+      throw IllegalStateException("mergeReleaseJniLibFolders task not found")
+    }
+
+    val appProject = findAppProject(project.rootProject)
+    val stripTask = ":${appProject?.name}:stripReleaseDebugSymbols"
+    val codegenTask = ":${project.name}:generateCodegenSchemaFromJavaScript"
+    val appBuildDir = appProject?.layout?.buildDirectory?.get() ?: throw IllegalStateException("App build directory not found")
+
+    val fromDir =
+        appBuildDir.dir("intermediates/stripped_native_libs/release/stripReleaseDebugSymbols/out/lib").asFile
+
+    val intoDir =
+        project.rootProject.file("${project.name}/libsRelease")
+    
+    val copyTask = project.tasks.register("copyAppModulesLib", Copy::class.java) {
+      dependsOn(codegenTask, stripTask)
+      from(fromDir)
+      into(intoDir)
+      include("**/libappmodules.so", "**/libreact_codegen_*.so")
+    }
+
+    mergeJniLibsTask.configure {
+      dependsOn(copyTask)
+    }
   }
 }
