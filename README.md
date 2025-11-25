@@ -323,7 +323,8 @@ can help you build your next dream product –
 
 <!-- automd:contributors author="software-mansion" -->
 
-Made by [@software-mansion](https://github.com/software-mansion) 💙
+Made by [@software-mansion](https://github.com/software-mansion) and
+[community](https://github.com/software-mansion-labs/expo-brownfield-target/graphs/contributors) 💙
 <br><br>
 <a href="https://github.com/software-mansion-labs/expo-brownfield-target/graphs/contributors">
 <img src="https://contrib.rocks/image?repo=software-mansion-labs/expo-brownfield-target" />
