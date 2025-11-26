@@ -1,6 +1,6 @@
 {
   "name": "expo-brownfield-target",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "license": "MIT",
   "description": "Expo config plugin extending native projects for building app as a brownfield.",
   "keywords": [
