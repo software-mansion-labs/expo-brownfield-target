@@ -143,20 +143,6 @@ Below snippets are taken from the examples of using brownfields inside native ap
 <a name="using-android"></a>
 ### Android
 
-```
-<!--activity_main.xml-->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/reactFragment"
-        android:name="com.pmleczek.expobrownfieldtargetexample.brownfield.ReactNativeFragment"
-        android:label="@string/react_native_fragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-</FrameLayout>
-```
-
 ```kotlin
 // MainActivity.kt
 package com.swmansion.example
@@ -165,18 +151,17 @@ import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
-import com.pmleczek.expobrownfieldtargetexample.brownfield.ReactNativeHostManager
+import com.swmansion.brownfield.showReactNativeFragment
 
 class MainActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ReactNativeHostManager.shared.initialize(this.application)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
+        showReactNativeFragment()
     }
 
     override fun invokeDefaultOnBackPressed() {
-        // ...
+        ...
     }
 }
 ```
