@@ -10,12 +10,17 @@ import MyBrownfieldApp
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            MyBrownfieldApp.ReactNativeView(
-                moduleName: "main",
-            )
+        NavigationStack {
+            VStack {
+                NavigationLink {
+                    MyBrownfieldApp.ReactNativeView(moduleName: "main")
+                } label: {
+                    Text("Open React Native app")
+                        .font(.largeTitle)
+                        .underline(true)
+                }
+            }
         }
-        .ignoresSafeArea(.all)
     }
 }
 
