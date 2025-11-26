@@ -139,7 +139,7 @@ npx expo-brownfield-target build-android
 npx expo-brownfield-target build-android -l mybrownfield
 ```
 
-When the build succeeds a **fat-AAR** (i.e. AAR which includes all) with and (optionally) published to the local Maven repo
+When the build succeeds a **fat-AAR** (i.e. AAR which also includes all needed dependencies) with brownfield and (optionally) published to the local Maven repo
 
 <!-- END SECTION: ANDROID STUDIO -->
 
