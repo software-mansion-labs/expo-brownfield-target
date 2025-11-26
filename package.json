@@ -11,32 +11,33 @@
     "apple",
     "android"
   ],
-  "main": "./build/commonjs/index",
-  "module": "./build/module/index",
-  "types": "./build/typescript/index.d.ts",
-  "source": "./plugin/index",
-  "react-native": "./plugin/index",
-  "bin": "./build/commonjs/cli/index.js",
+  "main": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "bin": "./plugin/build/cli/index.js",
   "exports": {
     ".": {
-      "source": "./plugin/index.ts",
-      "types": "./build/typescript/index.d.ts",
-      "default": "./build/module/index.js"
+      "source": "./src/index.ts",
+      "types": "./build/index.d.ts",
+      "default": "./build/index.js"
     },
     "./package.json": "./package.json",
     "./app.plugin.js": "./app.plugin.js"
   },
-  "files": [
-    "app.plugin.js",
-    "build/**/*",
-    "plugin/**/*"
-  ],
+
   "scripts": {
-    "clean": "rimraf ./build",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "prepack": "npm run clean && bob build && chmod +x build/commonjs/cli/index.js",
-    "test": "jest"
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "clean:plugin": "rm -rf plugin/build plugin/tsconfig.tsbuildinfo",
+    "lint": "expo-module eslint",
+    "lint:libOnly": "expo-module eslint --ignore-pattern 'example/*'",
+    "lint:fix": "expo-module eslint --fix",
+    "lint:fix:libOnly": "expo-module eslint --fix --ignore-pattern 'example/*'",
+    "prepare": "expo-module prepare && rm .eslintrc.js && chmod +x ./plugin/build/cli/index.js && cp -r ./plugin/src/templates ./plugin/build/templates",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module",
+    "test": "jest",
+    "typecheck": "tsc"
+
   },
   "repository": {
     "type": "git",
@@ -49,10 +50,11 @@
     "url": "https://github.com/software-mansion-labs/expo-brownfield-target/issues"
   },
   "dependencies": {
-    "chalk": "^5.6.2"
+    "chalk": "^4.1.2"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
+    "@types/react": "^19.2.7",
     "eslint": "^9.38.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
@@ -61,7 +63,6 @@
     "expo-module-scripts": "^5.0.7",
     "jest": "^29.7.0",
     "prettier": "^3.6.2",
-    "react-native-builder-bob": "^0.40.13",
     "rimraf": "^6.0.1",
     "ts-jest": "^29.4.5",
     "typescript": "^5.9.3",
@@ -70,19 +71,5 @@
   "peerDependencies": {
     "expo": "*",
     "expo-build-properties": ">=1.0.0"
-  },
-  "react-native-builder-bob": {
-    "source": "./plugin",
-    "output": "./build",
-    "targets": [
-      "commonjs",
-      "module",
-      [
-        "typescript",
-        {
-          "project": "tsconfig.json"
-        }
-      ]
-    ]
   }
 }
