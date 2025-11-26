@@ -42,7 +42,7 @@
         }
       ],
       [
-        "expo-brownfield-target", 
+        "../../app.plugin.js", 
         { 
           "android": {
             "package": "com.pmleczek.expobrownfieldtargetexample.brownfield"
