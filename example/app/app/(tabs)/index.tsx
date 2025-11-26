@@ -6,19 +6,9 @@ import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import * as ExpoBrownfieldModule from 'expo-brownfield-target';
-import { Link, useNavigation } from 'expo-router';
+import { Link } from 'expo-router';
 
 export default function HomeScreen() {
-  const navigation = useNavigation();
-
-  const popToNative = () => {
-    if (navigation.canGoBack()) {
-      navigation.goBack();
-    } else {
-      ExpoBrownfieldModule.popToNative();
-    }
-  };
- 
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -33,7 +23,7 @@ export default function HomeScreen() {
         <ThemedText type="title">Welcome!</ThemedText>
         <HelloWave />
       </ThemedView>
-      <Button title="Pop to native" onPress={() => popToNative()} />
+      <Button title="Pop to native" onPress={() => ExpoBrownfieldModule.popToNative()} />
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 1: Try it</ThemedText>
         <ThemedText>

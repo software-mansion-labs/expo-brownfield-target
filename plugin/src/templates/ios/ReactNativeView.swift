@@ -17,6 +17,8 @@ struct ReactNativeViewRepresentable: UIViewRepresentable {
 }
 
 public struct ReactNativeView: View {
+  @Environment(\.dismiss) var dismiss
+  
   var moduleName: String
   var initialProps: [AnyHashable: Any]? = [:]
   var launchOptions: [AnyHashable: Any]? = [:]
@@ -36,5 +38,11 @@ public struct ReactNativeView: View {
       moduleName: moduleName, initialProps: initialProps, launchOptions: launchOptions
     )
     .ignoresSafeArea(.all)
+    // .navigationBarBackButtonHidden(true)
+    .navigationBarTitle("")
+    .navigationBarHidden(true)
+    .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("popToNative"))) { _ in
+      dismiss()
+    }
   }
 }
