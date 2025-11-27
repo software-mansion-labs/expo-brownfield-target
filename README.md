@@ -22,6 +22,8 @@
     - [Android](#using-android)
     - [iOS (SwiftUI)](#using-swiftui)
     - [iOS (UIKit)](#using-uikit)
+  - [Navigation](#navigation)
+    - [popToNative](#pop-to-native)
 - [CLI reference](#cli)
   - [CLI commands](#cli-commands)
 - [Configuration reference](#configuration)
@@ -42,6 +44,7 @@ Brownfield approach enables integrating React Native apps into native Android an
 - Enables easy integration with the Expo project via config plugin interface
 - Enables building the brownfield as an XCFramework or an AAR which simplifies usage in the native projects
 - Customizable through file templates and the config plugin options
+- Supports navigating out of React Native view
 
 **Note:** Our goal is maximum customizability, so if you feel like anything else needs to be customizable, please feel free to cut an issue.
 
@@ -220,6 +223,44 @@ class ViewController: UIViewController {
 }
 ```
 
+<a name="navigation"></a>
+## Navigation
+
+<a name="nav-methods"></a>
+### Methods
+
+```
+popToNative(animated?: boolean)
+```
+
+**Description:** A method to return to the native view which precedes the React Native brownfield in the navigation history.
+
+**Arguments:**
+
+| Name | Required | Description | Platform support | Default value |
+| --- | --- | --- | --- | --- |
+| `animated` | No | Specifies if the return to the native view should be performed with an animation | iOS (UIKit) | `false` |
+
+**Example:**
+
+```
+import * as ExpoBrownfieldModule from 'expo-brownfield-target';
+
+...
+
+<Button 
+  title="Go back" 
+  onPress={() => ExpoBrownfieldModule.popToNative()} 
+/>
+
+<Button 
+  title="Go back animated" 
+  onPress={() => ExpoBrownfieldModule.popToNative(true)} 
+/>
+
+```
+
+
 <a name="cli"></a>
 ## CLI reference
 
@@ -295,6 +336,8 @@ Huge thanks to:
 - [@hurali97](https://www.github.com/hurali97) for shipping some of the work we built this on
 
 - [@lukmccall](https://www.github.com/lukmccall), [@aleqsio](https://www.github.com/aleqsio) and [@dawidmatyjasik](https://www.github.com/dawidmatyjasik) for research and support during the plugin development
+
+- [@callstack](https://github.com/callstack) for shipping the great set of helpers for brownfields ([react-native-brownfield](https://github.com/callstack/react-native-brownfield))
 
 ## expo-brownfield-target is created by Software Mansion
 
