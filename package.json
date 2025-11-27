@@ -23,7 +23,18 @@
     "./package.json": "./package.json",
     "./app.plugin.js": "./app.plugin.js"
   },
-
+  "files": [
+    "android/",
+    "!android/build/",
+    "build/",
+    "ios/",
+    "plugin/",
+    "src/",
+    "LICENSE.txt",
+    "README.md",
+    "app.plugin.js",
+    "package.json"
+  ],
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -37,7 +48,6 @@
     "expo-module": "expo-module",
     "test": "jest",
     "typecheck": "tsc"
-
   },
   "repository": {
     "type": "git",
