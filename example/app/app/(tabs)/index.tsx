@@ -24,6 +24,7 @@ export default function HomeScreen() {
         <HelloWave />
       </ThemedView>
       <Button title="Pop to native" onPress={() => ExpoBrownfieldModule.popToNative()} />
+      <Button title="Pop to native (animated)" onPress={() => ExpoBrownfieldModule.popToNative(true)} />
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 1: Try it</ThemedText>
         <ThemedText>
