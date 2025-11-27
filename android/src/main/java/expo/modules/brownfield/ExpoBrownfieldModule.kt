@@ -11,7 +11,7 @@ class ExpoBrownfieldModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoBrownfieldModule")
 
-    Function("popToNative") {
+    Function("popToNative") { animated: Boolean ->
       shouldPopToNative = true
       appContext.currentActivity?.runOnUiThread {
         @Suppress("DEPRECATION")

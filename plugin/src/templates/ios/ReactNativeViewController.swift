@@ -44,9 +44,9 @@ import UIKit
     }
     
     @objc private func popToNative(_ notification: Notification) {
-        // TODO: Implement animated handling
+        let animated = notification.userInfo?["animated"] as? Bool ?? false
         DispatchQueue.main.async { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
+            self?.navigationController?.popViewController(animated: animated)
         }
     }
 }
