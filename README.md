@@ -331,7 +331,7 @@ Huge thanks to:
 
 - [@lukmccall](https://www.github.com/lukmccall), [@aleqsio](https://www.github.com/aleqsio) and [@dawidmatyjasik](https://www.github.com/dawidmatyjasik) for research and support during the plugin development
 
-- [@callstack](https://github.com/callstack) for shipping the great set of helpers for brownfields ([react-native-brownfield](https://github.com/callstack/react-native-brownfield))
+- [@callstack](https://github.com/callstack) for shipping the great set of helpers for brownfields ([react-native-brownfield](https://github.com/callstack/react-native-brownfield)) which inspired parts of this library
 
 ## expo-brownfield-target is created by Software Mansion
 
