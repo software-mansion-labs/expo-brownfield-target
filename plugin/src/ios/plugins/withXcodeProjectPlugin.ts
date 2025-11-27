@@ -39,10 +39,6 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
     createFileFromTemplate('ExpoApp.swift', groupPath);
     // Create the SwiftUI brownfield entrypoint based on the template
     createFileFromTemplate('ReactNativeView.swift', groupPath);
-    // Add the brownfield host manager initializer based on the template
-    createFileFromTemplate('ReactNativeLoader.m', groupPath, {
-      targetName: pluginConfig.targetName,
-    });
     // Create the UIKit brownfield view controller based on the template
     createFileFromTemplate('ReactNativeViewController.swift', groupPath);
 
@@ -50,7 +46,6 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
     createGroup(xcodeProject, pluginConfig.targetName, groupPath, [
       'ExpoApp.swift',
       'ReactNativeView.swift',
-      'ReactNativeLoader.m',
       'ReactNativeViewController.swift',
     ]);
 
@@ -68,8 +63,8 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
     // Configure build phases:
     // - Reference Expo app target's RN bundle script
     // - Add custom script for patching ExpoModulesProvider
-    // - Add 'ExpoApp.swift', 'ReactNativeView.swift', 
-    //   'ReactNativeLoader.m' and 'ReactNativeViewController.swift'
+    // - Add 'ExpoApp.swift', 'ReactNativeView.swift'
+    //   and 'ReactNativeViewController.swift'
     //   to the compile sources phase
     configureBuildPhases(
       xcodeProject,
@@ -79,7 +74,6 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
       [
         `${pluginConfig.targetName}/ExpoApp.swift`,
         `${pluginConfig.targetName}/ReactNativeView.swift`,
-        `${pluginConfig.targetName}/ReactNativeLoader.m`,
         `${pluginConfig.targetName}/ReactNativeViewController.swift`,
       ],
     );

@@ -4,11 +4,8 @@ internal import React
 internal import ReactAppDependencyProvider
 import UIKit
 
-/* Objective-C bridging needed for automatic initialization using
-  `load()` in ReactNativeLoader.m */
-@objc(ReactNativeHostManager)
-public class ReactNativeHostManager: NSObject {
-  @objc public static let shared = ReactNativeHostManager()
+public class ReactNativeHostManager {
+  public static let shared = ReactNativeHostManager()
 
   private var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
   private var reactNativeFactory: RCTReactNativeFactory?
@@ -16,10 +13,9 @@ public class ReactNativeHostManager: NSObject {
 
   /*
    * Initializes the React Native host manager shared instance.
-   * This method should be automatically called by the ReactNativeLoader.m file.
    * Prevents multiple initializations of the React Native host manager shared instance.
    */
-  @objc public func initialize() {
+  public func initialize() {
     /* Prevent multiple initializations */
     guard reactNativeDelegate == nil else { return }
 
