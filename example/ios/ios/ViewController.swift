@@ -12,23 +12,23 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let reactNativeView = MyBrownfieldApp
-            .ReactNativeHostManager
-            .shared
-            .loadView(
-                moduleName: "main",
-                initialProps: nil,
-                launchOptions: [:]
-            )
+        view.backgroundColor = .systemBackground
+        let button = UIButton(type: .system)
+        button.setTitle("Open React Native app", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 28, weight: .bold)
+        button.addTarget(self, action: #selector(openReactNativeApp), for: .touchUpInside)
         
-        view.addSubview(reactNativeView)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(button)
         
-        reactNativeView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            reactNativeView.topAnchor.constraint(equalTo: view.topAnchor),
-            reactNativeView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            reactNativeView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            reactNativeView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            button.centerYAnchor.constraint(equalTo: view.centerYAnchor),
         ])
+    }
+    
+    @objc private func openReactNativeApp() {
+        let reactNativeViewController = MyBrownfieldApp.ReactNativeViewController(moduleName: "main")
+        navigationController?.pushViewController(reactNativeViewController, animated: true)
     }
 }
