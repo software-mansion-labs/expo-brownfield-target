@@ -23,7 +23,7 @@
     - [iOS (SwiftUI)](#using-swiftui)
     - [iOS (UIKit)](#using-uikit)
   - [Navigation](#navigation)
-    - [popToNative](#pop-to-native)
+    - [Methods](#nav-methods)
 - [CLI reference](#cli)
   - [CLI commands](#cli-commands)
 - [Configuration reference](#configuration)
@@ -178,13 +178,14 @@ import SwiftUI
 import MyBrownfieldApp
 
 struct ContentView: View {
+    init() {
+        ReactNativeHostManager.shared.initialize()
+    }
+
     var body: some View {
         VStack {
-            MyBrownfieldApp.ReactNativeView(
-                moduleName: "main",
-            )
+            ReactNativeView(moduleName: "main")
         }
-        .ignoresSafeArea(.all)
     }
 }
 ```
@@ -193,32 +194,26 @@ struct ContentView: View {
 ### iOS (UIKit)
 
 ```swift
-// ViewController.swift
-import MyBrownfieldApp
+// AppDelegate.swift
 import UIKit
+import MyBrownfieldApp
 
-class ViewController: UIViewController {
-    override func viewDidLoad() {
-        super.viewDidLoad()
+@main
+class AppDelegate: UIResponder, UIApplicationDelegate {
+    var window: UIWindow?
+
+    func application(
+      _ application: UIApplication,
+      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool{
+        ReactNativeHostManager.shared.initialize()
+
+        window = UIWindow(frame: UIScreen.main.bounds)
+        let viewController = ReactNativeViewController(moduleName: "main")
+        window?.rootViewController = viewController
+        window?.makeKeyAndVisible()
         
-        let reactNativeView = MyBrownfieldApp
-            .ReactNativeHostManager
-            .shared
-            .loadView(
-                moduleName: "main",
-                initialProps: nil,
-                launchOptions: [:]
-            )
-        
-        view.addSubview(reactNativeView)
-        
-        reactNativeView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            reactNativeView.topAnchor.constraint(equalTo: view.topAnchor),
-            reactNativeView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            reactNativeView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            reactNativeView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-        ])
+        return true
     }
 }
 ```
@@ -259,7 +254,6 @@ import * as ExpoBrownfieldModule from 'expo-brownfield-target';
 />
 
 ```
-
 
 <a name="cli"></a>
 ## CLI reference
