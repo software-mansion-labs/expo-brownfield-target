@@ -33,6 +33,7 @@
     "LICENSE.txt",
     "README.md",
     "app.plugin.js",
+    "expo-module.config.json",
     "package.json"
   ],
   "scripts": {
