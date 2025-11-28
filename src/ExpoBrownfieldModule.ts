@@ -3,6 +3,7 @@ import { ExpoBrownfieldModuleEvents } from './types';
 
 declare class ExpoBrownfieldModuleSpec extends NativeModule<ExpoBrownfieldModuleEvents> {
   popToNative(animated: boolean): void;
+  setNativeBackEnabled(enabled: boolean): void;
 }
 
 const module = requireOptionalNativeModule<ExpoBrownfieldModuleSpec>(
