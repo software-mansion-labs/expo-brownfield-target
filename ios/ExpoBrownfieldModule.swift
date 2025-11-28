@@ -13,5 +13,15 @@ public class ExpoBrownfieldModule: Module {
         )
       }
     }
+
+    Function("setNativeBackEnabled") { (enabled: Bool) in
+      DispatchQueue.main.async {
+        NotificationCenter.default.post(
+          name: Notification.Name("setNativeBackEnabled"),
+          object: nil,
+          userInfo: ["enabled": enabled]
+        )
+      }
+    }
   }
 }

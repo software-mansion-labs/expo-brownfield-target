@@ -28,7 +28,7 @@ class ViewController: UIViewController {
     }
     
     @objc private func openReactNativeApp() {
-        let reactNativeViewController = MyBrownfieldApp.ReactNativeViewController(moduleName: "main")
+        let reactNativeViewController = ReactNativeViewController(moduleName: "main")
         navigationController?.pushViewController(reactNativeViewController, animated: true)
     }
 }

@@ -164,7 +164,7 @@ class MainActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
     }
 
     override fun invokeDefaultOnBackPressed() {
-        ...
+        // ...
     }
 }
 ```
@@ -238,10 +238,10 @@ popToNative(animated?: boolean)
 
 **Example:**
 
-```
+```tsx
 import * as ExpoBrownfieldModule from 'expo-brownfield-target';
 
-...
+// ...
 
 <Button 
   title="Go back" 
@@ -253,6 +253,51 @@ import * as ExpoBrownfieldModule from 'expo-brownfield-target';
   onPress={() => ExpoBrownfieldModule.popToNative(true)} 
 />
 
+```
+
+<br />
+
+----
+
+<br />
+
+```
+setNativeBackEnabled(enabled: boolean)
+```
+
+**Description:** Enables or disables native handling of the back action (the back gesture on iOS or back button on Android).
+
+**Arguments:**
+
+| Name | Required | Description | Platform support | Default value |
+| --- | --- | --- | --- | --- |
+| `enabled` | Yes | If native handling of the back action should be enabled or disabled | All | - |
+
+**Example:**
+
+```tsx
+import * as ExpoBrownfieldModule from 'expo-brownfield-target';
+import { useNavigation } from "expo-router";
+
+...
+
+export default function HomeScreen() {
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("state", () => {
+      // Enable native handling only when we can't further go back
+      // within the React Native app
+      const shouldEnableNativeBack = navigation.canGoBack();
+      ExpoBrownfield.setNativeBackEnabled(!shouldEnableNativeBack);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [navigation]);
+
+  // ...
 ```
 
 <a name="cli"></a>
