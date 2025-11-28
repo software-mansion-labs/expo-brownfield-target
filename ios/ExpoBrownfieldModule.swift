@@ -15,7 +15,6 @@ public class ExpoBrownfieldModule: Module {
     }
 
     Function("setNativeBackEnabled") { (enabled: Bool) in
-      print("setNativeBackEnabled: \(enabled)")
       DispatchQueue.main.async {
         NotificationCenter.default.post(
           name: Notification.Name("setNativeBackEnabled"),
