@@ -56,10 +56,22 @@ import UIKit
     }
 
     @objc private func setNativeBackEnabled(_ notification: Notification) {
-        let enabled = notification.userInfo?["enabled"] as? Bool ?? true
+        guard let enabled = notification.userInfo?["enabled"] as? Bool else {
+            return
+        }
+        
         DispatchQueue.main.async { [weak self] in
-            print("setNativeBackEnabled (ReactNativeViewController): \(enabled)")
             self?.navigationController?.interactivePopGestureRecognizer?.isEnabled = enabled
+            self?.navigationController?.view?.gestureRecognizers?.forEach { gesture in
+                if gesture === self?.navigationController?.interactivePopGestureRecognizer {
+                    return
+                }
+                
+                if gesture is UIScreenEdgePanGestureRecognizer
+                    || gesture is UIPanGestureRecognizer {
+                    gesture.isEnabled = enabled
+                }
+            }
         }
     }
 }
