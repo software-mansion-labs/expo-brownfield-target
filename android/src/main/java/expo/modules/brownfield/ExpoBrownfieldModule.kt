@@ -3,6 +3,10 @@ package expo.modules.brownfield
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
+object BrownfieldNavigationState {
+  var nativeBackEnabled = true
+}
+
 class ExpoBrownfieldModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoBrownfieldModule")
@@ -15,7 +19,7 @@ class ExpoBrownfieldModule : Module() {
     }
 
     Function("setNativeBackEnabled") { enabled: Boolean ->
-      println("setNativeBackEnabled: $enabled")
+      BrownfieldNavigationState.nativeBackEnabled = enabled
     }
   }
 }

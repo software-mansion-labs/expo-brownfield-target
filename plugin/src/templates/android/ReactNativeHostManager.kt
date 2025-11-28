@@ -2,17 +2,21 @@ package ${{packageId}}
 
 import android.app.Activity
 import android.app.Application
+import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
 import com.facebook.react.common.ReleaseLevel
+import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
 import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
 import com.facebook.react.defaults.DefaultReactNativeHost
 import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ReactNativeHostWrapper
+import expo.modules.brownfield.BrownfieldNavigationState
 
 class ReactNativeHostManager {
     companion object {
@@ -70,4 +74,33 @@ fun Activity.showReactNativeFragment() {
   ReactNativeHostManager.shared.initialize(this.application)
   val fragment = ReactNativeFragment.createFragmentHost(this)
   setContentView(fragment)
+  setUpNativeBackHandling()
+}
+
+fun Activity.setUpNativeBackHandling() {
+  val componentActivity = this as? ComponentActivity
+  if (componentActivity == null) {
+    return
+  }
+  
+  val backCallback = object : OnBackPressedCallback(true) {
+    override fun handleOnBackPressed() {
+      if (BrownfieldNavigationState.nativeBackEnabled) {
+        isEnabled = false
+        componentActivity.onBackPressedDispatcher?.onBackPressed()
+        isEnabled = true
+      } else {
+        val reactHost = ReactNativeHostManager.shared.getReactHost()
+        val reactContext = reactHost?.currentReactContext
+        if (reactContext != null) {
+          val deviceEventManager = reactContext.getNativeModule(
+            DeviceEventManagerModule::class.java
+          )
+          deviceEventManager?.emitHardwareBackPressed()
+        }
+      }
+    }
+  }
+
+  componentActivity.onBackPressedDispatcher?.addCallback(componentActivity, backCallback)
 }
