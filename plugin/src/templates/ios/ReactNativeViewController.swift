@@ -39,22 +39,27 @@ import UIKit
             name: NSNotification.Name("popToNative"),
             object: nil
         )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(setNativeBackEnabled(_:)),
+            name: NSNotification.Name("setNativeBackEnabled"),
+            object: nil
+        )
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: false)
-    }
-
-    public override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: false)
-    }
-    
     @objc private func popToNative(_ notification: Notification) {
         let animated = notification.userInfo?["animated"] as? Bool ?? false
         DispatchQueue.main.async { [weak self] in
             self?.navigationController?.popViewController(animated: animated)
+        }
+    }
+
+    @objc private func setNativeBackEnabled(_ notification: Notification) {
+        let enabled = notification.userInfo?["enabled"] as? Bool ?? true
+        DispatchQueue.main.async { [weak self] in
+            print("setNativeBackEnabled (ReactNativeViewController): \(enabled)")
+            self?.navigationController?.interactivePopGestureRecognizer?.isEnabled = enabled
         }
     }
 }

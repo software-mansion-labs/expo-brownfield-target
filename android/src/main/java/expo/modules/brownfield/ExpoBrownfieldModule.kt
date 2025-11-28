@@ -13,5 +13,9 @@ class ExpoBrownfieldModule : Module() {
         appContext.currentActivity?.onBackPressed()
       }
     }
+
+    Function("setNativeBackEnabled") { enabled: Boolean ->
+      println("setNativeBackEnabled: $enabled")
+    }
   }
 }

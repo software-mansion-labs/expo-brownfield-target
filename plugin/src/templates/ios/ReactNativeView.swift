@@ -1,19 +1,19 @@
 import SwiftUI
 
-struct ReactNativeViewRepresentable: UIViewRepresentable {
+struct ReactNativeViewRepresentable: UIViewControllerRepresentable {
   var moduleName: String
   var initialProps: [AnyHashable: Any]?
   var launchOptions: [AnyHashable: Any]?
 
-  func makeUIView(context: Context) -> UIView {
-    return ReactNativeHostManager.shared.loadView(
+  func makeUIViewController(context: Context) -> UIViewController {
+    return ReactNativeViewController(
       moduleName: moduleName,
       initialProps: initialProps,
-      launchOptions: launchOptions
+      launchOptions: launchOptions,
     )
   }
 
-  func updateUIView(_ uiView: UIView, context: Context) {}
+  func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
 }
 
 public struct ReactNativeView: View {
@@ -37,9 +37,6 @@ public struct ReactNativeView: View {
     ReactNativeViewRepresentable(
       moduleName: moduleName, initialProps: initialProps, launchOptions: launchOptions
     )
-    .ignoresSafeArea(.all)
-    .navigationBarTitle("")
-    .navigationBarHidden(true)
     .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("popToNative"))) { _ in
       dismiss()
     }
