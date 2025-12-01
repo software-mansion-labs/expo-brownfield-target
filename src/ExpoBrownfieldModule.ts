@@ -1,19 +1,6 @@
-import { NativeModule, requireOptionalNativeModule } from 'expo';
-import { ExpoBrownfieldModuleEvents } from './types';
+import { requireNativeModule } from 'expo';
+import type { ExpoBrownfieldModuleSpec } from './types';
 
-declare class ExpoBrownfieldModuleSpec extends NativeModule<ExpoBrownfieldModuleEvents> {
-  popToNative(animated: boolean): void;
-  setNativeBackEnabled(enabled: boolean): void;
-  sendMessage<T extends object>(message: T): void;
-}
-
-const module = requireOptionalNativeModule<ExpoBrownfieldModuleSpec>(
+export default requireNativeModule<ExpoBrownfieldModuleSpec>(
   'ExpoBrownfieldModule',
 );
-if (!module) {
-  const errorMessage = `Native module: ExpoBrownfieldModule not available
-  Please ensure that your project is configured according to the documentation: https://github.com/software-mansion-labs/expo-brownfield-target/blob/main/README.md`;
-  throw new Error(errorMessage);
-}
-
-export default module;

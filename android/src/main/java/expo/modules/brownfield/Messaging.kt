@@ -14,14 +14,7 @@ object BrownfieldMessaging {
   )
 
   private val listeners = mutableSetOf<BrownfieldListener>()
-
-  fun emit(message: BrownfieldMessage) {
-    listeners.forEach { listener ->
-      if (listener.filter?.invoke(message) != false) {
-        listener.callback(message)
-      }
-    }
-  }
+  private var expoModule: ExpoBrownfieldModule? = null
 
   fun addListener(
     filter: BrownfieldFilter = null,
@@ -39,5 +32,24 @@ object BrownfieldMessaging {
 
   fun removeListener(id: String) {
     listeners.removeAll { it.id == id }
+  }
+
+  fun sendMessage(message: BrownfieldMessage) {
+    expoModule?.let { module ->
+      print(message)
+      module.sendMessage(message)
+    }
+  }
+
+  internal fun emit(message: BrownfieldMessage) {
+    listeners.forEach { listener ->
+      if (listener.filter?.invoke(message) != false) {
+        listener.callback(message)
+      }
+    }
+  }
+
+  internal fun setExpoModule(expoModule: ExpoBrownfieldModule?) {
+    this.expoModule = expoModule
   }
 }
