@@ -4,7 +4,6 @@ import type { ExpoBrownfieldModuleSpec, Listener, MessageEvent } from './types';
 
 class ExpoBrownfieldModule {
   nativeModule: ExpoBrownfieldModuleSpec;
-  eventName: string = 'onMessage';
 
   constructor(nativeModule: ExpoBrownfieldModuleSpec) {
     this.nativeModule = nativeModule;
