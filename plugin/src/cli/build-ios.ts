@@ -130,9 +130,9 @@ const packageFrameworks = async (config: BuildConfigIOS) => {
     [
       '-create-xcframework',
       '-framework',
-      `${config.derivedDataPath}/Build/Products/Release-iphoneos/${config.scheme}.framework`,
+      `${config.derivedDataPath}/Build/Products/${config.configuration}-iphoneos/${config.scheme}.framework`,
       '-framework',
-      `${config.derivedDataPath}/Build/Products/Release-iphonesimulator/${config.scheme}.framework`,
+      `${config.derivedDataPath}/Build/Products/${config.configuration}-iphonesimulator/${config.scheme}.framework`,
       '-output',
       `${config.artifactsDir}/${config.scheme}.xcframework`,
     ],
