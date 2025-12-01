@@ -1,19 +1,15 @@
-import type { StyleProp, ViewStyle } from 'react-native';
+import type { NativeModule } from 'expo';
 
-export type OnLoadEventPayload = {
-  url: string;
-};
+export type MessageEvent = Record<string, any>;
+
+export type Listener<E> = (event: E) => void;
 
 export type ExpoBrownfieldModuleEvents = {
-  onChange: (params: ChangeEventPayload) => void;
+  onMessage: (event: MessageEvent) => void;
 };
 
-export type ChangeEventPayload = {
-  value: string;
-};
-
-export type ExpoBrownfieldModuleViewProps = {
-  url: string;
-  onLoad: (event: { nativeEvent: OnLoadEventPayload }) => void;
-  style?: StyleProp<ViewStyle>;
-};
+export declare class ExpoBrownfieldModuleSpec extends NativeModule<ExpoBrownfieldModuleEvents> {
+  popToNative(animated: boolean): void;
+  setNativeBackEnabled(enabled: boolean): void;
+  sendMessage(message: Record<string, any>): void;
+}

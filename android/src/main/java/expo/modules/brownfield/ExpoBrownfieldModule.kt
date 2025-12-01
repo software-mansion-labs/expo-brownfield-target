@@ -4,9 +4,21 @@ import androidx.activity.ComponentActivity
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
+const val NATIVE_MESSAGE_EVENT_NAME = "onMessage"
+
 class ExpoBrownfieldModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoBrownfieldModule")
+
+    Events(NATIVE_MESSAGE_EVENT_NAME)
+
+    OnCreate {
+      BrownfieldMessaging.setExpoModule(this@ExpoBrownfieldModule)
+    }
+
+    OnDestroy {
+      BrownfieldMessaging.setExpoModule(null)
+    }
 
     Function("popToNative") { animated: Boolean ->
       appContext.currentActivity?.runOnUiThread {
@@ -28,8 +40,8 @@ class ExpoBrownfieldModule : Module() {
       BrownfieldNavigationState.nativeBackEnabled = enabled
     }
   }
-}
 
-object BrownfieldNavigationState {
-  var nativeBackEnabled = true
+  fun sendMessage(message: BrownfieldMessage) {
+    sendEvent(NATIVE_MESSAGE_EVENT_NAME, message)
+  }
 }
