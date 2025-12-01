@@ -91,8 +91,7 @@ fun Activity.setUpNativeBackHandling() {
         isEnabled = true
       } else {
         val reactHost = ReactNativeHostManager.shared.getReactHost()
-        val reactContext = reactHost?.currentReactContext
-        if (reactContext != null) {
+        reactHost?.currentReactContext?.let { reactContext ->
           val deviceEventManager = reactContext.getNativeModule(
             DeviceEventManagerModule::class.java
           )
