@@ -7,3 +7,7 @@ export const popToNative = (animated: boolean = false): void => {
 export const setNativeBackEnabled = (enabled: boolean): void => {
   return ExpoBrownfieldModule?.setNativeBackEnabled(enabled);
 };
+
+export const sendMessage = <T extends object>(message: T) => {
+  return ExpoBrownfieldModule?.sendMessage(message);
+};
