@@ -3,9 +3,6 @@ package expo.modules.brownfield
 import androidx.activity.ComponentActivity
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import java.util.UUID
-
-typealias BrownfieldMessage = Map<String, Any?>
 
 class ExpoBrownfieldModule : Module() {
   override fun definition() = ModuleDefinition {
@@ -24,8 +21,6 @@ class ExpoBrownfieldModule : Module() {
     }
 
     Function("sendMessage") { message: BrownfieldMessage ->
-      println("Message received")
-      println(message)
       BrownfieldMessaging.emit(message)
     }
 
@@ -37,40 +32,4 @@ class ExpoBrownfieldModule : Module() {
 
 object BrownfieldNavigationState {
   var nativeBackEnabled = true
-}
-
-object BrownfieldMessaging {
-  data class BrownfieldListener(
-    val id: String,
-    val filter: ((BrownfieldMessage) -> Boolean)? = null,
-    val callback: (BrownfieldMessage) -> Unit
-  )
-
-  private val listeners = mutableSetOf<BrownfieldListener>()
-
-  fun emit(message: BrownfieldMessage) {
-    listeners.forEach { listener ->
-      if (listener.filter?.invoke(message) != false) {
-        listener.callback(message)
-      }
-    }
-  }
-
-  fun addListener(
-    filter: ((BrownfieldMessage) -> Boolean)? = null,
-    callback: ((BrownfieldMessage) -> Unit)
-  ): String {
-    val id = java.util.UUID.randomUUID().toString()
-    listeners.add(BrownfieldListener(
-      id,
-      filter,
-      callback
-    ))
-
-    return id
-  }
-
-  fun removeListener(id: String) {
-    listeners.removeAll { it.id == id }
-  }
 }
