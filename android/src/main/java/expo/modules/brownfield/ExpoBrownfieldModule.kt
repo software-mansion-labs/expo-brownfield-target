@@ -11,11 +11,11 @@ class ExpoBrownfieldModule : Module() {
 
     Events(NATIVE_MESSAGE_EVENT_NAME)
 
-    OnCreate {
+    OnStartObserving {
       BrownfieldMessaging.setExpoModule(this@ExpoBrownfieldModule)
     }
 
-    OnDestroy {
+    OnStopObserving {
       BrownfieldMessaging.setExpoModule(null)
     }
 
