@@ -24,6 +24,10 @@
     - [iOS (UIKit)](#using-uikit)
   - [Navigation](#navigation)
     - [Methods](#nav-methods)
+  - [Communication](#communication)
+    - [JavaScript Methods](#communication-methods-js)
+    - [Android Methods](#communication-methods-android)
+    - [iOS Methods](#communication-methods-ios)
 - [CLI reference](#cli)
   - [CLI commands](#cli-commands)
 - [Configuration reference](#configuration)
@@ -105,7 +109,6 @@ If you want to pass any configuration options make sure to add the plugin as an 
   }
 }
 ```
-
 
 <a name="manual-setup"></a>
 ### Manual setup
@@ -224,7 +227,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 <a name="nav-methods"></a>
 ### Methods
 
-```
+```ts
 popToNative(animated?: boolean)
 ```
 
@@ -239,7 +242,7 @@ popToNative(animated?: boolean)
 **Example:**
 
 ```tsx
-import * as ExpoBrownfieldModule from 'expo-brownfield-target';
+import ExpoBrownfieldModule from 'expo-brownfield-target';
 
 // ...
 
@@ -261,7 +264,7 @@ import * as ExpoBrownfieldModule from 'expo-brownfield-target';
 
 <br />
 
-```
+```ts
 setNativeBackEnabled(enabled: boolean)
 ```
 
@@ -276,10 +279,10 @@ setNativeBackEnabled(enabled: boolean)
 **Example:**
 
 ```tsx
-import * as ExpoBrownfieldModule from 'expo-brownfield-target';
+import ExpoBrownfieldModule from 'expo-brownfield-target';
 import { useNavigation } from "expo-router";
 
-...
+// ...
 
 export default function HomeScreen() {
   const navigation = useNavigation();
@@ -298,6 +301,330 @@ export default function HomeScreen() {
   }, [navigation]);
 
   // ...
+```
+
+<a name="communication"></a>
+## Communication
+
+<a name="communication-methods-js"></a>
+### JavaScript Methods
+
+```ts
+addListener(listener: (event: MessageEvent) => void): EventSubscription
+```
+
+**Description:** Registers an `onMessage` event listener.
+
+**Arguments:**
+
+| Name | Required | Description | Platform support | Default value |
+| --- | --- | --- | --- | --- |
+| `listener` | Yes | `onMessage` event listener | All | - |
+
+**Example:**
+
+```tsx
+import ExpoBrownfieldModule, { MessageEvent } from 'expo-brownfield-target';
+
+// ...
+
+const handleEvent = (event: MessageEvent) => {
+    setLastEvent(event);
+    updateEventCount();
+};
+
+useEffect(() => {
+    ExpoBrownfield.addListener(handleEvent);
+
+// ...
+```
+
+<br />
+
+----
+
+<br />
+
+
+```ts
+listenerCount(): number
+```
+
+**Description:** Returns count of listeners registered for `onMessage` event.
+
+**Example:**
+
+```tsx
+import ExpoBrownfieldModule from 'expo-brownfield-target';
+
+// ...
+
+const activeListeners = ExpoBrownfieldModule.listenerCount();
+```
+
+<br />
+
+----
+
+<br />
+
+```ts
+removeAllListeners()
+```
+
+**Description:** Removes all listeners registered for `onMessage` event.
+
+**Example:**
+
+```tsx
+import ExpoBrownfieldModule from 'expo-brownfield-target';
+
+// ...
+
+useEffect(() => {
+  return () => {
+    ExpoBrownfieldModule.removeAllListeners();
+  };
+});
+```
+
+<br />
+
+----
+
+<br />
+
+```ts
+removeListener(listener: (event: MessageEvent) => void): EventSubscription
+```
+
+**Description:** Removes a specified `onMessage` event listener.
+
+**Arguments:**
+
+| Name | Required | Description | Platform support | Default value |
+| --- | --- | --- | --- | --- |
+| `listener` | Yes | `onMessage` event listener | All | - |
+
+**Example:**
+
+```tsx
+import ExpoBrownfieldModule, { MessageEvent } from 'expo-brownfield-target';
+
+// ...
+
+const handleEvent = (event: MessageEvent) => {
+    setLastEvent(event);
+    updateEventCount();
+};
+
+useEffect(() => {
+    ExpoBrownfield.addListener(handleEvent);
+    return () => {
+        ExpoBrownfield.removeListener(handleEvent);
+    }
+});
+// ...
+```
+
+<br />
+
+----
+
+<br />
+
+
+```ts
+sendMessage(message: Record<string, any>)
+```
+
+**Description:** Sends a message from JavaScript to the native listeners.
+
+**Arguments:**
+
+| Name | Required | Description | Platform support | Default value |
+| --- | --- | --- | --- | --- |
+| `message` | Yes | Message payload | All | - |
+
+**Example:**
+
+```tsx
+import ExpoBrownfieldModule from 'expo-brownfield-target';
+
+// ...
+
+ExpoBrownfieldModule.sendMessage({
+  type: "MyMesage",
+  data: {
+    language: "TypeScript",
+    expo: true,
+    nativePlatforms: 2,
+    platforms: ["android", "ios"],
+  },
+});
+```
+
+<a name="communication-methods-android"></a>
+### Android Methods
+
+```kotlin
+addListener(callback: (Map<String, Any?>) -> Unit)
+```
+
+**Description:** Registers a listener for messages from JavaScript. Returns the UUID of the listener which can be used to remove it.
+
+**Arguments:**
+
+| Name | Required | Description | Type | Default value |
+| --- | --- | --- | --- | --- |
+| `callback` | Yes | Callback invoked with the incoming message | (Map<String, Any?>) -> Unit | - |
+
+**Example:**
+
+```kotlin
+val listenerId = BrownfieldMessaging.addListener { event ->
+    println("Message listener: $event")
+}
+```
+
+<br />
+
+----
+
+<br />
+
+```kotlin
+removeListener(id: String)
+```
+
+**Description:** Removes listener with the specified UUID.
+
+**Arguments:**
+
+| Name | Required | Description | Type | Default value |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | UUID of the listener to be de-registered | String | - |
+
+**Example:**
+
+```kotlin
+BrownfieldMessaging.removeListener(listenerId)
+```
+
+<br />
+
+----
+
+<br />
+
+```kotlin
+sendMessage(message: Map<String, Any?>)
+```
+
+**Description:** Emits a `onMessage` event with the message from Android to the JavaScript listeners.
+
+**Arguments:**
+
+| Name | Required | Description | Type | Default value |
+| --- | --- | --- | --- | --- |
+| `message` | Yes | Message payload | Map<String, Any?> | - |
+
+**Example:**
+
+```kotlin
+import expo.modules.brownfield.BrownfieldMessaging
+
+// ...
+
+BrownfieldMessaging.sendMessage(mapOf(
+    "type" to "MyAndroidMessage",
+    "timestamp" to System.currentTimeMillis(),
+    "nestedObject" to mapOf(
+        "platform" to "android",
+        "number" to 123.456,
+        "chunks" to listOf("Hello", "from", "Android")
+    )
+))
+```
+
+<a name="communication-methods-ios"></a>
+### iOS Methods
+
+```swift
+addListener(_ callback: @escaping ([String: Any?]) -> Void)
+```
+
+**Description:** Registers a listener for messages from JavaScript. Returns the UUID of the listener which can be used to remove it.
+
+**Arguments:**
+
+| Name | Required | Description | Type | Default value |
+| --- | --- | --- | --- | --- |
+| `callback` | Yes | Callback invoked with the incoming message | @escaping ([String: Any?]) -> Void | - |
+
+**Example:**
+
+```swift
+let listenerId = BrownfieldMessaging.addListener { event ->
+    print("Message listener: \(event)")
+}
+```
+
+<br />
+
+----
+
+<br />
+
+
+```swift
+removeListener(id: String)
+```
+
+**Description:** Removes listener with specified UUID.
+
+**Arguments:**
+
+| Name | Required | Description | Type | Default value |
+| --- | --- | --- | --- | --- |
+| `id` | Yes | UUID of the listener to be de-registered | String | - |
+
+**Example:**
+
+```swift
+BrownfieldMessaging.removeListener(id: listenerId)
+```
+
+<br />
+
+----
+
+<br />
+
+```swift
+sendMessage(_ message: [String: Any?])
+```
+
+**Description:** Emits a `onMessage` event with the message from iOS to the JavaScript listeners.
+
+**Arguments:**
+
+| Name | Required | Description | Type | Default value |
+| --- | --- | --- | --- | --- |
+| `message` | Yes | Message payload| [String: Any?] | - |
+
+**Example:**
+
+```swift
+BrownfieldMessaging.sendMessage([
+  "type": "MyIOSMessage",
+  "timestamp": Date().timeIntervalSince1970,
+  "nestedObject": [
+    "platform": "ios",
+    "number": 123.456,
+    "chunks": ["Hello", "from", "iOS"]
+  ]
+])
 ```
 
 <a name="cli"></a>
