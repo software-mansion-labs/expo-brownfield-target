@@ -37,6 +37,8 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
     mkdir(groupPath);
     // Create the brownfield entrypoint based on the template
     createFileFromTemplate('ExpoApp.swift', groupPath);
+    // Create the messaging proxy based on the template
+    createFileFromTemplate('Messaging.swift', groupPath);
     // Create the SwiftUI brownfield entrypoint based on the template
     createFileFromTemplate('ReactNativeView.swift', groupPath);
     // Create the UIKit brownfield view controller based on the template
@@ -45,6 +47,7 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
     // Create and properly add a new group for the framework
     createGroup(xcodeProject, pluginConfig.targetName, groupPath, [
       'ExpoApp.swift',
+      'Messaging.swift',
       'ReactNativeView.swift',
       'ReactNativeViewController.swift',
     ]);
@@ -64,7 +67,7 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
     // - Reference Expo app target's RN bundle script
     // - Add custom script for patching ExpoModulesProvider
     // - Add 'ExpoApp.swift', 'ReactNativeView.swift'
-    //   and 'ReactNativeViewController.swift'
+    //   'Messaging.swift' and 'ReactNativeViewController.swift'
     //   to the compile sources phase
     configureBuildPhases(
       xcodeProject,
@@ -73,6 +76,7 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
       projectName,
       [
         `${pluginConfig.targetName}/ExpoApp.swift`,
+        `${pluginConfig.targetName}/Messaging.swift`,
         `${pluginConfig.targetName}/ReactNativeView.swift`,
         `${pluginConfig.targetName}/ReactNativeViewController.swift`,
       ],
