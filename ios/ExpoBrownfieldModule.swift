@@ -1,8 +1,20 @@
 import ExpoModulesCore
 
+let NATIVE_MESSAGE_EVENT_NAME = "onMessage"
+
 public class ExpoBrownfieldModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoBrownfieldModule")
+
+    Events(NATIVE_MESSAGE_EVENT_NAME)
+
+    OnStartObserving {
+      BrownfieldMessagingInternal.shared.setExpoModule(self)
+    }
+
+    OnStopObserving {
+      BrownfieldMessagingInternal.shared.setExpoModule(nil)
+    }
 
     Function("popToNative") { (animated: Bool) in
       DispatchQueue.main.async {
@@ -23,5 +35,13 @@ public class ExpoBrownfieldModule: Module {
         )
       }
     }
+
+    Function("sendMessage") { (message: BrownfieldMessage) in
+      BrownfieldMessagingInternal.shared.emit(message)
+    }
+  }
+
+  public func sendMessage(_ message: BrownfieldMessage) {
+    sendEvent(NATIVE_MESSAGE_EVENT_NAME, message)
   }
 }
