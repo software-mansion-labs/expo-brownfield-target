@@ -3,7 +3,6 @@ import Network
 internal import React
 internal import ReactAppDependencyProvider
 import UIKit
-internal import ExpoBrownfieldModule
 
 public class ReactNativeHostManager {
   public static let shared = ReactNativeHostManager()
@@ -80,19 +79,5 @@ class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
       let frameworkBundle = Bundle(for: ReactNativeHostManager.self)
       return frameworkBundle.url(forResource: "main", withExtension: "jsbundle")
     #endif
-  }
-}
-
-public struct BrownfieldMessaging {
-  public static func addListener(_ callback: @escaping ([String: Any?]) -> Void) -> String {
-    return BrownfieldMessagingInternal.shared.addListener(callback)
-  }
-
-  public static func removeListener(id: String) {
-    BrownfieldMessagingInternal.shared.removeListener(id: id)
-  }
-
-  public static func sendMessage(_ message: [String: Any?]) {
-    BrownfieldMessagingInternal.shared.sendMessage(message)
   }
 }
