@@ -1,5 +1,6 @@
 package expo.modules.brownfield
 
+import androidx.activity.ComponentActivity
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
@@ -13,8 +14,13 @@ class ExpoBrownfieldModule : Module() {
 
     Function("popToNative") { animated: Boolean ->
       appContext.currentActivity?.runOnUiThread {
-        @Suppress("DEPRECATION")
-        appContext.currentActivity?.onBackPressed()
+        val componentActivity = appContext.currentActivity as? ComponentActivity
+        if (componentActivity != null) {
+          val enabled = BrownfieldNavigationState.nativeBackEnabled
+          BrownfieldNavigationState.nativeBackEnabled = true
+          componentActivity.onBackPressedDispatcher?.onBackPressed()
+          BrownfieldNavigationState.nativeBackEnabled = enabled
+        }
       }
     }
 
