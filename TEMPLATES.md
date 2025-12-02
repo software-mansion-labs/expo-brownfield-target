@@ -83,6 +83,7 @@ Note: `.brownfield-templates` supports both flat and per-platform directory stru
 | File | Default template | Description | Interpolated variable |
 | --- | --- | --- | --- |
 | ExpoApp.swift | [ExpoApp.swift](./plugin/templates/ios/ExpoApp.swift) | React Native host manager used to initialize and integrate RN app with the native app lifecycle. Also used for loading the view hosting the React Native app | - |
+| Messaging.swift | [Messaging.swift](./plugin/templates/ios/Messaging.swift) | Exposes bi-directional communication methods | - |
 | Info.plist | [Info.plist](./plugin/templates/ios/Info.plist) | Contains native target metadata and settings. Required by Xcode | `${{bundleIdentifier}}`, `${{targetName}}` |
 | patch-expo.sh | [patch-expo.sh](./plugin/templates/ios/patch-expo.sh) | Script embedded within the build steps of the brownfield target. Used to patch Expo Modules | `${{projectName}}`, `${{targetName}}` |
 | ReactNativeView.swift | [ReactNativeView.swift](./plugin/templates/ios/ReactNativeView.swift) | Brownfield entrypoint for SwiftUI apps | - |

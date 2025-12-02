@@ -66,7 +66,7 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
     // Configure build phases:
     // - Reference Expo app target's RN bundle script
     // - Add custom script for patching ExpoModulesProvider
-    // - Add 'ExpoApp.swift', 'ReactNativeView.swift'
+    // - Add 'ExpoApp.swift', 'ReactNativeView.swift',
     //   'Messaging.swift' and 'ReactNativeViewController.swift'
     //   to the compile sources phase
     configureBuildPhases(
