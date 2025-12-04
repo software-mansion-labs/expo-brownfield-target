@@ -1,0 +1,13 @@
+pluginManagement {
+  repositories {
+    mavenCentral()
+    google()
+    gradlePluginPortal()
+  }
+}
+
+include(
+  ":publish"
+)
+
+rootProject.name = "expo-brownfield-gradle-plugins"
