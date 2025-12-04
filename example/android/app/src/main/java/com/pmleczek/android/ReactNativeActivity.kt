@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
-import com.pmleczek.expobrownfieldtargetexample.brownfield.showReactNativeFragment
+import com.pmleczek.testapp.brownfield.showReactNativeFragment
 
 class ReactNativeActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
     override fun onCreate(savedInstanceState: Bundle?) {

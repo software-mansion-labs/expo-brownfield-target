@@ -14,6 +14,9 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        maven {
+            url '/Users/patrykmleczek/Desktop/test-app/maven'
+        }
         google()
         mavenCentral()
         mavenLocal()

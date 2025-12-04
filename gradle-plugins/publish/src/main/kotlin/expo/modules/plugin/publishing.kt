@@ -85,6 +85,7 @@ internal fun removeReactNativeDependencyModule(project: Project) {
         return@doLast
       }
 
+      @Suppress("UNCHECKED_CAST")
       val moduleJson = JsonSlurper().parseText(moduleFile.readText()) as? Map<String, Any>
       if (moduleJson == null) {
         println("WARNING: Failed to parse module file for project: ${project.name}")
@@ -92,7 +93,9 @@ internal fun removeReactNativeDependencyModule(project: Project) {
         return@doLast
       }
 
+      @Suppress("UNCHECKED_CAST")
       (moduleJson["variants"] as? List<MutableMap<String, Any>>)?.forEach { variant ->
+        @Suppress("UNCHECKED_CAST")
         (variant["dependencies"] as? MutableList<MutableMap<String, Any>>)?.removeAll {
           it["group"] == "com.facebook.react" && it["module"] == "react-native"
         }

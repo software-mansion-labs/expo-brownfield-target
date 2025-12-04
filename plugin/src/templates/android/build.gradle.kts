@@ -1,25 +1,23 @@
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import expo.modules.plugin.ExpoGradleExtension
+import com.android.build.gradle.LibraryExtension
+import java.io.File
 
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("com.facebook.react")
-    id("com.callstack.react.brownfield")
     `maven-publish`
 }
 
-reactBrownfield {
-    isExpo = true
-}
+evaluationDependsOn(":expo")
 
 react {
     autolinkLibrariesWithApp()
 }
 
 android {
-    namespace = "${{packageId}}"
+    namespace = "com.pmleczek.testapp.brownfield"
     compileSdk = 36
 
     buildFeatures {
@@ -54,28 +52,13 @@ android {
         jvmTarget = "17"
     }
 
-    packaging {
-      jniLibs {
-        pickFirsts += "lib/armeabi-v7a/libworklets.so"
-        pickFirsts += "lib/arm64-v8a/libworklets.so"
-        pickFirsts += "lib/x86/libworklets.so"
-        pickFirsts += "lib/x86_64/libworklets.so"
+    publishing {
+      multipleVariants("release") {
+        includeBuildTypeValues("debug", "release")
+        withSourcesJar()
       }
     }
-
-    publishing {
-        singleVariant("release") {
-            withSourcesJar()
-            withJavadocJar()
-        }
-    }
 }
-
-val gradleExtension = project.gradle.extensions.findByType(ExpoGradleExtension::class.java)
-    ?: throw IllegalStateException("`ExpoGradleExtension` not found. Please, make sure that `useExpoModules` was called in `settings.gradle`.")
-val config = gradleExtension.config
-val (prebuiltProjects, projects) = config.allProjects.partition { it.usePublication }
-
 
 dependencies {
    debugApi("com.facebook.react:react-android:0.81.5") {
@@ -84,6 +67,9 @@ dependencies {
             type = "aar"
         }
     }
+  
+    // api("com.facebook.react:react-android:0.81.5")
+    // api("com.facebook.react:hermes-android:0.81.5")
     
     debugApi("com.facebook.react:hermes-android:0.81.5") {
         artifact {
@@ -117,24 +103,6 @@ dependencies {
     api("com.github.penfeizhou.android.animation:glide-plugin:3.0.5")
     api("com.caverock:androidsvg-aar:1.4")
 
-    // Embed the subproject Expo packages
-    projects.forEach { proj ->
-      embed(project(":${proj.name}"))
-    }
-
-    // Embed the prebuilt Expo packages
-    prebuiltProjects.forEach { proj ->
-      val publication = requireNotNull(proj.publication)
-      embed("${publication.groupId}:${publication.artifactId}:${publication.version}")
-    }
-
-    // We need to explicitly include Coil 
-    // because of issues related to it in Screens
-    val COIL_VERSION = "3.0.4"
-    implementation("io.coil-kt.coil3:coil:${COIL_VERSION}")
-    implementation("io.coil-kt.coil3:coil-network-okhttp:${COIL_VERSION}")
-    implementation("io.coil-kt.coil3:coil-svg:${COIL_VERSION}")
-
     implementation("androidx.core:core-ktx:1.16.0")
     implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("com.google.android.material:material:1.12.0")
@@ -143,76 +111,106 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 }
 
-fun isExpoDep(group: String, artifactId: String): Boolean {
-    return group == "host.exp.exponent" && artifactId == "expo"
+afterEvaluate {
+  val androidExtension = extensions.getByType(LibraryExtension::class.java)
+
+  // Find the main app module
+  val appProject = rootProject.subprojects.firstOrNull { it.plugins.hasPlugin("com.android.application") }
+    ?: throw IllegalStateException("App project not found")
+
+  val appBuildDir = appProject.layout.buildDirectory.get().asFile
+  val moduleBuildDir = layout.buildDirectory.get().asFile
+
+  // --- Configure source sets ---
+
+  val main = androidExtension.sourceSets.getByName("main")
+  main.assets.srcDirs("$appBuildDir/generated/assets/createBundleReleaseJsAndAssets")
+  main.res.srcDirs("$appBuildDir/generated/res/createBundleReleaseJsAndAssets")
+  main.java.srcDirs("$moduleBuildDir/generated/autolinking/src/main/java")
+
+  androidExtension.sourceSets.getByName("release").apply {
+    jniLibs.srcDirs("libsRelease")
+  }
+
+  androidExtension.sourceSets.getByName("debug").apply {
+    jniLibs.srcDirs("libsDebug")
+  }
+
+  tasks.register("copyAutolinkingSources", Copy::class) {
+    val path = "generated/autolinking/src/main/java"
+
+    dependsOn(":${appProject.name}:generateAutolinkingPackageList")
+
+    from("$appBuildDir/$path")
+    into("$moduleBuildDir/$path")
+
+    // If you need to patch entry point:
+    val rnEntryPointTask = appProject.tasks.findByName("generateReactNativeEntryPoint")
+    if (rnEntryPointTask != null) {
+        dependsOn(rnEntryPointTask)
+    }
+
+    doLast {
+        val sourceFile = File(moduleBuildDir, "$path/com/facebook/react/ReactNativeApplicationEntryPoint.java")
+        if (sourceFile.exists()) {
+            var content = sourceFile.readText()
+            val nameSpace = "com.pmleczek.testapp.brownfield"
+
+            val regex = Regex("""\b[\w.]+(?=\.BuildConfig)""")
+            content = content.replace(regex, nameSpace)
+
+            sourceFile.writeText(content)
+        }
+    }
+  }
+
+  tasks.named("preBuild").configure {
+    dependsOn("copyAutolinkingSources")
+  }
+
+  tasks.named("preBuild").configure {
+    dependsOn(appProject.tasks.named("createBundleReleaseJsAndAssets"))
+  }
+
+  val mergeJniLibsTask = tasks.named("mergeReleaseJniLibFolders")
+
+  val stripTaskPath = ":${appProject.name}:stripReleaseDebugSymbols"
+  val codegenTaskPath = ":$name:generateCodegenSchemaFromJavaScript"
+
+  val fromDir = appProject.layout.buildDirectory
+      .dir("intermediates/stripped_native_libs/release/stripReleaseDebugSymbols/out/lib")
+      .get().asFile
+
+  val intoDir = rootProject.file("$name/libsRelease")
+
+  val copyTask = tasks.register("copyAppModulesLib", Copy::class) {
+      dependsOn(stripTaskPath, codegenTaskPath)
+      from(fromDir)
+      into(intoDir)
+      include("**/libappmodules.so", "**/libreact_codegen_*.so")
+  }
+
+  mergeJniLibsTask.configure {
+      dependsOn(copyTask)
+  }
 }
 
 publishing {
     publications {
         create<MavenPublication>("mavenAar") {
-            groupId = "${{groupId}}"
-            artifactId = "${{artifactId}}"
+            groupId = "com.pmleczek.testapp"
+            artifactId = "brownfield"
             version = "0.0.1-local"
             afterEvaluate {
                 from(components.getByName("release"))
-            }
-
-            pom {
-                withXml {
-                    val dependenciesNode = (asNode().get("dependencies") as groovy.util.NodeList).first() as groovy.util.Node
-                    dependenciesNode.children()
-                        .filterIsInstance<groovy.util.Node>()
-                        .filter {
-                            val artifactId = (it["artifactId"] as groovy.util.NodeList).text()
-                            val group = (it["groupId"] as groovy.util.NodeList).text()
-
-                            (isExpoDep(group, artifactId) || group == rootProject.name)
-                        }
-                        .forEach { dependenciesNode.remove(it) }
-                }
             }
         }
     }
 
     repositories {
-        mavenLocal()
-    }
-}
-
-val moduleBuildDir: Directory = layout.buildDirectory.get()
-
-tasks.register("removeDependenciesFromModuleFile") {
-    doLast {
-        file("$moduleBuildDir/publications/mavenAar/module.json").run {
-            val json = inputStream().use { JsonSlurper().parse(it) as Map<String, Any> }
-            (json["variants"] as? List<MutableMap<String, Any>>)?.forEach { variant ->
-                (variant["dependencies"] as? MutableList<Map<String, Any>>)?.removeAll {
-                    val module = it["module"] as String
-                    val group = it["group"] as String
-
-                    (isExpoDep(group, module) || group == rootProject.name)
-                }
-            }
-            writer().use { it.write(JsonOutput.prettyPrint(JsonOutput.toJson(json))) }
-        }
-    }
-}
-
-tasks.named("generateMetadataFileForMavenAarPublication") {
-    finalizedBy("removeDependenciesFromModuleFile")
-}
-
-afterEvaluate {
-  listOf("mergeReleaseJniLibFolders", "mergeDebugJniLibFolders").forEach { taskName ->
-    tasks.named(taskName) {
-      doFirst {
-        fileTree("$buildDir/intermediates/exploded-aar/${rootProject.name}/react-native-worklets") {
-          include("**/jni/**/libworklets.so")
-        }.forEach { file ->
-          println("Removing duplicate libworklets.so: ${file.path}")
-          file.delete()
-        }
+      maven {
+        name = "customLocal"
+        url = uri("file://${rootProject.projectDir.parentFile}/maven")
       }
     }
-  }
 }
