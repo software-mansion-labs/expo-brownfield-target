@@ -56,3 +56,6 @@ plugin/tsconfig.tsbuildinfo
 
 # Logs
 *.log
+
+# Tarballs
+*.tgz
