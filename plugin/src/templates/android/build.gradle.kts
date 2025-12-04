@@ -7,17 +7,16 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("com.facebook.react")
-    `maven-publish`
+    id("expo-brownfield-setup")
 }
-
-evaluationDependsOn(":expo")
 
 react {
     autolinkLibrariesWithApp()
 }
 
 android {
-    namespace = "com.pmleczek.testapp.brownfield"
+    // TODO: Hardocded value
+    namespace = "com.pmleczek.expobrownfieldtargetexample.brownfield"
     compileSdk = 36
 
     buildFeatures {
@@ -27,6 +26,7 @@ android {
     defaultConfig {
         minSdk = 24
 
+        // TODO: Maybe remove?
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
         buildConfigField("boolean", "IS_NEW_ARCHITECTURE_ENABLED", properties["newArchEnabled"].toString())
@@ -52,6 +52,7 @@ android {
         jvmTarget = "17"
     }
 
+    // TODO: Maybe use 'default' instead of 'release'?
     publishing {
       multipleVariants("release") {
         includeBuildTypeValues("debug", "release")
@@ -68,6 +69,7 @@ dependencies {
         }
     }
   
+    // TODO: Investigate
     // api("com.facebook.react:react-android:0.81.5")
     // api("com.facebook.react:hermes-android:0.81.5")
     
@@ -111,94 +113,12 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 }
 
-afterEvaluate {
-  val androidExtension = extensions.getByType(LibraryExtension::class.java)
-
-  // Find the main app module
-  val appProject = rootProject.subprojects.firstOrNull { it.plugins.hasPlugin("com.android.application") }
-    ?: throw IllegalStateException("App project not found")
-
-  val appBuildDir = appProject.layout.buildDirectory.get().asFile
-  val moduleBuildDir = layout.buildDirectory.get().asFile
-
-  // --- Configure source sets ---
-
-  val main = androidExtension.sourceSets.getByName("main")
-  main.assets.srcDirs("$appBuildDir/generated/assets/createBundleReleaseJsAndAssets")
-  main.res.srcDirs("$appBuildDir/generated/res/createBundleReleaseJsAndAssets")
-  main.java.srcDirs("$moduleBuildDir/generated/autolinking/src/main/java")
-
-  androidExtension.sourceSets.getByName("release").apply {
-    jniLibs.srcDirs("libsRelease")
-  }
-
-  androidExtension.sourceSets.getByName("debug").apply {
-    jniLibs.srcDirs("libsDebug")
-  }
-
-  tasks.register("copyAutolinkingSources", Copy::class) {
-    val path = "generated/autolinking/src/main/java"
-
-    dependsOn(":${appProject.name}:generateAutolinkingPackageList")
-
-    from("$appBuildDir/$path")
-    into("$moduleBuildDir/$path")
-
-    // If you need to patch entry point:
-    val rnEntryPointTask = appProject.tasks.findByName("generateReactNativeEntryPoint")
-    if (rnEntryPointTask != null) {
-        dependsOn(rnEntryPointTask)
-    }
-
-    doLast {
-        val sourceFile = File(moduleBuildDir, "$path/com/facebook/react/ReactNativeApplicationEntryPoint.java")
-        if (sourceFile.exists()) {
-            var content = sourceFile.readText()
-            val nameSpace = "com.pmleczek.testapp.brownfield"
-
-            val regex = Regex("""\b[\w.]+(?=\.BuildConfig)""")
-            content = content.replace(regex, nameSpace)
-
-            sourceFile.writeText(content)
-        }
-    }
-  }
-
-  tasks.named("preBuild").configure {
-    dependsOn("copyAutolinkingSources")
-  }
-
-  tasks.named("preBuild").configure {
-    dependsOn(appProject.tasks.named("createBundleReleaseJsAndAssets"))
-  }
-
-  val mergeJniLibsTask = tasks.named("mergeReleaseJniLibFolders")
-
-  val stripTaskPath = ":${appProject.name}:stripReleaseDebugSymbols"
-  val codegenTaskPath = ":$name:generateCodegenSchemaFromJavaScript"
-
-  val fromDir = appProject.layout.buildDirectory
-      .dir("intermediates/stripped_native_libs/release/stripReleaseDebugSymbols/out/lib")
-      .get().asFile
-
-  val intoDir = rootProject.file("$name/libsRelease")
-
-  val copyTask = tasks.register("copyAppModulesLib", Copy::class) {
-      dependsOn(stripTaskPath, codegenTaskPath)
-      from(fromDir)
-      into(intoDir)
-      include("**/libappmodules.so", "**/libreact_codegen_*.so")
-  }
-
-  mergeJniLibsTask.configure {
-      dependsOn(copyTask)
-  }
-}
-
 publishing {
     publications {
         create<MavenPublication>("mavenAar") {
-            groupId = "com.pmleczek.testapp"
+            // TODO: Hardocded values
+            groupId = "com.pmleczek.expobrownfieldtargetexample"
+            // TODO: Hardocded value
             artifactId = "brownfield"
             version = "0.0.1-local"
             afterEvaluate {
@@ -208,6 +128,7 @@ publishing {
     }
 
     repositories {
+      // TODO: Hardocded value
       maven {
         name = "customLocal"
         url = uri("file://${rootProject.projectDir.parentFile}/maven")

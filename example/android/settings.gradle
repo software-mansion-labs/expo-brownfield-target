@@ -15,7 +15,7 @@ dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         maven {
-            url '/Users/patrykmleczek/Desktop/test-app/maven'
+            url '/Users/patrykmleczek/Desktop/expo-brownfield-target/example/app/maven'
         }
         google()
         mavenCentral()
