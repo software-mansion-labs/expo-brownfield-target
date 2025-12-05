@@ -85,18 +85,22 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
   }
 
   private fun setupCopyingNativeLibs() {
-    // TODO: Add Debug handling
-    val mergeJniLibsTask = brownfieldProject.tasks.named("mergeReleaseJniLibFolders")
+    setupCopyingNativeLibsForType("Release")
+    setupCopyingNativeLibsForType("Debug")
+  }
 
-    val stripTaskPath = ":${appProject.name}:stripReleaseDebugSymbols"
+  private fun setupCopyingNativeLibsForType(buildType: String) {
+    val mergeJniLibsTask = brownfieldProject.tasks.named("merge${buildType}JniLibFolders")
+
+    val stripTaskPath = ":${appProject.name}:strip${buildType}DebugSymbols"
     val codegenTaskPath = ":${brownfieldProject.name}:generateCodegenSchemaFromJavaScript"
 
     val fromDir = appProject.layout.buildDirectory
-      .dir("intermediates/stripped_native_libs/release/stripReleaseDebugSymbols/out/lib")
+      .dir("intermediates/stripped_native_libs/${buildType.toLowerCase()}/strip${buildType}DebugSymbols/out/lib")
       .get().asFile
-    val intoDir = brownfieldProject.rootProject.file("${brownfieldProject.name}/libsRelease")
+    val intoDir = brownfieldProject.rootProject.file("${brownfieldProject.name}/libs${buildType}")
 
-    val copyTask = brownfieldProject.tasks.register("copyAppModulesLib", Copy::class.java) { task ->
+    val copyTask = brownfieldProject.tasks.register("copyAppModulesLib${buildType}", Copy::class.java) { task ->
       task.dependsOn(stripTaskPath, codegenTaskPath)
       task.from(fromDir)
       task.into(intoDir)
