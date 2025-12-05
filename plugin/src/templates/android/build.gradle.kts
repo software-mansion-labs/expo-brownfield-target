@@ -54,7 +54,17 @@ android {
 
     // TODO: Maybe use 'default' instead of 'release'?
     publishing {
-      multipleVariants("release") {
+      multipleVariants("brownfieldDebug") {
+        includeBuildTypeValues("debug")
+        withSourcesJar()
+      }
+
+      multipleVariants("brownfieldRelease") {
+        includeBuildTypeValues("release")
+        withSourcesJar()
+      }
+
+      multipleVariants("brownfieldAll") {
         includeBuildTypeValues("debug", "release")
         withSourcesJar()
       }
@@ -62,37 +72,37 @@ android {
 }
 
 dependencies {
-   debugApi("com.facebook.react:react-android:0.81.5") {
-        artifact {
-            classifier = "debug"
-            type = "aar"
-        }
-    }
+  //  debugApi("com.facebook.react:react-android:0.81.5") {
+  //       artifact {
+  //           classifier = "debug"
+  //           type = "aar"
+  //       }
+  //   }
   
     // TODO: Investigate
-    // api("com.facebook.react:react-android:0.81.5")
-    // api("com.facebook.react:hermes-android:0.81.5")
+    api("com.facebook.react:react-android:0.81.5")
+    api("com.facebook.react:hermes-android:0.81.5")
     
-    debugApi("com.facebook.react:hermes-android:0.81.5") {
-        artifact {
-            classifier = "debug"
-            type = "aar"
-        }
-    }
+    // debugApi("com.facebook.react:hermes-android:0.81.5") {
+    //     artifact {
+    //         classifier = "debug"
+    //         type = "aar"
+    //     }
+    // }
     
-    releaseApi("com.facebook.react:react-android:0.81.5") {
-        artifact {
-            classifier = "release"
-            type = "aar"
-        }
-    }
+    // releaseApi("com.facebook.react:react-android:0.81.5") {
+    //     artifact {
+    //         classifier = "release"
+    //         type = "aar"
+    //     }
+    // }
     
-    releaseApi("com.facebook.react:hermes-android:0.81.5") {
-        artifact {
-            classifier = "release"
-            type = "aar"
-        }
-    }
+    // releaseApi("com.facebook.react:hermes-android:0.81.5") {
+    //     artifact {
+    //         classifier = "release"
+    //         type = "aar"
+    //     }
+    // }
 
     compileOnly("androidx.fragment:fragment-ktx:1.6.1")
 
@@ -115,15 +125,37 @@ dependencies {
 
 publishing {
     publications {
-        create<MavenPublication>("mavenAar") {
+        create<MavenPublication>("brownfieldDebug") {
             // TODO: Hardocded values
             groupId = "com.pmleczek.expobrownfieldtargetexample"
             // TODO: Hardocded value
             artifactId = "brownfield"
             version = "0.0.1-local"
             afterEvaluate {
-                from(components.getByName("release"))
+                from(components.getByName("brownfieldDebug"))
             }
+        }
+
+        create<MavenPublication>("brownfieldRelease") {
+          // TODO: Hardocded values
+          groupId = "com.pmleczek.expobrownfieldtargetexample"
+          // TODO: Hardocded value
+          artifactId = "brownfield"
+          version = "0.0.1-local"
+          afterEvaluate {
+              from(components.getByName("brownfieldRelease"))
+          }
+        }
+
+        create<MavenPublication>("brownfieldAll") {
+          // TODO: Hardocded values
+          groupId = "com.pmleczek.expobrownfieldtargetexample"
+          // TODO: Hardocded value
+          artifactId = "brownfield"
+          version = "0.0.1-local"
+          afterEvaluate {
+            from(components.getByName("brownfieldAll"))
+          }
         }
     }
 

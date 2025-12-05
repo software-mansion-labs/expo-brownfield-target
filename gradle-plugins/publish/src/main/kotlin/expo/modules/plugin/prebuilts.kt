@@ -30,8 +30,15 @@ internal fun setupPrebuiltsCopying(rootProject: Project) {
       task.into(rootProject.file("../maven"))
     }
   
-    brownfieldProject.tasks.named("generateMetadataFileForMavenAarPublication").configure {
-      it.finalizedBy(copyTask)
+    val tasks = listOf(
+      "generateMetadataFileForBrownfieldDebugPublication",
+      "generateMetadataFileForBrownfieldReleasePublication",
+      "generateMetadataFileForBrownfieldAllPublication"
+    )
+    tasks.forEach { task ->
+      brownfieldProject.tasks.named(task).configure {
+        it.finalizedBy(copyTask)
+      }
     }
   }
 }

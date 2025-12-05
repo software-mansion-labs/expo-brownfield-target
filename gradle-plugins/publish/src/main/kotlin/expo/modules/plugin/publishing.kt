@@ -22,19 +22,56 @@ internal fun setupPublishing(project: Project) {
       val publicationExtension = project.extensions.getByType(PublishingExtension::class.java)
 
       if (
-        project.components.getByName("prebuildRelease") == null ||
-        publicationExtension == null
+        publicationExtension == null ||
+        project.components.getByName("brownfieldRelease") == null ||
+        project.components.getByName("brownfieldDebug") == null ||
+        project.components.getByName("brownfieldAll") == null
       ) {
-        println("Skipping ${project.name} as it can't be published due to missing components or publishing extension")
+        println("Skipping ${project.name} as it can't be published due to missing publishing variants or publishing extension")
         return@afterEvaluate
       }
 
+      // TODO: Deduplicate - maybe add some extension on publishing extension?
       publicationExtension.publications.create(
-        "default",
+        "brownfieldDebug",
         MavenPublication::class.java
       ) { mavenPublication ->
         with(mavenPublication) {
-          from(project.components.getByName("prebuildRelease"))
+          from(project.components.getByName("brownfieldDebug"))
+          groupId = project.group.toString()
+          artifactId = requireNotNull(libraryExtension.namespace)
+          version = requireNotNull(libraryExtension.defaultConfig.versionName ?: "1.0.0")
+
+          pom.withXml { xml ->
+            removeReactNativeDependencyPom(xml)
+          }
+        }
+      }
+
+      // TODO: Deduplicate - maybe add some extension on publishing extension?
+      publicationExtension.publications.create(
+        "brownfieldRelease",
+        MavenPublication::class.java
+      ) { mavenPublication ->
+        with(mavenPublication) {
+          from(project.components.getByName("brownfieldRelease"))
+          groupId = project.group.toString()
+          artifactId = requireNotNull(libraryExtension.namespace)
+          version = requireNotNull(libraryExtension.defaultConfig.versionName ?: "1.0.0")
+
+          pom.withXml { xml ->
+            removeReactNativeDependencyPom(xml)
+          }
+        }
+      }
+
+      // TODO: Deduplicate - maybe add some extension on publishing extension?
+      publicationExtension.publications.create(
+        "brownfieldAll",
+        MavenPublication::class.java
+      ) { mavenPublication ->
+        with(mavenPublication) {
+          from(project.components.getByName("brownfieldAll"))
           groupId = project.group.toString()
           artifactId = requireNotNull(libraryExtension.namespace)
           version = requireNotNull(libraryExtension.defaultConfig.versionName ?: "1.0.0")
@@ -47,6 +84,7 @@ internal fun setupPublishing(project: Project) {
 
       removeReactNativeDependencyModule(project)
 
+      // TODO: Support multiple repositories dynamically
       publicationExtension.repositories.maven { repo ->
         repo.name = "customLocal"
         repo.url = project.uri("file://${project.rootProject.projectDir.parentFile}/maven")
@@ -75,10 +113,17 @@ internal fun removeReactNativeDependencyPom(xml: XmlProvider) {
 }
 
 internal fun removeReactNativeDependencyModule(project: Project) {
-  val removeDependenciesTask = project.tasks.register("removeRNDependencyFromModuleFile") { task ->
+  val vairants = listOf("brownfieldDebug", "brownfieldRelease", "brownfieldAll")
+  vairants.forEach { variant ->
+    createRemoveReactNativeDependencyModuleTask(project, variant)
+  }
+}
+
+internal fun createRemoveReactNativeDependencyModuleTask(project: Project, variant: String) {
+  val removeDependenciesTask = project.tasks.register("removeRNDependencyFromModuleFile$variant") { task ->
     task.doLast {
       val moduleBuildDir = project.layout.buildDirectory.get().asFile
-      val moduleFile = File(moduleBuildDir, "publications/default/module.json")
+      val moduleFile = File(moduleBuildDir, "publications/$variant/module.json")
       if (!moduleFile.exists()) {
         println("WARNING: Module file for project: ${project.name} does not exist at: ${moduleFile.path}")
         println("This file might not need to be modified. Continuing tasks...")
@@ -105,10 +150,8 @@ internal fun removeReactNativeDependencyModule(project: Project) {
     }
   }
 
-  val task = project.tasks.named("generateMetadataFileForDefaultPublication")
-  if (task != null) {
-    task.configure {
-      it.finalizedBy(removeDependenciesTask)
-    }
+  val taskName = "generateMetadataFileFor${variant.capitalized()}Publication"
+  project.tasks.named(taskName).configure {
+    it.finalizedBy(removeDependenciesTask)
   }
 }

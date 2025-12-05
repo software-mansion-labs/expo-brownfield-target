@@ -6,9 +6,20 @@ import groovy.util.NodeList
 import org.gradle.api.XmlProvider
 
 // SECTION: LibraryExtension
+// TODO: Update name?
 internal fun LibraryExtension.applyPublishingVariant() {
   publishing { publishing ->
-      publishing.multipleVariants("prebuildRelease") {
+      publishing.multipleVariants("brownfieldDebug") {
+        includeBuildTypeValues("debug")
+        withSourcesJar()
+      }
+
+      publishing.multipleVariants("brownfieldRelease") {
+        includeBuildTypeValues("release")
+        withSourcesJar()
+      }
+
+      publishing.multipleVariants("brownfieldAll") {
         includeBuildTypeValues("debug", "release")
         withSourcesJar()
       }
@@ -64,3 +75,9 @@ internal fun Node.artifactId(): String? {
   return artifactIdNode?.text()
 }
 // END SECTION: Node
+
+// SECTION: String
+internal fun String.capitalized(): String {
+  return this.replaceFirstChar { it.uppercase() }
+}
+// END SECTION: String
