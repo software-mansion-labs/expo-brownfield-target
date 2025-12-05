@@ -56,3 +56,9 @@ plugin/tsconfig.tsbuildinfo
 
 # Logs
 *.log
+
+# Tarballs
+*.tgz
+
+# Local Maven repository
+maven/

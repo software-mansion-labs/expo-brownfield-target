@@ -7,7 +7,7 @@ def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.ab
 apply from: expoModulesCorePlugin
 applyKotlinExpoModulesCorePlugin()
 useCoreDependencies()
-useExpoPublishing()
+// useExpoPublishing()
 
 def useManagedAndroidSdkVersions = false
 if (useManagedAndroidSdkVersions) {
@@ -36,7 +36,7 @@ android {
   namespace "expo.modules.brownfield"
   defaultConfig {
     versionCode 1
-    versionName "0.7.6"
+    versionName "0.1.0"
   }
   lintOptions {
     abortOnError false

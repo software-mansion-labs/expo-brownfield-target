@@ -16,6 +16,7 @@
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/native": "^7.1.8",
     "expo": "~54.0.19",
+    "expo-brownfield-target": "file:expo-brownfield-target-0.4.1.tgz",
     "expo-constants": "~18.0.10",
     "expo-font": "~14.0.9",
     "expo-haptics": "~15.0.7",
@@ -43,10 +44,5 @@
     "eslint-config-expo": "~10.0.0",
     "typescript": "~5.9.2"
   },
-  "private": true,
-  "expo": {
-    "autolinking": {
-      "nativeModulesDir": "../.."
-    }
-  }
+  "private": true
 }
