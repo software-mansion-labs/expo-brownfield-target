@@ -3,7 +3,15 @@ package expo.modules.plugin
 import com.android.build.gradle.LibraryExtension
 import groovy.util.Node
 import groovy.util.NodeList
+import org.gradle.api.Project
 import org.gradle.api.XmlProvider
+import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.artifacts.repositories.MavenArtifactRepository
+import org.gradle.api.artifacts.repositories.PasswordCredentials
+import org.gradle.api.artifacts.repositories.AuthenticationSupported
+import org.gradle.authentication.http.HttpHeaderAuthentication
+import org.gradle.api.credentials.HttpHeaderCredentials
 
 // SECTION: LibraryExtension
 // TODO: Update name?
@@ -81,3 +89,72 @@ internal fun String.capitalized(): String {
   return this.replaceFirstChar { it.uppercase() }
 }
 // END SECTION: String
+
+// SECTION: PublicationExtension
+internal fun PublishingExtension.setupRepository(publication: PublicationConfig, project: Project) {
+  when(publication.type.get()) {
+    "localMaven" -> {
+      repositories { repo ->
+        repo.mavenLocal()
+      }
+    }
+    "localDirectory", "remotePublic" -> {
+      repositories { repo ->
+        repo.maven { maven ->
+          maven.name = publication.getName()
+          maven.url = project.uri("${publication.url.get()}")
+        }
+      }
+    }
+    "remotePrivateBasic" -> {
+      repositories { repo ->
+        repo.maven { maven ->
+          maven.name = publication.getName()
+          maven.url = project.uri("${publication.url.get()}")
+          maven.credentials { credentials ->
+            credentials.username = publication.username.get()
+            credentials.password = publication.password.get()
+          }
+        }
+      }
+    }
+    "remotePrivateToken" -> {
+      repositories { repo ->
+        repo.maven { maven ->
+          maven.name = publication.getName()
+          maven.url = project.uri("${publication.url}")
+          maven.credentials(HttpHeaderCredentials::class.java) { credentials ->
+            credentials.name = "Authorization"
+            credentials.value = "Bearer ${publication.token.get()}"
+          }
+          maven.authentication { authentication ->
+            authentication.create("header", HttpHeaderAuthentication::class.java)
+          }
+        }
+      }
+    }
+  }
+}
+
+internal fun PublishingExtension.createPublication(
+  from: String,
+  project: Project,
+  libraryExtension: LibraryExtension,
+) {
+  publications.create(
+    from,
+    MavenPublication::class.java
+  ) { mavenPublication ->
+    with(mavenPublication) {
+      from(project.components.getByName(from))
+      groupId = project.group.toString()
+      artifactId = requireNotNull(libraryExtension.namespace)
+      version = requireNotNull(libraryExtension.defaultConfig.versionName ?: "1.0.0")
+
+      pom.withXml { xml ->
+        removeReactNativeDependencyPom(xml)
+      }
+    }
+  }
+}
+// END SECTION: PublicationExtension

@@ -32,64 +32,90 @@ internal fun setupPublishing(project: Project) {
       }
 
       // TODO: Deduplicate - maybe add some extension on publishing extension?
-      publicationExtension.publications.create(
+      // publicationExtension.publications.create(
+      //   "brownfieldDebug",
+      //   MavenPublication::class.java
+      // ) { mavenPublication ->
+      //   with(mavenPublication) {
+      //     from(project.components.getByName("brownfieldDebug"))
+      //     groupId = project.group.toString()
+      //     artifactId = requireNotNull(libraryExtension.namespace)
+      //     version = requireNotNull(libraryExtension.defaultConfig.versionName ?: "1.0.0")
+
+      //     pom.withXml { xml ->
+      //       removeReactNativeDependencyPom(xml)
+      //     }
+      //   }
+      // }
+      publicationExtension.createPublication(
         "brownfieldDebug",
-        MavenPublication::class.java
-      ) { mavenPublication ->
-        with(mavenPublication) {
-          from(project.components.getByName("brownfieldDebug"))
-          groupId = project.group.toString()
-          artifactId = requireNotNull(libraryExtension.namespace)
-          version = requireNotNull(libraryExtension.defaultConfig.versionName ?: "1.0.0")
-
-          pom.withXml { xml ->
-            removeReactNativeDependencyPom(xml)
-          }
-        }
-      }
+        project,
+        libraryExtension
+      )
 
       // TODO: Deduplicate - maybe add some extension on publishing extension?
-      publicationExtension.publications.create(
+      // publicationExtension.publications.create(
+      //   "brownfieldRelease",
+      //   MavenPublication::class.java
+      // ) { mavenPublication ->
+      //   with(mavenPublication) {
+      //     from(project.components.getByName("brownfieldRelease"))
+      //     groupId = project.group.toString()
+      //     artifactId = requireNotNull(libraryExtension.namespace)
+      //     version = requireNotNull(libraryExtension.defaultConfig.versionName ?: "1.0.0")
+
+      //     pom.withXml { xml ->
+      //       removeReactNativeDependencyPom(xml)
+      //     }
+      //   }
+      // }
+      publicationExtension.createPublication(
         "brownfieldRelease",
-        MavenPublication::class.java
-      ) { mavenPublication ->
-        with(mavenPublication) {
-          from(project.components.getByName("brownfieldRelease"))
-          groupId = project.group.toString()
-          artifactId = requireNotNull(libraryExtension.namespace)
-          version = requireNotNull(libraryExtension.defaultConfig.versionName ?: "1.0.0")
-
-          pom.withXml { xml ->
-            removeReactNativeDependencyPom(xml)
-          }
-        }
-      }
+        project,
+        libraryExtension
+      )
 
       // TODO: Deduplicate - maybe add some extension on publishing extension?
-      publicationExtension.publications.create(
-        "brownfieldAll",
-        MavenPublication::class.java
-      ) { mavenPublication ->
-        with(mavenPublication) {
-          from(project.components.getByName("brownfieldAll"))
-          groupId = project.group.toString()
-          artifactId = requireNotNull(libraryExtension.namespace)
-          version = requireNotNull(libraryExtension.defaultConfig.versionName ?: "1.0.0")
+      // publicationExtension.publications.create(
+      //   "brownfieldAll",
+      //   MavenPublication::class.java
+      // ) { mavenPublication ->
+      //   with(mavenPublication) {
+      //     from(project.components.getByName("brownfieldAll"))
+      //     groupId = project.group.toString()
+      //     artifactId = requireNotNull(libraryExtension.namespace)
+      //     version = requireNotNull(libraryExtension.defaultConfig.versionName ?: "1.0.0")
 
-          pom.withXml { xml ->
-            removeReactNativeDependencyPom(xml)
-          }
-        }
-      }
+      //     pom.withXml { xml ->
+      //       removeReactNativeDependencyPom(xml)
+      //     }
+      //   }
+      // }
+      publicationExtension.createPublication(
+        "brownfieldAll",
+        project,
+        libraryExtension
+      )
 
       removeReactNativeDependencyModule(project)
-
-      // TODO: Support multiple repositories dynamically
-      publicationExtension.repositories.maven { repo ->
-        repo.name = "customLocal"
-        repo.url = project.uri("file://${project.rootProject.projectDir.parentFile}/maven")
-      }
+      setupRepositories(publicationExtension, project)
     }
+  }
+}
+
+internal fun setupRepositories(publicationExtension: PublishingExtension, project: Project) {
+  val publications = project.rootProject.extensions
+    .findByType(ExpoPublishExtension::class.java)?.publications
+    ?: throw IllegalStateException("`ExpoPublishExtension` not found or not configured. Please, make sure that `expoBrownfieldPublishPlugin` was called in `build.gradle`.")
+
+  if (publications.isEmpty) {
+    throw IllegalStateException(
+      "`publications` is not set. Please, make sure that `publications { ... }` was called in the root `build.gradle` file."
+    )
+  }
+
+  publications.forEach { publication ->
+    publicationExtension.setupRepository(publication, project)
   }
 }
 

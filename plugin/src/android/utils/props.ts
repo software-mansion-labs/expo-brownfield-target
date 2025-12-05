@@ -3,7 +3,7 @@ import path from 'node:path';
 import type { ExpoConfig } from 'expo/config';
 import { withAndroidManifest } from 'expo/config-plugins';
 
-import type { PluginConfig, PluginProps } from '../types';
+import type { PluginConfig, PluginProps, Publication } from '../types';
 
 export const getPluginConfig = (
   props: PluginProps,
@@ -17,6 +17,7 @@ export const getPluginConfig = (
     package: packageId,
     packagePath: getPackagePath(packageId),
     projectRoot: getProjectRoot(config),
+    publishing: getPublishing(props),
   };
 };
 
@@ -48,4 +49,14 @@ export const getProjectRoot = (config: ExpoConfig): string => {
   }
 
   return projectRoot;
+};
+
+export const getPublishing = (props: PluginProps): Publication[] => {
+  return (
+    props?.publishing || [
+      {
+        type: 'localMaven',
+      },
+    ]
+  );
 };

@@ -45,7 +45,17 @@
         "expo-brownfield-target", 
         { 
           "android": {
-            "package": "com.pmleczek.expobrownfieldtargetexample.brownfield"
+            "package": "com.pmleczek.expobrownfieldtargetexample.brownfield",
+            "publishing": [
+              {
+                "type": "localMaven"
+              },
+              {
+                "type": "localDirectory",
+                "name": "customLocal",
+                "path": "./maven"
+              }
+            ]
           },
           "ios": { 
             "targetName": "MyBrownfieldApp" 

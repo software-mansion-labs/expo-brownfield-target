@@ -1,10 +1,22 @@
 import { type ConfigPlugin, withProjectBuildGradle } from 'expo/config-plugins';
 
+import type { PluginConfig, Publication } from '../types';
+import {
+  localDirectoryRepository,
+  localMavenRepository,
+  remotePrivateBasicRepository,
+  remotePrivateTokenRepository,
+  remotePublicRepository,
+} from '../utils';
+
 const EXPO_APPLY_STATEMENT = 'apply plugin: "expo-root-project"';
 const PLUGIN_CLASSPATH = 'expo.modules:publish';
 const PLUGIN_NAME = 'expo-brownfield-publish';
 
-const withProjectBuildGradlePlugin: ConfigPlugin = (config) => {
+const withProjectBuildGradlePlugin: ConfigPlugin<PluginConfig> = (
+  config,
+  pluginConfig,
+) => {
   return withProjectBuildGradle(config, (config) => {
     if (config.modResults.contents.includes(PLUGIN_CLASSPATH)) {
       return config;
@@ -13,6 +25,11 @@ const withProjectBuildGradlePlugin: ConfigPlugin = (config) => {
     let lines = config.modResults.contents.split('\n');
     lines = addPluginClasspathStatement(lines);
     lines = addApplyStatement(lines);
+    lines = addPublicationConfiguration(
+      lines,
+      pluginConfig.publishing,
+      pluginConfig.projectRoot,
+    );
     config.modResults.contents = lines.join('\n');
 
     return config;
@@ -41,7 +58,9 @@ const addApplyStatement = (lines: string[]): string[] => {
   );
 
   if (expoApplyIndex === -1) {
-    throw new Error('Error: "expo-root-project" apply statement not found in the project build.gradle file');
+    throw new Error(
+      'Error: "expo-root-project" apply statement not found in the project build.gradle file',
+    );
   }
 
   lines = [
@@ -51,6 +70,61 @@ const addApplyStatement = (lines: string[]): string[] => {
   ];
 
   return lines;
+};
+
+const addPublicationConfiguration = (
+  lines: string[],
+  publications: Publication[],
+  projectRoot: string,
+): string[] => {
+  lines = [
+    ...lines,
+    'expoBrownfieldPublishPlugin {',
+    '    publications {',
+    ...createPublicationConfigurations(publications, projectRoot),
+    '    }',
+    '}',
+  ];
+
+  return lines;
+};
+
+const createPublicationConfigurations = (
+  publications: Publication[],
+  projectRoot: string,
+): string[] => {
+  const configs: string[] = [];
+
+  publications.forEach((publication) => {
+    switch (publication.type) {
+      // Local Maven publication
+      case 'localMaven':
+        configs.push(...localMavenRepository(configs));
+        break;
+      // Local Directory publication
+      case 'localDirectory':
+        configs.push(
+          ...localDirectoryRepository(configs, projectRoot, publication),
+        );
+        break;
+      // Remote Public publication (without authentication)
+      case 'remotePublic':
+        configs.push(...remotePublicRepository(configs, publication));
+        break;
+      // Remote Private publication (basic authentication)
+      case 'remotePrivateBasic':
+        configs.push(...remotePrivateBasicRepository(configs, publication));
+        break;
+      // Remote Private publication (token-based authentication)
+      case 'remotePrivateToken':
+        configs.push(...remotePrivateTokenRepository(configs, publication));
+        break;
+      default:
+        break;
+    }
+  });
+
+  return configs;
 };
 
 export default withProjectBuildGradlePlugin;
