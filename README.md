@@ -482,6 +482,10 @@ addListener(callback: (Map<String, Any?>) -> Unit)
 **Example:**
 
 ```kotlin
+import expo.modules.brownfield.BrownfieldMessaging
+
+// ...
+
 val listenerId = BrownfieldMessaging.addListener { event ->
     println("Message listener: $event")
 }
@@ -508,6 +512,10 @@ removeListener(id: String)
 **Example:**
 
 ```kotlin
+import expo.modules.brownfield.BrownfieldMessaging
+
+// ...
+
 BrownfieldMessaging.removeListener(listenerId)
 ```
 
