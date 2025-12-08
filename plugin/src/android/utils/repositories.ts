@@ -36,6 +36,7 @@ const repositoryTemplates = {
       `    ${nameOrPlaceholder} {`,
       '        type = "remotePublic"',
       `        url = "${publication.url}"`,
+      `        allowInsecure = ${publication.allowInsecure}`,
       '    }',
     ];
   },
@@ -51,6 +52,7 @@ const repositoryTemplates = {
       `        url = "${publication.url}"`,
       `        username = "${publication.username}"`,
       `        password = "${publication.password}"`,
+      `        allowInsecure = ${publication.allowInsecure}`,
       '    }',
     ];
   },

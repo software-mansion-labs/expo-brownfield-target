@@ -90,7 +90,6 @@ const createPublicationConfigurations = (
   projectRoot: string,
 ): string[] => {
   const configs: string[] = [];
-
   publications.forEach((publication) => {
     configs.push(...addRepository(configs, projectRoot, publication));
   });

@@ -19,6 +19,7 @@ export interface RemotePublicPublication {
   type: 'remotePublic';
   name?: string;
   url: string;
+  allowInsecure?: boolean;
 }
 
 export interface RemotePrivateBasicPublication {
@@ -27,6 +28,7 @@ export interface RemotePrivateBasicPublication {
   url: string;
   username: string;
   password: string;
+  allowInsecure?: boolean;
 }
 
 export type Publication =

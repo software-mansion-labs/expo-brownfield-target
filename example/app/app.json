@@ -58,14 +58,16 @@
               {
                 "type": "remotePublic",
                 "name": "remotePublic",
-                "url": "http://localhost:8081/repository/remote-public"
+                "url": "http://localhost:8081/repository/remote-public",
+                "allowInsecure": true
               },
               {
                 "type": "remotePrivate",
                 "name": "remotePrivate",
                 "url": "http://localhost:8081/repository/remote-basic-auth",
                 "username": "user",
-                "password": "user1234"
+                "password": "user1234",
+                "allowInsecure": true
               }
             ]
           },

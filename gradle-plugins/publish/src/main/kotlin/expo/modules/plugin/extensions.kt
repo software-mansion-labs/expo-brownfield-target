@@ -16,7 +16,6 @@ import expo.modules.plugin.configuration.GradleProject
 import java.io.File
 
 // SECTION: LibraryExtension
-// TODO: Update name?
 internal fun LibraryExtension.applyPublishingVariant() {
   publishing { publishing ->
       publishing.multipleVariants("brownfieldDebug") {
@@ -105,8 +104,7 @@ internal fun PublishingExtension.setupRepository(publication: PublicationConfig,
         repo.maven { maven ->
           maven.name = publication.getName()
           maven.url = project.uri("${publication.url.get()}")
-          // TODO: Handle properly
-          maven.isAllowInsecureProtocol = publication.type.get() == "remotePublic"
+          maven.isAllowInsecureProtocol = publication.allowInsecure.get()
         }
       }
     }
@@ -119,8 +117,7 @@ internal fun PublishingExtension.setupRepository(publication: PublicationConfig,
             credentials.username = publication.username.get()
             credentials.password = publication.password.get()
           }
-          // TODO: Handle properly
-          maven.isAllowInsecureProtocol = true
+          maven.isAllowInsecureProtocol = publication.allowInsecure.get()
         }
       }
     }

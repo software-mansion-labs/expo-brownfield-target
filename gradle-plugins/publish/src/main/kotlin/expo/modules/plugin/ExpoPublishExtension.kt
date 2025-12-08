@@ -17,13 +17,13 @@ abstract class PublicationConfig @Inject constructor(
     abstract val url: Property<String>
     abstract val username: Property<String>
     abstract val password: Property<String>
-    abstract val token: Property<String>
+    abstract val allowInsecure: Property<Boolean>
     
     init {
         url.convention("")
         username.convention("")
         password.convention("")
-        token.convention("")
+        allowInsecure.convention(false)
     }
 }
 
