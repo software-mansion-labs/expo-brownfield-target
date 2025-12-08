@@ -54,6 +54,11 @@
                 "type": "localDirectory",
                 "name": "customLocal",
                 "path": "./maven"
+              },
+              {
+                "type": "remotePublic",
+                "name": "remotePublic",
+                "url": "http://localhost:8081/repository/remote-public"
               }
             ]
           },

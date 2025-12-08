@@ -12,6 +12,8 @@ import org.gradle.api.artifacts.repositories.PasswordCredentials
 import org.gradle.api.artifacts.repositories.AuthenticationSupported
 import org.gradle.authentication.http.HttpHeaderAuthentication
 import org.gradle.api.credentials.HttpHeaderCredentials
+import expo.modules.plugin.configuration.GradleProject
+import java.io.File
 
 // SECTION: LibraryExtension
 // TODO: Update name?
@@ -103,6 +105,8 @@ internal fun PublishingExtension.setupRepository(publication: PublicationConfig,
         repo.maven { maven ->
           maven.name = publication.getName()
           maven.url = project.uri("${publication.url.get()}")
+          // TODO: Handle properly
+          maven.isAllowInsecureProtocol = publication.type.get() == "remotePublic"
         }
       }
     }
@@ -115,6 +119,8 @@ internal fun PublishingExtension.setupRepository(publication: PublicationConfig,
             credentials.username = publication.username.get()
             credentials.password = publication.password.get()
           }
+          // TODO: Handle properly
+          maven.isAllowInsecureProtocol = true
         }
       }
     }
@@ -130,6 +136,8 @@ internal fun PublishingExtension.setupRepository(publication: PublicationConfig,
           maven.authentication { authentication ->
             authentication.create("header", HttpHeaderAuthentication::class.java)
           }
+          // TODO: Handle properly
+          maven.isAllowInsecureProtocol = true
         }
       }
     }
@@ -158,3 +166,16 @@ internal fun PublishingExtension.createPublication(
   }
 }
 // END SECTION: PublicationExtension
+
+// SECTION: GradleProject
+internal fun GradleProject.localMavenRepo(): File {
+  return File(sourceDir).parentFile.resolve("local-maven-repo")
+}
+
+internal fun GradleProject.getCapitalizedName(): String {
+  return name
+    .split('-')
+    .map { it.capitalized() }
+    .joinToString("")
+}
+// END SECTION: GradleProject

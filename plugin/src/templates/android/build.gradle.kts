@@ -72,37 +72,8 @@ android {
 }
 
 dependencies {
-  //  debugApi("com.facebook.react:react-android:0.81.5") {
-  //       artifact {
-  //           classifier = "debug"
-  //           type = "aar"
-  //       }
-  //   }
-  
-    // TODO: Investigate
     api("com.facebook.react:react-android:0.81.5")
     api("com.facebook.react:hermes-android:0.81.5")
-    
-    // debugApi("com.facebook.react:hermes-android:0.81.5") {
-    //     artifact {
-    //         classifier = "debug"
-    //         type = "aar"
-    //     }
-    // }
-    
-    // releaseApi("com.facebook.react:react-android:0.81.5") {
-    //     artifact {
-    //         classifier = "release"
-    //         type = "aar"
-    //     }
-    // }
-    
-    // releaseApi("com.facebook.react:hermes-android:0.81.5") {
-    //     artifact {
-    //         classifier = "release"
-    //         type = "aar"
-    //     }
-    // }
 
     compileOnly("androidx.fragment:fragment-ktx:1.6.1")
 

@@ -29,6 +29,7 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
       setupCopyingAutolinking()
       setupTasks()
       setupCopyingNativeLibs()
+      setupPublishing()
     }
   }
 
@@ -110,6 +111,25 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
     mergeJniLibsTask.configure { task ->
       task.dependsOn(copyTask)
     }
+  }
+
+  private fun setupPublishing() {
+    // libraryExtension.publishing { publishing ->
+    //   publishing.multipleVariants("brownfieldDebug") {
+    //     includeBuildTypeValues("debug")
+    //     withSourcesJar()
+    //   }
+
+    //   publishing.multipleVariants("brownfieldRelease") {
+    //     includeBuildTypeValues("release")
+    //     withSourcesJar()
+    //   }
+
+    //   publishing.multipleVariants("brownfieldAll") {
+    //     includeBuildTypeValues("debug", "release")
+    //     withSourcesJar()
+    //   }
+    // }
   }
 
   private fun getLibraryExtension(): LibraryExtension {

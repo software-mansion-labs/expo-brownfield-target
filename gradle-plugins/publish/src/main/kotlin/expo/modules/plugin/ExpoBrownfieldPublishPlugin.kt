@@ -20,11 +20,7 @@ class ExpoBrownfieldPublishPlugin : Plugin<Project> {
   }
 
   private fun shouldSkip(project: Project): Boolean {
-    val appProject = project.rootProject.subprojects.firstOrNull { it.plugins.hasPlugin("com.android.application") }
-    if (appProject == null) {
-      throw IllegalStateException("App project not found in the root project")
-    }
-
+    val appProject = findAppProject(project)
     return project.extensions.findByType(AndroidComponentsExtension::class.java) == null ||
       project.extensions.findByType(LibraryExtension::class.java) == null ||
       listOf("${appProject.name}", "brownfield").contains(project.name)
