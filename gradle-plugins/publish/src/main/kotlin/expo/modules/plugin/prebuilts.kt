@@ -1,7 +1,9 @@
 package expo.modules.plugin
 
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.tasks.Copy
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import expo.modules.plugin.ExpoGradleExtension
@@ -64,17 +66,7 @@ internal fun createPrebuiltsCopyTask(
       }
     }
   
-    val tasks = listOf(
-      "build"
-      // "generateMetadataFileForBrownfieldDebugPublication",
-      // "generateMetadataFileForBrownfieldReleasePublication",
-      // "generateMetadataFileForBrownfieldAllPublication"
-    )
-    tasks.forEach { task ->
-      brownfieldProject.tasks.named(task).configure {
-        it.finalizedBy(copyTask)
-      }
-    }
+    registerPrebuiltPublicationTask(brownfieldProject, task = copyTask)
   }
 }
 
@@ -138,26 +130,12 @@ internal fun createPrebuiltsPublishTask(
         )
       }
 
-    // TODO: Deduplicate
-    val tasks = listOf(
-      "build"
-      // "generateMetadataFileForBrownfieldDebugPublication",
-      // "generateMetadataFileForBrownfieldReleasePublication",
-      // "generateMetadataFileForBrownfieldAllPublication"
-    )
-
-    tasks.forEach { task ->
-      brownfieldProject.tasks.named(task).configure {
-        it.finalizedBy(publishTasks)
-      }
-    }
+    registerPrebuiltPublicationTask(brownfieldProject, tasks = publishTasks)
   }
 }
 
-// internal fun wirePrebuiltsPublicationTask() {
-//   val tasks = listOf(
-//     "generateMetadataFileForBrownfieldDebugPublication",
-//     "generateMetadataFileForBrownfieldReleasePublication",
-//     "generateMetadataFileForBrownfieldAllPublication"
-//   )
-// }
+internal fun registerPrebuiltPublicationTask(brownfieldProject: Project, task: TaskProvider<Copy>? = null, tasks: List<TaskProvider<Task>> = listOf()) {
+  brownfieldProject.tasks.named("build").configure {
+    it.finalizedBy(task ?: tasks)
+  }
+}

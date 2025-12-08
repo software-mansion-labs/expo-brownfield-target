@@ -1,128 +1,91 @@
 import path from 'node:path';
 
-import { LocalDirectoryPublication, RemotePrivateBasicPublication, RemotePrivateTokenPublication, RemotePublicPublication } from '../types';
+import {
+  LocalDirectoryPublication,
+  Publication,
+  RemotePrivateBasicPublication,
+  RemotePublicPublication,
+} from '../types';
 
-// TODO: Fix formatting, 2 spaces less
-// TODO: Deduplicate into object?
-export const localMavenRepository = (lines: string[]) => {
-  const hasLocalMaven = lines.find((line) => line.includes('localDefault'));
-  if (hasLocalMaven) {
-    return [];
-  }
+const repositoryTemplates = {
+  localMaven: () => [
+    '    localDefault {',
+    '        type = "localMaven"',
+    '    }',
+  ],
+  localDirectory: (
+    count: number,
+    publication: LocalDirectoryPublication,
+    projectRoot: string,
+  ) => {
+    const nameOrPlaceholder = publication.name ?? `localDirectory${count + 1}`;
+    return [
+      `    ${nameOrPlaceholder} {`,
+      '        type = "localDirectory"',
+      `        url = "file://${standardizePath(publication.path, projectRoot)}"`,
+      '    }',
+    ];
+  },
+  remotePublic: (
+    count: number,
+    publication: RemotePublicPublication,
+    _projectRoot: string,
+  ) => {
+    const nameOrPlaceholder = publication.name ?? `remotePublic${count + 1}`;
+    return [
+      `    ${nameOrPlaceholder} {`,
+      '        type = "remotePublic"',
+      `        url = "${publication.url}"`,
+      '    }',
+    ];
+  },
+  remotePrivate: (
+    count: number,
+    publication: RemotePrivateBasicPublication,
+    _projectRoot: string,
+  ) => {
+    const nameOrPlaceholder = publication.name ?? `remotePrivate${count + 1}`;
+    return [
+      `    ${nameOrPlaceholder} {`,
+      '        type = "remotePrivate"',
+      `        url = "${publication.url}"`,
+      `        username = "${publication.username}"`,
+      `        password = "${publication.password}"`,
+      '    }',
+    ];
+  },
+} as const;
 
-  return [
-    '        localDefault {',
-    '            type = "localMaven"',
-    '        }',
-  ];
-};
-
-export const localDirectoryRepository = (
+export const addRepository = (
   lines: string[],
   projectRoot: string,
-  publication: LocalDirectoryPublication,
+  publication: Publication,
 ) => {
-  const url = path.isAbsolute(publication.path)
-    ? publication.path
-    : path.join(projectRoot, publication.path);
-
-  if (publication.name) {
-    return [
-      `        ${publication.name} {`,
-      '            type = "localDirectory"',
-      `            url = "file://${url}"`,
-      '        }',
-    ];
+  switch (publication.type) {
+    case 'localMaven':
+      const isAlreadyAdded = countOccurences(lines, 'localDefault') > 0;
+      return isAlreadyAdded ? [] : repositoryTemplates.localMaven();
+    case 'localDirectory':
+    case 'remotePublic':
+    case 'remotePrivate':
+      const count = countOccurences(lines, `type = "${publication.type}"`);
+      return repositoryTemplates[publication.type](
+        count,
+        // @ts-expect-error - TypeScript can't narrow union in fall-through case
+        publication,
+        projectRoot,
+      );
+    default:
+      // @ts-expect-error - Non-existent, invalid publication type
+      console.warn(`Unknown publication type: "${publication.type}"`);
+      return [];
   }
-
-  const count = lines.filter(
-    (line) => line.includes('localDirectory') && line.includes('{'),
-  ).length;
-
-  return [
-    `        localDirectory${count + 1} {`,
-    '            type = "localDirectory"',
-    `            url = "file://${url}"`,
-    '        }',
-  ];
 };
 
-export const remotePublicRepository = (
-  lines: string[],
-  publication: RemotePublicPublication,
-) => {
-  if (publication.name) {
-    return [
-      `        ${publication.name} {`,
-      '            type = "remotePublic"',
-      `            url = "${publication.url}"`,
-      '        }',
-    ];
-  }
-
-  const count = lines.filter(
-    (line) => line.includes('remotePublic') && line.includes('{'),
-  ).length;
-
-  return [
-    `        remotePublic${count + 1} {`,
-    '            type = "remotePublic"',
-    `            url = "${publication.url}"`,
-  ];
+const countOccurences = (lines: string[], pattern: string) => {
+  return lines.filter((line) => line.includes(pattern)).length;
 };
 
-export const remotePrivateBasicRepository = (
-  lines: string[],
-  publication: RemotePrivateBasicPublication,
-) => {
-  if (publication.name) {
-    return [
-      `        ${publication.name} {`,
-      '            type = "remotePrivateBasic"',
-      `            url = "${publication.url}"`,
-      `            username = "${publication.username}"`,
-      `            password = "${publication.password}"`,
-      '        }',
-    ];
-  }
-
-  const count = lines.filter(
-    (line) => line.includes('remotePrivateBasic') && line.includes('{'),
-  ).length;
-
-  return [
-    `        remotePrivateBasic${count + 1} {`,
-    '            type = "remotePrivateBasic"',
-    `            url = "${publication.url}"`,
-    `            username = "${publication.username}"`,
-    `            password = "${publication.password}"`,
-    '        }',
-  ];
-};
-
-export const remotePrivateTokenRepository = (
-  lines: string[],
-  publication: RemotePrivateTokenPublication,
-) => {
-  if (publication.name) {
-    return [
-      `        ${publication.name} {`,
-      '            type = "remotePrivateToken"',
-      `            url = "${publication.url}"`,
-      `            token = "${publication.token}"`,
-      '        }',
-    ];
-  }
-
-  const count = lines.filter(
-    (line) => line.includes('remotePrivateToken') && line.includes('{'),
-  ).length;
-
-  return [
-    `        remotePrivateToken${count + 1} {`,
-    '            type = "remotePrivateToken"',
-    `            url = "${publication.url}"`,
-    `            token = "${publication.token}"`,
-    '        }',
-  ];
+const standardizePath = (url: string, projectRoot: string) => {
+  return path.isAbsolute(url) ? url : path.join(projectRoot, url);
 };

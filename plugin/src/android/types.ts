@@ -2,7 +2,7 @@ export type PublicationType =
   | 'localMaven'
   | 'localDirectory'
   | 'remotePublic'
-  | 'remotePrivateBasic'
+  | 'remotePrivate'
   | 'remotePrivateToken';
 
 export interface LocalMavenPublication {
@@ -22,25 +22,18 @@ export interface RemotePublicPublication {
 }
 
 export interface RemotePrivateBasicPublication {
-  type: 'remotePrivateBasic';
+  type: 'remotePrivate';
   name?: string;
   url: string;
   username: string;
   password: string;
 }
 
-export interface RemotePrivateTokenPublication {
-  type: 'remotePrivateToken';
-  name?: string;
-  url: string;
-  token: string;
-}
 export type Publication =
   | LocalMavenPublication
   | LocalDirectoryPublication
   | RemotePublicPublication
-  | RemotePrivateBasicPublication
-  | RemotePrivateTokenPublication;
+  | RemotePrivateBasicPublication;
 
 export interface PluginConfig {
   libraryName: string;

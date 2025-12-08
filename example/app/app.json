@@ -61,7 +61,7 @@
                 "url": "http://localhost:8081/repository/remote-public"
               },
               {
-                "type": "remotePrivateBasic",
+                "type": "remotePrivate",
                 "name": "remotePrivate",
                 "url": "http://localhost:8081/repository/remote-basic-auth",
                 "username": "user",

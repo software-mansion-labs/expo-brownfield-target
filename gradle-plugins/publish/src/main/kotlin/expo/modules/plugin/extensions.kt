@@ -110,7 +110,7 @@ internal fun PublishingExtension.setupRepository(publication: PublicationConfig,
         }
       }
     }
-    "remotePrivateBasic" -> {
+    "remotePrivate" -> {
       repositories { repo ->
         repo.maven { maven ->
           maven.name = publication.getName()
@@ -118,23 +118,6 @@ internal fun PublishingExtension.setupRepository(publication: PublicationConfig,
           maven.credentials { credentials ->
             credentials.username = publication.username.get()
             credentials.password = publication.password.get()
-          }
-          // TODO: Handle properly
-          maven.isAllowInsecureProtocol = true
-        }
-      }
-    }
-    "remotePrivateToken" -> {
-      repositories { repo ->
-        repo.maven { maven ->
-          maven.name = publication.getName()
-          maven.url = project.uri("${publication.url}")
-          maven.credentials(HttpHeaderCredentials::class.java) { credentials ->
-            credentials.name = "Authorization"
-            credentials.value = "Bearer ${publication.token.get()}"
-          }
-          maven.authentication { authentication ->
-            authentication.create("header", HttpHeaderAuthentication::class.java)
           }
           // TODO: Handle properly
           maven.isAllowInsecureProtocol = true

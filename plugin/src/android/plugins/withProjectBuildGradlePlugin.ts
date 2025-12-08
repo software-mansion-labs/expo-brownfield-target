@@ -2,11 +2,7 @@ import { type ConfigPlugin, withProjectBuildGradle } from 'expo/config-plugins';
 
 import type { PluginConfig, Publication } from '../types';
 import {
-  localDirectoryRepository,
-  localMavenRepository,
-  remotePrivateBasicRepository,
-  remotePrivateTokenRepository,
-  remotePublicRepository,
+  addRepository,
 } from '../utils';
 
 const EXPO_APPLY_STATEMENT = 'apply plugin: "expo-root-project"';
@@ -80,9 +76,9 @@ const addPublicationConfiguration = (
   lines = [
     ...lines,
     'expoBrownfieldPublishPlugin {',
-    '    publications {',
+    '  publications {',
     ...createPublicationConfigurations(publications, projectRoot),
-    '    }',
+    '  }',
     '}',
   ];
 
@@ -96,32 +92,7 @@ const createPublicationConfigurations = (
   const configs: string[] = [];
 
   publications.forEach((publication) => {
-    switch (publication.type) {
-      // Local Maven publication
-      case 'localMaven':
-        configs.push(...localMavenRepository(configs));
-        break;
-      // Local Directory publication
-      case 'localDirectory':
-        configs.push(
-          ...localDirectoryRepository(configs, projectRoot, publication),
-        );
-        break;
-      // Remote Public publication (without authentication)
-      case 'remotePublic':
-        configs.push(...remotePublicRepository(configs, publication));
-        break;
-      // Remote Private publication (basic authentication)
-      case 'remotePrivateBasic':
-        configs.push(...remotePrivateBasicRepository(configs, publication));
-        break;
-      // Remote Private publication (token-based authentication)
-      case 'remotePrivateToken':
-        configs.push(...remotePrivateTokenRepository(configs, publication));
-        break;
-      default:
-        break;
-    }
+    configs.push(...addRepository(configs, projectRoot, publication));
   });
 
   return configs;

@@ -34,10 +34,10 @@ abstract class PublicationConfig @Inject constructor(
  * expoBrownfieldPublishPlugin {
  *     publications {
  *         localDefault {
- *             type = PublicationType.localMaven
+ *             type = "localMaven"
  *         }
  *         private {
- *             type = PublicationType.remotePrivateBasic
+ *             type = "remotePrivate"
  *             url = "https://maven.example.com"
  *             username = "username"
  *             password = "password"
