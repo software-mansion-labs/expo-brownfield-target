@@ -148,7 +148,14 @@ internal fun PublishingExtension.createPublication(
   from: String,
   project: Project,
   libraryExtension: LibraryExtension,
+  isBrownfieldProject: Boolean = false
 ) {
+  val _artifactId = if (isBrownfieldProject) {
+    project.name
+  } else {
+    requireNotNull(libraryExtension.namespace)
+  }
+  
   publications.create(
     from,
     MavenPublication::class.java
@@ -156,7 +163,7 @@ internal fun PublishingExtension.createPublication(
     with(mavenPublication) {
       from(project.components.getByName(from))
       groupId = project.group.toString()
-      artifactId = requireNotNull(libraryExtension.namespace)
+      artifactId = _artifactId
       version = requireNotNull(libraryExtension.defaultConfig.versionName ?: "1.0.0")
 
       pom.withXml { xml ->

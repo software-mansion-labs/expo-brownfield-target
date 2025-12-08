@@ -3,6 +3,9 @@ import groovy.json.JsonSlurper
 import com.android.build.gradle.LibraryExtension
 import java.io.File
 
+// group = "com.pmleczek.expobrownfieldtargetexample"
+// version = "0.0.1"
+
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
@@ -51,24 +54,6 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-
-    // TODO: Maybe use 'default' instead of 'release'?
-    publishing {
-      multipleVariants("brownfieldDebug") {
-        includeBuildTypeValues("debug")
-        withSourcesJar()
-      }
-
-      multipleVariants("brownfieldRelease") {
-        includeBuildTypeValues("release")
-        withSourcesJar()
-      }
-
-      multipleVariants("brownfieldAll") {
-        includeBuildTypeValues("debug", "release")
-        withSourcesJar()
-      }
-    }
 }
 
 dependencies {
@@ -92,49 +77,4 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
-}
-
-publishing {
-    publications {
-        create<MavenPublication>("brownfieldDebug") {
-            // TODO: Hardocded values
-            groupId = "com.pmleczek.expobrownfieldtargetexample"
-            // TODO: Hardocded value
-            artifactId = "brownfield"
-            version = "0.0.1-local"
-            afterEvaluate {
-                from(components.getByName("brownfieldDebug"))
-            }
-        }
-
-        create<MavenPublication>("brownfieldRelease") {
-          // TODO: Hardocded values
-          groupId = "com.pmleczek.expobrownfieldtargetexample"
-          // TODO: Hardocded value
-          artifactId = "brownfield"
-          version = "0.0.1-local"
-          afterEvaluate {
-              from(components.getByName("brownfieldRelease"))
-          }
-        }
-
-        create<MavenPublication>("brownfieldAll") {
-          // TODO: Hardocded values
-          groupId = "com.pmleczek.expobrownfieldtargetexample"
-          // TODO: Hardocded value
-          artifactId = "brownfield"
-          version = "0.0.1-local"
-          afterEvaluate {
-            from(components.getByName("brownfieldAll"))
-          }
-        }
-    }
-
-    repositories {
-      // TODO: Hardocded value
-      maven {
-        name = "customLocal"
-        url = uri("file://${rootProject.projectDir.parentFile}/maven")
-      }
-    }
 }

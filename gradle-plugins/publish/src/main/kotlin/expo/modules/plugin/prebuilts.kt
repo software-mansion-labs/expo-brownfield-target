@@ -65,9 +65,10 @@ internal fun createPrebuiltsCopyTask(
     }
   
     val tasks = listOf(
-      "generateMetadataFileForBrownfieldDebugPublication",
-      "generateMetadataFileForBrownfieldReleasePublication",
-      "generateMetadataFileForBrownfieldAllPublication"
+      "build"
+      // "generateMetadataFileForBrownfieldDebugPublication",
+      // "generateMetadataFileForBrownfieldReleasePublication",
+      // "generateMetadataFileForBrownfieldAllPublication"
     )
     tasks.forEach { task ->
       brownfieldProject.tasks.named(task).configure {
@@ -91,7 +92,7 @@ internal fun createPrebuiltsPublishTask(
       val (_groupId, _artifactId, _version) = getPublicationInformation(project)
 
       publishingExtension.publications.create(
-        "publishPrebuilt${project.getCapitalizedName()}",
+        "publishPrebuilt${project.getCapitalizedName()}${publication.getName()}",
         MavenPublication::class.java
       ) { mavenPublication ->
         with(mavenPublication) {
@@ -139,9 +140,10 @@ internal fun createPrebuiltsPublishTask(
 
     // TODO: Deduplicate
     val tasks = listOf(
-      "generateMetadataFileForBrownfieldDebugPublication",
-      "generateMetadataFileForBrownfieldReleasePublication",
-      "generateMetadataFileForBrownfieldAllPublication"
+      "build"
+      // "generateMetadataFileForBrownfieldDebugPublication",
+      // "generateMetadataFileForBrownfieldReleasePublication",
+      // "generateMetadataFileForBrownfieldAllPublication"
     )
 
     tasks.forEach { task ->
@@ -152,10 +154,10 @@ internal fun createPrebuiltsPublishTask(
   }
 }
 
-internal fun wirePrebuiltsPublicationTask() {
-  val tasks = listOf(
-    "generateMetadataFileForBrownfieldDebugPublication",
-    "generateMetadataFileForBrownfieldReleasePublication",
-    "generateMetadataFileForBrownfieldAllPublication"
-  )
-}
+// internal fun wirePrebuiltsPublicationTask() {
+//   val tasks = listOf(
+//     "generateMetadataFileForBrownfieldDebugPublication",
+//     "generateMetadataFileForBrownfieldReleasePublication",
+//     "generateMetadataFileForBrownfieldAllPublication"
+//   )
+// }

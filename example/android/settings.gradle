@@ -15,7 +15,12 @@ dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         maven {
-            url '/Users/patrykmleczek/Desktop/expo-brownfield-target/example/app/maven'
+            url 'http://localhost:8081/repository/remote-basic-auth'
+            credentials {
+                username "user"
+                password "user1234"
+            }
+            allowInsecureProtocol true
         }
         google()
         mavenCentral()

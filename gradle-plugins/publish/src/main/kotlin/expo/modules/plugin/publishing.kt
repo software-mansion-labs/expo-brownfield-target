@@ -31,10 +31,14 @@ internal fun setupPublishing(project: Project) {
         return@afterEvaluate
       }
 
+      val isBrownfieldProject = project.name == "brownfield"
       listOf("brownfieldDebug", "brownfieldRelease", "brownfieldAll").forEach { variant ->
-        publicationExtension.createPublication(variant, project, libraryExtension)
+        publicationExtension.createPublication(variant, project, libraryExtension, isBrownfieldProject)
       }
-      removeReactNativeDependencyModule(project)
+      
+      if (!isBrownfieldProject) {
+        removeReactNativeDependencyModule(project)
+      }
       setupRepositories(publicationExtension, project)
     }
   }
