@@ -14,10 +14,10 @@ internal fun findAppProject(project: Project): Project {
   return appProject
 }
 
-internal fun getBrownfieldProject(rootProject: Project): Project {
-  val brownfieldProject = rootProject.project(":brownfield")
+internal fun getBrownfieldProject(rootProject: Project, libraryName: String): Project {
+  val brownfieldProject = rootProject.project(":${libraryName}")
   if (brownfieldProject == null) {
-    throw IllegalStateException("Brownfield project not found in the root project")
+    throw IllegalStateException("Brownfield project with name \"${libraryName}\" not found in the root project")
   }
 
   return brownfieldProject
@@ -48,4 +48,11 @@ internal fun getPublishingExtension(project: Project): PublishingExtension {
       "`publishing` extension not found. Please apply `maven-publish` plugin in root project."
     )
   return publishingExtension
+}
+
+internal fun getConfigExtension(project: Project): ExpoPublishExtension {
+  val configExtension = project.rootProject.extensions
+    .findByType(ExpoPublishExtension::class.java)
+    ?: throw IllegalStateException("`ExpoPublishExtension` not found or not configured. Please, make sure that `expoBrownfieldPublishPlugin` was called in `build.gradle`.")
+  return configExtension
 }

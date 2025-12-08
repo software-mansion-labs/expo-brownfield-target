@@ -25,6 +25,7 @@ const withProjectBuildGradlePlugin: ConfigPlugin<PluginConfig> = (
       lines,
       pluginConfig.publishing,
       pluginConfig.projectRoot,
+      pluginConfig.libraryName,
     );
     config.modResults.contents = lines.join('\n');
 
@@ -72,10 +73,12 @@ const addPublicationConfiguration = (
   lines: string[],
   publications: Publication[],
   projectRoot: string,
+  libraryName: string,
 ): string[] => {
   lines = [
     ...lines,
     'expoBrownfieldPublishPlugin {',
+    getBrownfieldLibraryConfiguration(libraryName),
     '  publications {',
     ...createPublicationConfigurations(publications, projectRoot),
     '  }',
@@ -95,6 +98,10 @@ const createPublicationConfigurations = (
   });
 
   return configs;
+};
+
+const getBrownfieldLibraryConfiguration = (libraryName: string): string => {
+  return `libraryName = "${libraryName}"`;
 };
 
 export default withProjectBuildGradlePlugin;

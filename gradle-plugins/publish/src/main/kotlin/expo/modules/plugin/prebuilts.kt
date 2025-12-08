@@ -12,41 +12,45 @@ import java.io.File
 
 internal fun setupPrebuiltsCopying(rootProject: Project) {
   rootProject.afterEvaluate {
-    val publications = rootProject.extensions
-    .findByType(ExpoPublishExtension::class.java)?.publications
-    ?: throw IllegalStateException("`ExpoPublishExtension` not found or not configured. Please, make sure that `expoBrownfieldPublishPlugin` was called in `build.gradle`.")
+    val configExtension = getConfigExtension(rootProject)
 
-    if (publications.isEmpty) {
+    if (configExtension.publications.isEmpty) {
       throw IllegalStateException(
         "`publications` is not set. Please, make sure that `publications { ... }` was called in the root `build.gradle` file."
       )
     }
 
-    publications.forEach { publication ->
-      createPrebuiltsPublicationTask(publication, rootProject)
+    configExtension.publications.forEach { publication ->
+      createPrebuiltsPublicationTask(
+        publication, 
+        rootProject, 
+        configExtension.libraryName.get()
+      )
     }
   }
 }
 
 internal fun createPrebuiltsPublicationTask(
   publication: PublicationConfig,
-  rootProject: Project
+  rootProject: Project,
+  libraryName: String
 ) {
   when (publication.type.get()) {
     "localDirectory", "localMaven" -> {
-      createPrebuiltsCopyTask(publication, rootProject)
+      createPrebuiltsCopyTask(publication, rootProject, libraryName)
     }
     else -> {
-      createPrebuiltsPublishTask(publication, rootProject)
+      createPrebuiltsPublishTask(publication, rootProject, libraryName)
     }
   }
 }
 
 internal fun createPrebuiltsCopyTask(
   publication: PublicationConfig,
-  rootProject: Project
+  rootProject: Project,
+  libraryName: String
 ) {
-  val brownfieldProject = getBrownfieldProject(rootProject)
+  val brownfieldProject = getBrownfieldProject(rootProject, libraryName)
   val projects = getExpoPrebuiltProjects(rootProject)
 
   brownfieldProject.afterEvaluate {
@@ -73,9 +77,10 @@ internal fun createPrebuiltsCopyTask(
 
 internal fun createPrebuiltsPublishTask(
   publication: PublicationConfig,
-  rootProject: Project
+  rootProject: Project,
+  libraryName: String
 ) {
-  val brownfieldProject = getBrownfieldProject(rootProject)
+  val brownfieldProject = getBrownfieldProject(rootProject, libraryName)
   val publishingExtension = getPublishingExtension(brownfieldProject)
   val projects = getExpoPrebuiltProjects(rootProject)
 

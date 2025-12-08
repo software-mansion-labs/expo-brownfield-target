@@ -23,6 +23,6 @@ class ExpoBrownfieldPublishPlugin : Plugin<Project> {
     val appProject = findAppProject(project)
     return project.extensions.findByType(AndroidComponentsExtension::class.java) == null ||
       project.extensions.findByType(LibraryExtension::class.java) == null ||
-      listOf("${appProject.name}").contains(project.name) // TODO: Simplify - remove the list
+      project == appProject
   }
 }

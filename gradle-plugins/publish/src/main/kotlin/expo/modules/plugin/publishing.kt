@@ -14,48 +14,45 @@ import groovy.json.JsonSlurper
 import groovy.json.JsonOutput
 
 internal fun setupPublishing(project: Project) {
+  val variants = listOf("brownfieldDebug", "brownfieldRelease", "brownfieldAll")
+  
   project.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl {
     val libraryExtension = project.extensions.getByType(LibraryExtension::class.java)
     libraryExtension.applyPublishingVariant()
 
     project.afterEvaluate {
+      val configExtension = getConfigExtension(project)
       val publicationExtension = project.extensions.getByType(PublishingExtension::class.java)
 
       if (
         publicationExtension == null ||
-        project.components.getByName("brownfieldRelease") == null ||
-        project.components.getByName("brownfieldDebug") == null ||
-        project.components.getByName("brownfieldAll") == null
+        variants.any { project.components.getByName(it) == null }
       ) {
-        println("Skipping ${project.name} as it can't be published due to missing publishing variants or publishing extension")
+        println("Skipping ${project.name} as it can't be published due to missing publishing variants (\"brownfieldDebug, etc.\") or publishing extension")
         return@afterEvaluate
       }
 
-      val isBrownfieldProject = project.name == "brownfield"
-      listOf("brownfieldDebug", "brownfieldRelease", "brownfieldAll").forEach { variant ->
+      val isBrownfieldProject = project.name == configExtension.libraryName.get()
+      variants.forEach { variant ->
         publicationExtension.createPublication(variant, project, libraryExtension, isBrownfieldProject)
       }
       
       if (!isBrownfieldProject) {
         removeReactNativeDependencyModule(project)
       }
-      setupRepositories(publicationExtension, project)
+      setupRepositories(publicationExtension, project, configExtension)
     }
   }
 }
 
-internal fun setupRepositories(publicationExtension: PublishingExtension, project: Project) {
-  val publications = project.rootProject.extensions
-    .findByType(ExpoPublishExtension::class.java)?.publications
-    ?: throw IllegalStateException("`ExpoPublishExtension` not found or not configured. Please, make sure that `expoBrownfieldPublishPlugin` was called in `build.gradle`.")
-
-  if (publications.isEmpty) {
+internal fun setupRepositories(publicationExtension: PublishingExtension, project: Project, configExtension: ExpoPublishExtension) {
+  if (configExtension.publications.isEmpty) {
     throw IllegalStateException(
       "`publications` is not set. Please, make sure that `publications { ... }` was called in the root `build.gradle` file."
     )
   }
 
-  publications.forEach { publication ->
+  configExtension.publications.forEach { publication ->
     publicationExtension.setupRepository(publication, project)
   }
 }
