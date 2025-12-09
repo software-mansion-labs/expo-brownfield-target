@@ -34,8 +34,6 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
 
   private fun setupSourceSets() {
     val main = libraryExtension.sourceSets.getByName("main")
-    // main.assets.srcDirs("$appBuildDir/generated/assets/createBundleReleaseJsAndAssets")
-    // main.res.srcDirs("$appBuildDir/generated/res/createBundleReleaseJsAndAssets")
     main.java.srcDirs("$moduleBuildDir/generated/autolinking/src/main/java")
 
     libraryExtension.sourceSets.getByName("release").apply {

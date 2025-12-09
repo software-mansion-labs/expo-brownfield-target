@@ -56,19 +56,5 @@ android {
 dependencies {
   api("com.facebook.react:react-android:0.81.5")
   api("com.facebook.react:hermes-android:0.81.5")
-
   compileOnly("androidx.fragment:fragment-ktx:1.6.1")
-
-  api("org.jetbrains.kotlin:kotlin-reflect:2.0.21")
-  api("androidx.browser:browser:1.6.0")
-  api("commons-io:commons-io:2.6")
-  api("com.github.bumptech.glide:glide:4.16.0")
-  api("com.github.bumptech.glide:avif-integration:4.16.0")
-  api("com.github.bumptech.glide:okhttp3-integration:4.11.0")
-  api("com.github.penfeizhou.android.animation:glide-plugin:3.0.5")
-  api("com.caverock:androidsvg-aar:1.4")
-
-  implementation("androidx.core:core-ktx:1.16.0")
-  implementation("androidx.appcompat:appcompat:1.7.1")
-  implementation("com.google.android.material:material:1.12.0")
 }
