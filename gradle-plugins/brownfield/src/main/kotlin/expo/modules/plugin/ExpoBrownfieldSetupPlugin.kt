@@ -34,12 +34,14 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
 
   private fun setupSourceSets() {
     val main = libraryExtension.sourceSets.getByName("main")
-    main.assets.srcDirs("$appBuildDir/generated/assets/createBundleReleaseJsAndAssets")
-    main.res.srcDirs("$appBuildDir/generated/res/createBundleReleaseJsAndAssets")
+    // main.assets.srcDirs("$appBuildDir/generated/assets/createBundleReleaseJsAndAssets")
+    // main.res.srcDirs("$appBuildDir/generated/res/createBundleReleaseJsAndAssets")
     main.java.srcDirs("$moduleBuildDir/generated/autolinking/src/main/java")
 
     libraryExtension.sourceSets.getByName("release").apply {
       jniLibs.srcDirs("libsRelease")
+      assets.srcDirs("$appBuildDir/generated/assets/createBundleReleaseJsAndAssets")
+      res.srcDirs("$appBuildDir/generated/res/createBundleReleaseJsAndAssets")
     }
   
     libraryExtension.sourceSets.getByName("debug").apply {
@@ -78,8 +80,7 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
       task.dependsOn("copyAutolinkingSources")
     }
 
-    // TODO: Release vs Debug?
-    brownfieldProject.tasks.named("preBuild").configure { task ->
+    brownfieldProject.tasks.named("preReleaseBuild").configure { task ->
       task.dependsOn(appProject.tasks.named("createBundleReleaseJsAndAssets"))
     }
   }

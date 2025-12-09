@@ -46,7 +46,6 @@ const repositoryTemplates = {
     _projectRoot: string,
   ) => {
     const nameOrPlaceholder = publication.name ?? `remotePrivate${count + 1}`;
-    console.log('nameOrPlaceholder', nameOrPlaceholder);
     return [
       `    ${nameOrPlaceholder} {`,
       '        type = "remotePrivate"',
@@ -72,8 +71,6 @@ export const addRepository = (
     case 'remotePublic':
     case 'remotePrivate':
       const count = countOccurences(lines, `type = "${publication.type}"`);
-      console.log('count', count);
-      console.log('publicationName', publication.name);
       return repositoryTemplates[publication.type](
         count,
         // @ts-expect-error - TypeScript can't narrow union in fall-through case

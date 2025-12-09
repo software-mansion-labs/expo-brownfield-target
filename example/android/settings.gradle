@@ -14,14 +14,14 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        maven {
-            url 'http://localhost:8081/repository/remote-basic-auth'
-            credentials {
-                username "user"
-                password "user1234"
-            }
-            allowInsecureProtocol true
-        }
+//        maven {
+//            url 'http://localhost:8081/repository/remote-basic-auth'
+//            credentials {
+//                username "user"
+//                password "user1234"
+//            }
+//            allowInsecureProtocol true
+//        }
 //        maven {
 //            url '/Users/patrykmleczek/Desktop/expo-brownfield-target/example/app/maven'
 //        }
@@ -30,7 +30,7 @@ dependencyResolutionManagement {
 //        }
         google()
         mavenCentral()
-//        mavenLocal()
+        mavenLocal()
     }
 }
 

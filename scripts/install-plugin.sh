@@ -24,5 +24,5 @@ npm install $TARBALL_PATH
 
 # Perform clean prebuild
 # TODO: Uncomment this after development/testing is done
-# rm -rf .expo android ios
-# yes | npx expo prebuild --clean
+rm -rf .expo android ios
+yes | npx expo prebuild --clean
