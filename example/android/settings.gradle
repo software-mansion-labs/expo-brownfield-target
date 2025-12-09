@@ -22,9 +22,15 @@ dependencyResolutionManagement {
             }
             allowInsecureProtocol true
         }
+//        maven {
+//            url '/Users/patrykmleczek/Desktop/expo-brownfield-target/example/app/maven'
+//        }
+//        maven {
+//            url 'http://localhost:8081/repository/remote-public'
+//        }
         google()
         mavenCentral()
-        mavenLocal()
+//        mavenLocal()
     }
 }
 

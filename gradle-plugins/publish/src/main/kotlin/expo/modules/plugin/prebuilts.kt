@@ -10,6 +10,11 @@ import expo.modules.plugin.ExpoGradleExtension
 import expo.modules.plugin.configuration.GradleProject
 import java.io.File
 
+/**
+ * Set up prebuilt artifact copying for the root project.
+ * 
+ * @param rootProject The root project to set up prebuilt artifact copying for.
+ */
 internal fun setupPrebuiltsCopying(rootProject: Project) {
   rootProject.afterEvaluate {
     val configExtension = getConfigExtension(rootProject)
@@ -20,23 +25,49 @@ internal fun setupPrebuiltsCopying(rootProject: Project) {
       )
     }
 
-    configExtension.publications.forEach { publication ->
-      createPrebuiltsPublicationTask(
-        publication, 
-        rootProject, 
-        configExtension.libraryName.get()
-      )
+    val requestedTasks = rootProject.gradle.startParameter.taskNames
+    val parsed = parsePublishInvocation(requestedTasks.firstOrNull() ?: throw IllegalStateException("No task specified"))
+    if (parsed == null) {
+      throw IllegalStateException("Invalid task name: ${requestedTasks.firstOrNull()}")
     }
+    val (variant, repo) = parsed
+
+    val publication = findPublicationWithRepository(configExtension.publications.toList(), repo)
+    if (publication == null) {
+      throw IllegalStateException("Publication not found for repository: $repo")
+    }
+    
+    createPrebuiltsPublicationTask(
+      publication, 
+      rootProject, 
+      configExtension.libraryName.get()
+    )
+
+    // configExtension.publications.forEach { publication ->
+    //   createPrebuiltsPublicationTask(
+    //     publication, 
+    //     rootProject, 
+    //     configExtension.libraryName.get()
+    //   )
+    // }
   }
 }
 
+/**
+ * Create a task to copy or publish prebuilt artifacts to the publication repository
+ * based on the publication type.
+ * 
+ * @param publication The publication configuration to use.
+ * @param rootProject The root project to use.
+ * @param libraryName The name of the brownfield library project.
+ */
 internal fun createPrebuiltsPublicationTask(
   publication: PublicationConfig,
   rootProject: Project,
   libraryName: String
 ) {
   when (publication.type.get()) {
-    "localDirectory", "localMaven" -> {
+    "localDirectory" -> {
       createPrebuiltsCopyTask(publication, rootProject, libraryName)
     }
     else -> {
@@ -45,6 +76,15 @@ internal fun createPrebuiltsPublicationTask(
   }
 }
 
+/**
+ * Create a task to copy prebuilt artifacts to the publication repository.
+ * 
+ * Used for localDirectory repositories where copying artifacts is sufficient.
+ * 
+ * @param publication The publication configuration to use.
+ * @param rootProject The root project to use.
+ * @param libraryName The name of the brownfield library project.
+ */
 internal fun createPrebuiltsCopyTask(
   publication: PublicationConfig,
   rootProject: Project,
@@ -61,20 +101,22 @@ internal fun createPrebuiltsCopyTask(
           }
       }
   
-      if (publication.type.get() == "localDirectory") {
-        task.into(rootProject.file("${publication.url.get()}"))
-      } else {
-        val m2Repo = File(System.getProperty("user.home"))
-          .resolve(".m2/repository")
-        task.into(m2Repo)
-      }
+      task.into(rootProject.file("${publication.url.get()}"))
     }
-  
+
     registerPrebuiltPublicationTask(brownfieldProject, task = copyTask)
   }
 }
 
-
+/**
+ * Create a task to publish prebuilt artifacts to the publication repository.
+ * 
+ * Used for remote and mavenLocal repositories which require publications.
+ * 
+ * @param publication The publication configuration to use.
+ * @param rootProject The root project to use.
+ * @param libraryName The name of the brownfield library project.
+ */
 internal fun createPrebuiltsPublishTask(
   publication: PublicationConfig,
   rootProject: Project,
@@ -127,20 +169,86 @@ internal fun createPrebuiltsPublishTask(
 
     publishingExtension.setupRepository(publication, brownfieldProject)
 
-    val publishTasks = publishingExtension.publications.toList()
-      .filter { it.name.startsWith("publishPrebuiltExpo") }
-      .map { pub ->
-        brownfieldProject.tasks.named(
-          "publish${pub.name.capitalized()}PublicationTo${publication.getName().capitalized()}Repository"
-        )
-      }
+    val publishTasks = if (publication.type.get() != "localMaven") {
+      publishingExtension.publications.toList()
+        .filter { it.name.startsWith("publishPrebuiltExpo") }
+        .map { pub ->
+          brownfieldProject.tasks.named(
+            "publish${pub.name.capitalized()}PublicationTo${publication.getName().capitalized()}Repository"
+          )
+        }
+    } else {
+      publishingExtension.publications.toList()
+        .filter { it.name.startsWith("publishPrebuiltExpo") }
+        .map { pub ->
+          brownfieldProject.tasks.named(
+            "publish${pub.name.capitalized()}PublicationToMavenLocal"
+          )
+        }
+    }
 
     registerPrebuiltPublicationTask(brownfieldProject, tasks = publishTasks)
   }
 }
 
-internal fun registerPrebuiltPublicationTask(brownfieldProject: Project, task: TaskProvider<Copy>? = null, tasks: List<TaskProvider<Task>> = listOf()) {
-  brownfieldProject.tasks.named("build").configure {
-    it.finalizedBy(task ?: tasks)
+/**
+ * Register one or more tasks to copy or publish prebuilt artifacts to the publication repository.
+ * 
+ * @param brownfieldProject The brownfield library project to register the task for.
+ * @param task The task to register (optional).
+ * @param tasks The list of tasks to register (optional).
+ */
+internal fun registerPrebuiltPublicationTask(
+    brownfieldProject: Project,
+    task: TaskProvider<Copy>? = null, 
+    tasks: List<TaskProvider<Task>> = listOf()
+  ) {
+    brownfieldProject.tasks.named("preBuild").configure {
+      it.finalizedBy(task ?: tasks)
+    }
+}
+
+/**
+ * Parse the name of the publish task to infer the variant and repository names.
+ * 
+ * @param name The name of the publish task.
+ * @return The variant and repository names, or null if the task name is invalid.
+ */
+internal fun parsePublishInvocation(name: String): Pair<String,String>? {
+  // TODO: Don't return unused variant?
+  val regex = Regex("publishBrownfield(\\w+)PublicationTo(\\w+)")
+  val m = regex.matchEntire(name) ?: return null
+  val variant = m.groupValues[1]
+  val repo = m.groupValues[2]
+  return variant to repo
+}
+
+/**
+ * Find the publication configuration which publishes to a specific repository.
+ * 
+ * Depends on the fact that we tie publication name with the repository name
+ * based on the publication configuration.
+ * 
+ * @param publications The list of publication configurations.
+ * @param repository The name of the repository to find the publication for.
+ * @return The publication configuration for the repository, or null if not found.
+ */
+internal fun findPublicationWithRepository(
+    publications: List<PublicationConfig>, 
+    repository: String
+  ): PublicationConfig? {
+  val repositoryName = repository
+    .removeSuffix("Repository")
+    .replaceFirstChar { it.lowercase() }
+  publications.forEach { publication ->
+   val publicationName = publication.getName()
+   if (
+    (publicationName == "localDefault" && repositoryName == "mavenLocal") ||
+    repositoryName == publicationName
+    ) {
+      return publication
+    }
   }
+
+  return null
 }

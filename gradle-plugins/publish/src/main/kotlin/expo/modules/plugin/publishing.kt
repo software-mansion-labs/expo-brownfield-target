@@ -13,6 +13,11 @@ import groovy.util.NodeList
 import groovy.json.JsonSlurper
 import groovy.json.JsonOutput
 
+/**
+ * Set up artifact publishing for the project.
+ * 
+ * @param project The project to set up publishing for.
+ */
 internal fun setupPublishing(project: Project) {
   val variants = listOf("brownfieldDebug", "brownfieldRelease", "brownfieldAll")
   
@@ -32,6 +37,7 @@ internal fun setupPublishing(project: Project) {
         return@afterEvaluate
       }
 
+      // TODO: Verify if this flag is needed?
       val isBrownfieldProject = project.name == configExtension.libraryName.get()
       variants.forEach { variant ->
         publicationExtension.createPublication(variant, project, libraryExtension, isBrownfieldProject)
@@ -45,7 +51,18 @@ internal fun setupPublishing(project: Project) {
   }
 }
 
-internal fun setupRepositories(publicationExtension: PublishingExtension, project: Project, configExtension: ExpoPublishExtension) {
+/**
+ * Set up repositories for the project.
+ * 
+ * @param publicationExtension The publishing extension to use.
+ * @param project The project to set up repositories for.
+ * @param configExtension The extension which specifies repository configuration.
+ */
+internal fun setupRepositories(
+    publicationExtension: PublishingExtension, 
+    project: Project, 
+    configExtension: ExpoPublishExtension
+  ) {
   if (configExtension.publications.isEmpty) {
     throw IllegalStateException(
       "`publications` is not set. Please, make sure that `publications { ... }` was called in the root `build.gradle` file."
@@ -57,6 +74,14 @@ internal fun setupRepositories(publicationExtension: PublishingExtension, projec
   }
 }
 
+/**
+ * Remove react-native dependency from the POM file.
+ * 
+ * com.facebook.react:react-native is deprecated and has to be stripped
+ * similarly to what React Native Gradle plugin does.
+ * 
+ * @param xml The XML provider to modify.
+ */
 internal fun removeReactNativeDependencyPom(xml: XmlProvider) {
   val dependencyNodes = xml.dependencyNodes()
   val toRemove = mutableListOf<Node>()
@@ -76,6 +101,14 @@ internal fun removeReactNativeDependencyPom(xml: XmlProvider) {
   }
 }
 
+/**
+ * Remove react-native dependency from the module.json file.
+ * 
+ * com.facebook.react:react-native is deprecated and has to be stripped
+ * similarly to what React Native Gradle plugin does.
+ * 
+ * @param project The project to remove react-native dependency from.
+ */
 internal fun removeReactNativeDependencyModule(project: Project) {
   val vairants = listOf("brownfieldDebug", "brownfieldRelease", "brownfieldAll")
   vairants.forEach { variant ->
@@ -83,6 +116,16 @@ internal fun removeReactNativeDependencyModule(project: Project) {
   }
 }
 
+/**
+ * Create and register a task to remove react-native dependency from the module.json file
+ * for specific publishing variant.
+ * 
+ * com.facebook.react:react-native is deprecated and has to be stripped
+ * similarly to what React Native Gradle plugin does.
+ * 
+ * @param project The project to remove react-native dependency from.
+ * @param variant The variant name.
+ */
 internal fun createRemoveReactNativeDependencyModuleTask(project: Project, variant: String) {
   val removeDependenciesTask = project.tasks.register("removeRNDependencyFromModuleFile$variant") { task ->
     task.doLast {

@@ -16,6 +16,11 @@ import expo.modules.plugin.configuration.GradleProject
 import java.io.File
 
 // SECTION: LibraryExtension
+/**
+ * Apply publishing variants to the library extension.
+ * 
+ * @return The library extension.
+ */
 internal fun LibraryExtension.applyPublishingVariant() {
   publishing { publishing ->
       publishing.multipleVariants("brownfieldDebug") {
@@ -37,6 +42,11 @@ internal fun LibraryExtension.applyPublishingVariant() {
 // END SECTION: LibraryExtension
 
 // SECTION: XmlProvider
+/**
+ * Get the dependencies node from the XML provider.
+ * 
+ * @return The dependencies node, or null if not found.
+ */
 internal fun XmlProvider.dependenciesNode(): Node? {
   val root = asNode() as? Node
   if (root == null) {
@@ -53,6 +63,11 @@ internal fun XmlProvider.dependenciesNode(): Node? {
   return dependenciesNode
 }
 
+/**
+ * Get the list of dependency nodes from the XML provider.
+ * 
+ * @return The list of dependency nodes, or empty list if not found.
+ */
 internal fun XmlProvider.dependencyNodes(): List<Node> {
   val dependenciesNode = dependenciesNode()
   if (dependenciesNode == null) {
@@ -64,6 +79,11 @@ internal fun XmlProvider.dependencyNodes(): List<Node> {
 // END SECTION: XmlProvider
 
 // SECTION: Node
+/**
+ * Get the groupId of the dependency.
+ * 
+ * @return The groupId of the dependency, or null if not found.
+ */
 internal fun Node.groupId(): String? {
   val groupIdNode = when (val g = this.get("groupId")) {
     is Node -> g
@@ -74,6 +94,11 @@ internal fun Node.groupId(): String? {
   return groupIdNode?.text()
 }
 
+/**
+ * Get the artifactId of the dependency.
+ * 
+ * @return The artifactId of the dependency, or null if not found.
+ */
 internal fun Node.artifactId(): String? {
   val artifactIdNode = when (val a = this.get("artifactId")) {
     is Node -> a
@@ -86,12 +111,23 @@ internal fun Node.artifactId(): String? {
 // END SECTION: Node
 
 // SECTION: String
+/**
+ * Capitalize the first letter of the string.
+ * 
+ * @return The capitalized string.
+ */
 internal fun String.capitalized(): String {
   return this.replaceFirstChar { it.uppercase() }
 }
 // END SECTION: String
 
 // SECTION: PublicationExtension
+/**
+ * Set up a repository for the publication.
+ * 
+ * @param publication The publication configuration to use.
+ * @param project The project to set up the repository for.
+ */
 internal fun PublishingExtension.setupRepository(publication: PublicationConfig, project: Project) {
   when(publication.type.get()) {
     "localMaven" -> {
@@ -124,6 +160,14 @@ internal fun PublishingExtension.setupRepository(publication: PublicationConfig,
   }
 }
 
+/**
+ * Create a publication for the project.
+ * 
+ * @param from The variant to create the publication for.
+ * @param project The project to create the publication for.
+ * @param libraryExtension The library extension to use.
+ * @param isBrownfieldProject Whether the project is a brownfield project.
+ */
 internal fun PublishingExtension.createPublication(
   from: String,
   project: Project,
@@ -155,10 +199,20 @@ internal fun PublishingExtension.createPublication(
 // END SECTION: PublicationExtension
 
 // SECTION: GradleProject
+/**
+ * Get the local Maven repository for the project.
+ * 
+ * @return The local Maven repository for the project.
+ */
 internal fun GradleProject.localMavenRepo(): File {
   return File(sourceDir).parentFile.resolve("local-maven-repo")
 }
 
+/**
+ * Get the capitalized name of the project.
+ * 
+ * @return The capitalized name of the project.
+ */
 internal fun GradleProject.getCapitalizedName(): String {
   return name
     .split('-')
