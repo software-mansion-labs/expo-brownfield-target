@@ -10,19 +10,12 @@ class ExpoBrownfieldPublishPlugin : Plugin<Project> {
     project.plugins.apply("maven-publish")
 
     project.afterEvaluate { project ->
-      if (shouldSkip(project)) {
-        println("Skipping ${project.name} as it is not a library project which should be published")
+      if (project.shouldBeSkipped()) {
+        println("Skipping ${project.name} as it is not a project which should be published")
         return@afterEvaluate
       }
 
       setupPublishing(project)     
     }
-  }
-
-  private fun shouldSkip(project: Project): Boolean {
-    val appProject = findAppProject(project)
-    return project.extensions.findByType(AndroidComponentsExtension::class.java) == null ||
-      project.extensions.findByType(LibraryExtension::class.java) == null ||
-      project == appProject
   }
 }

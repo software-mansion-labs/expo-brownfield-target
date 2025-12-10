@@ -27,8 +27,9 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
 
       setupSourceSets()
       setupCopyingAutolinking()
-      setupTasks()
-      setupCopyingNativeLibs()
+      setUpBundleTasksDependency()
+      setupCopyingNativeLibsForType("Release")
+      setupCopyingNativeLibsForType("Debug")
     }
   }
 
@@ -71,21 +72,16 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
         }
       }
     }
-  }
 
-  private fun setupTasks() {
     brownfieldProject.tasks.named("preBuild").configure { task ->
       task.dependsOn("copyAutolinkingSources")
     }
+  }
 
+  private fun setUpBundleTasksDependency() {
     brownfieldProject.tasks.named("preReleaseBuild").configure { task ->
       task.dependsOn(appProject.tasks.named("createBundleReleaseJsAndAssets"))
     }
-  }
-
-  private fun setupCopyingNativeLibs() {
-    setupCopyingNativeLibsForType("Release")
-    setupCopyingNativeLibsForType("Debug")
   }
 
   private fun setupCopyingNativeLibsForType(buildType: String) {

@@ -1,6 +1,7 @@
 package expo.modules.plugin
 
 import com.android.build.gradle.LibraryExtension
+import com.android.build.api.variant.AndroidComponentsExtension
 import groovy.util.Node
 import groovy.util.NodeList
 import org.gradle.api.Project
@@ -49,18 +50,12 @@ internal fun LibraryExtension.applyPublishingVariant() {
  */
 internal fun XmlProvider.dependenciesNode(): Node? {
   val root = asNode() as? Node
-  if (root == null) {
-    return null
-  }
+    ?: return null
+  val dependenciesNodeList = root.get("dependencies") as? NodeList
+    ?: return null
 
-  val dependenciesNodeList = root.get("dependencies") as? NodeList              
-  val dependenciesNode = if (dependenciesNodeList != null && dependenciesNodeList.size > 0) {
-    dependenciesNodeList[0] as? Node
-  } else {
-    null
-  }
-
-  return dependenciesNode
+  return dependenciesNodeList?.firstOrNull() as? Node
+    ?: null
 }
 
 /**
@@ -70,9 +65,7 @@ internal fun XmlProvider.dependenciesNode(): Node? {
  */
 internal fun XmlProvider.dependencyNodes(): List<Node> {
   val dependenciesNode = dependenciesNode()
-  if (dependenciesNode == null) {
-    return emptyList()
-  }
+    ?: return emptyList()
 
   return dependenciesNode.children().filterIsInstance<Node>()
 }
@@ -85,9 +78,9 @@ internal fun XmlProvider.dependencyNodes(): List<Node> {
  * @return The groupId of the dependency, or null if not found.
  */
 internal fun Node.groupId(): String? {
-  val groupIdNode = when (val g = this.get("groupId")) {
+  val groupIdNode = when (val g = get("groupId")) {
     is Node -> g
-    is NodeList -> if (g.size > 0) g[0] as? Node else null
+    is NodeList -> g.firstOrNull() as? Node ?: null
     else -> null
   }
 
@@ -100,9 +93,9 @@ internal fun Node.groupId(): String? {
  * @return The artifactId of the dependency, or null if not found.
  */
 internal fun Node.artifactId(): String? {
-  val artifactIdNode = when (val a = this.get("artifactId")) {
+  val artifactIdNode = when (val a = get("artifactId")) {
     is Node -> a
-    is NodeList -> if (a.size > 0) a[0] as? Node else null
+    is NodeList -> a.firstOrNull() as? Node ?: null
     else -> null
   }
 
@@ -220,3 +213,17 @@ internal fun GradleProject.getCapitalizedName(): String {
     .joinToString("")
 }
 // END SECTION: GradleProject
+
+// SECTION: Project
+/**
+ * Check if the project should be skipped.
+ * 
+ * @return true if the project should be skipped, false otherwise.
+ */
+internal fun Project.shouldBeSkipped(): Boolean {
+  val appProject = findAppProject(project)
+  return project.extensions.findByType(AndroidComponentsExtension::class.java) == null ||
+    project.extensions.findByType(LibraryExtension::class.java) == null ||
+    project == appProject
+}
+// END SECTION: Project
