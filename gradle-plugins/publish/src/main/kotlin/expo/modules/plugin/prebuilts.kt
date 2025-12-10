@@ -25,31 +25,16 @@ internal fun setupPrebuiltsCopying(rootProject: Project) {
       )
     }
 
-    val requestedTasks = rootProject.gradle.startParameter.taskNames
-    val parsed = parsePublishInvocation(requestedTasks.firstOrNull() ?: throw IllegalStateException("No task specified"))
-    if (parsed == null) {
-      throw IllegalStateException("Invalid task name: ${requestedTasks.firstOrNull()}")
-    }
-    val (variant, repo) = parsed
-
+    val taskName = rootProject.gradle.startParameter.taskNames
+      .firstOrNull() ?: throw IllegalStateException("Cannot find task in the Gradle start parameter")
+    val repo = parsePublishInvocation(taskName)
     val publication = findPublicationWithRepository(configExtension.publications.toList(), repo)
-    if (publication == null) {
-      throw IllegalStateException("Publication not found for repository: $repo")
-    }
     
     createPrebuiltsPublicationTask(
       publication, 
       rootProject, 
       configExtension.libraryName.get()
     )
-
-    // configExtension.publications.forEach { publication ->
-    //   createPrebuiltsPublicationTask(
-    //     publication, 
-    //     rootProject, 
-    //     configExtension.libraryName.get()
-    //   )
-    // }
   }
 }
 
@@ -209,18 +194,22 @@ internal fun registerPrebuiltPublicationTask(
 }
 
 /**
- * Parse the name of the publish task to infer the variant and repository names.
+ * Parse the name of the publish task to infer the repository name.
+ * 
+ * Throws an exception if the task name is invalid and can't be parsed.
  * 
  * @param name The name of the publish task.
- * @return The variant and repository names, or null if the task name is invalid.
+ * @return The repository name.
  */
-internal fun parsePublishInvocation(name: String): Pair<String,String>? {
-  // TODO: Don't return unused variant?
+internal fun parsePublishInvocation(name: String): String {
   val regex = Regex("publishBrownfield(\\w+)PublicationTo(\\w+)")
-  val m = regex.matchEntire(name) ?: return null
-  val variant = m.groupValues[1]
-  val repo = m.groupValues[2]
-  return variant to repo
+  val match = regex.matchEntire(name)
+
+  if (match == null || match.groupValues.size < 3) {
+    throw IllegalStateException("Cannot parse task: $name to infer the Maven repository")
+  }
+
+  return match.groupValues[2]
 }
 
 /**
@@ -229,26 +218,26 @@ internal fun parsePublishInvocation(name: String): Pair<String,String>? {
  * Depends on the fact that we tie publication name with the repository name
  * based on the publication configuration.
  * 
+ * Throws an exception if the publication is not found.
+ * 
  * @param publications The list of publication configurations.
  * @param repository The name of the repository to find the publication for.
- * @return The publication configuration for the repository, or null if not found.
+ * @return The publication configuration for the repository.
  */
 internal fun findPublicationWithRepository(
     publications: List<PublicationConfig>, 
     repository: String
-  ): PublicationConfig? {
+  ): PublicationConfig {
   val repositoryName = repository
     .removeSuffix("Repository")
     .replaceFirstChar { it.lowercase() }
-  publications.forEach { publication ->
-   val publicationName = publication.getName()
-   if (
+
+  val publication = publications.find { publication ->
+    val publicationName = publication.getName()
     (publicationName == "localDefault" && repositoryName == "mavenLocal") ||
     repositoryName == publicationName
-    ) {
-      return publication
-    }
   }
 
-  return null
+  return publication 
+    ?: throw IllegalStateException("Publication not found for repository: $repositoryName")
 }
