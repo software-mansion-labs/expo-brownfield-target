@@ -1,39 +1,36 @@
 package expo.modules.plugin
 
+import com.android.build.gradle.LibraryExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.Copy
-import com.android.build.gradle.LibraryExtension
 import java.io.File
 
 class ExpoBrownfieldSetupPlugin : Plugin<Project> {
-  private lateinit var appProject: Project
-  private lateinit var brownfieldProject: Project
-  private lateinit var libraryExtension: LibraryExtension
-  private lateinit var appBuildDir: File
-  private lateinit var moduleBuildDir: File
-
   override fun apply(project: Project) {
-    project.plugins.apply("maven-publish")
     project.evaluationDependsOn(":expo")
-
     project.afterEvaluate { project ->
-      brownfieldProject = project
-      libraryExtension = getLibraryExtension()
-      appProject = findAppProject()
-
-      appBuildDir = appProject.layout.buildDirectory.get().asFile
-      moduleBuildDir = brownfieldProject.layout.buildDirectory.get().asFile
-
-      setupSourceSets()
-      setupCopyingAutolinking()
-      setUpBundleTasksDependency()
-      setupCopyingNativeLibsForType("Release")
-      setupCopyingNativeLibsForType("Debug")
+      setupSourceSets(project)
+      setupCopyingAutolinking(project)
+      setupBundleDependencyForRelease(project)
+      setupCopyingNativeLibsForType(project, "Release")
+      setupCopyingNativeLibsForType(project, "Debug")
     }
   }
 
-  private fun setupSourceSets() {
+  /**
+   * Setup the source sets for the project.
+   *
+   * @param brownfieldProject The brownfield project to setup the source sets for.
+   */
+  private fun setupSourceSets(
+    brownfieldProject: Project
+  ) {
+    val libraryExtension = getLibraryExtension(brownfieldProject)
+    val appProject = findAppProject(brownfieldProject)
+    val appBuildDir = appProject.layout.buildDirectory.get().asFile
+    val moduleBuildDir = brownfieldProject.layout.buildDirectory.get().asFile
+
     val main = libraryExtension.sourceSets.getByName("main")
     main.java.srcDirs("$moduleBuildDir/generated/autolinking/src/main/java")
 
@@ -42,14 +39,29 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
       assets.srcDirs("$appBuildDir/generated/assets/createBundleReleaseJsAndAssets")
       res.srcDirs("$appBuildDir/generated/res/createBundleReleaseJsAndAssets")
     }
-  
+
     libraryExtension.sourceSets.getByName("debug").apply {
       jniLibs.srcDirs("libsDebug")
     }
   }
 
-  private fun setupCopyingAutolinking() {
+  /**
+   * Setup the copying of the autolinking sources.
+   * 
+   * The autolinking sources are copied from the app project to the brownfield project.
+   *
+   * @param brownfieldProject The brownfield project to setup the copying of the autolinking sources for.
+   */
+  private fun setupCopyingAutolinking(
+    brownfieldProject: Project
+  ) {
+    val libraryExtension = getLibraryExtension(brownfieldProject)
+    val appProject = findAppProject(brownfieldProject)
+
     val path = "generated/autolinking/src/main/java"
+    val appBuildDir = appProject.layout.buildDirectory.get().asFile
+    val moduleBuildDir = brownfieldProject.layout.buildDirectory.get().asFile
+
     brownfieldProject.tasks.register("copyAutolinkingSources", Copy::class.java) { task ->
       task.dependsOn(":${appProject.name}:generateAutolinkingPackageList")
       task.from("$appBuildDir/$path")
@@ -78,13 +90,36 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
     }
   }
 
-  private fun setUpBundleTasksDependency() {
+  /**
+   * Setup the dependency of the bundle tasks.
+   * 
+   * Needed to include bundle and assets in the release variant.
+   *
+   * @param brownfieldProject The brownfield project to setup the dependency of the bundle tasks for.
+   */
+  internal fun setupBundleDependencyForRelease(
+    brownfieldProject: Project
+  ) {
+    val appProject = findAppProject(brownfieldProject)
     brownfieldProject.tasks.named("preReleaseBuild").configure { task ->
-      task.dependsOn(appProject.tasks.named("createBundleReleaseJsAndAssets"))
+      task.dependsOn(":${appProject.name}:createBundleReleaseJsAndAssets")
     }
   }
 
-  private fun setupCopyingNativeLibsForType(buildType: String) {
+  /**
+   * Setup the copying of the native libraries for a given build type.
+   * 
+   * The native libraries are copied from the app project to the brownfield project
+   * 
+   * @param brownfieldProject The brownfield project to setup the copying of the native libraries for.
+   * @param buildType The build type to setup the copying of the native libraries for.
+   */
+  private fun setupCopyingNativeLibsForType(
+    brownfieldProject: Project,
+    buildType: String
+  ) {
+    val appProject = findAppProject(brownfieldProject)
+
     val mergeJniLibsTask = brownfieldProject.tasks.named("merge${buildType}JniLibFolders")
 
     val stripTaskPath = ":${appProject.name}:strip${buildType}DebugSymbols"
@@ -107,12 +142,14 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
     }
   }
 
-  private fun getLibraryExtension(): LibraryExtension {
-    return brownfieldProject.extensions.getByType(LibraryExtension::class.java)
-  }
-
-  private fun findAppProject(): Project {
-    return brownfieldProject.rootProject.subprojects.firstOrNull { it.plugins.hasPlugin("com.android.application") }
-      ?: throw IllegalStateException("App project not found in the root project")
+  /**
+   * Get the library extension for the project.
+   * 
+   * @param project The project to get the library extension for.
+   * @return The library extension for the project.
+   * @throws DomainObjectNotFoundException if the library extension is not found.
+   */
+  private fun getLibraryExtension(project: Project): LibraryExtension {
+    return project.extensions.getByType(LibraryExtension::class.java)
   }
 }
