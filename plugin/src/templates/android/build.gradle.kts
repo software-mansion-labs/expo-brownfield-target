@@ -1,8 +1,4 @@
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
-import com.android.build.gradle.LibraryExtension
-import java.io.File
-
+// TODO: Hardocded value/investigate
 // group = "com.pmleczek.expobrownfieldtargetexample"
 // version = "0.0.1"
 
@@ -18,8 +14,7 @@ react {
 }
 
 android {
-    // TODO: Hardocded value
-  namespace = "com.pmleczek.expobrownfieldtargetexample.brownfield"
+  namespace = "${{packageId}}"
   compileSdk = 36
 
   buildFeatures {

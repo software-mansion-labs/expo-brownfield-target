@@ -37,15 +37,16 @@ internal fun setupPublishing(project: Project) {
         return@afterEvaluate
       }
 
-      // TODO: Verify if this flag is needed?
-      val isBrownfieldProject = project.name == configExtension.libraryName.get()
       variants.forEach { variant ->
-        publicationExtension.createPublication(variant, project, libraryExtension, isBrownfieldProject)
+        publicationExtension.createPublication(
+          variant, 
+          project, 
+          libraryExtension, 
+          project.name == configExtension.libraryName.get()
+        )
       }
       
-      if (!isBrownfieldProject) {
-        removeReactNativeDependencyModule(project)
-      }
+      removeReactNativeDependencyModule(project)
       setupRepositories(publicationExtension, project, configExtension)
     }
   }

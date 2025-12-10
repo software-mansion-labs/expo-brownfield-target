@@ -63,10 +63,10 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
         val sourceFile = File(moduleBuildDir, "$path/com/facebook/react/ReactNativeApplicationEntryPoint.java")
         if (sourceFile.exists()) {
             var content = sourceFile.readText()
-            // TODO: Hardocded value
-            val nameSpace = "com.pmleczek.expobrownfieldtargetexample.brownfield"
+            val namespace = libraryExtension.namespace 
+              ?: throw IllegalStateException("Namespace hasn't been configured for the library extension")
             val regex = Regex("""\b[\w.]+(?=\.BuildConfig)""")
-            content = content.replace(regex, nameSpace)
+            content = content.replace(regex, namespace)
             sourceFile.writeText(content)
         }
       }
