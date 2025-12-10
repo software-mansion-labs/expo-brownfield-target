@@ -49,6 +49,7 @@ android {
 }
 
 dependencies {
+  // TODO: Don't use hardcoded RN and Hermes versions
   api("com.facebook.react:react-android:0.81.5")
   api("com.facebook.react:hermes-android:0.81.5")
   compileOnly("androidx.fragment:fragment-ktx:1.6.1")
