@@ -59,13 +59,16 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
     val appProject = findAppProject(brownfieldProject)
 
     val path = "generated/autolinking/src/main/java"
-    val appBuildDir = appProject.layout.buildDirectory.get().asFile
-    val moduleBuildDir = brownfieldProject.layout.buildDirectory.get().asFile
+    val appBuildDir = appProject.layout.buildDirectory
+    val moduleBuildDir = brownfieldProject.layout.buildDirectory
+
+    val fromDir = appBuildDir.dir(path)
+    val intoDir = moduleBuildDir.dir(path)
 
     brownfieldProject.tasks.register("copyAutolinkingSources", Copy::class.java) { task ->
       task.dependsOn(":${appProject.name}:generateAutolinkingPackageList")
-      task.from("$appBuildDir/$path")
-      task.into("$moduleBuildDir/$path")
+      task.from(fromDir)
+      task.into(intoDir)
 
       val rnEntryPointTask = appProject.tasks.findByName("generateReactNativeEntryPoint")
       if (rnEntryPointTask != null) {
@@ -73,7 +76,7 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
       }
 
       task.doLast {
-        val sourceFile = File(moduleBuildDir, "$path/com/facebook/react/ReactNativeApplicationEntryPoint.java")
+        val sourceFile = File(moduleBuildDir.get().asFile, "$path/com/facebook/react/ReactNativeApplicationEntryPoint.java")
         if (sourceFile.exists()) {
             var content = sourceFile.readText()
             val namespace = libraryExtension.namespace 
@@ -127,7 +130,6 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
 
     val fromDir = appProject.layout.buildDirectory
       .dir("intermediates/stripped_native_libs/${buildType.toLowerCase()}/strip${buildType}DebugSymbols/out/lib")
-      .get().asFile
     val intoDir = brownfieldProject.rootProject.file("${brownfieldProject.name}/libs${buildType}")
 
     val copyTask = brownfieldProject.tasks.register("copyAppModulesLib${buildType}", Copy::class.java) { task ->
