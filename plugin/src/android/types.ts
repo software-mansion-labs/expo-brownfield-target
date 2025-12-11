@@ -1,3 +1,7 @@
+export interface EnvValue {
+  variable: string;
+}
+
 export type PublicationType =
   | 'localMaven'
   | 'localDirectory'
@@ -25,10 +29,17 @@ export interface RemotePublicPublication {
 export interface RemotePrivateBasicPublication {
   type: 'remotePrivate';
   name?: string;
+  url: string | EnvValue;
+  username: string | EnvValue;
+  password: string | EnvValue;
+  allowInsecure?: boolean;
+}
+
+export interface RemotePrivatePublicationInternal
+  extends RemotePrivateBasicPublication {
   url: string;
   username: string;
   password: string;
-  allowInsecure?: boolean;
 }
 
 export type Publication =

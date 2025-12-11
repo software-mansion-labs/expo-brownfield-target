@@ -65,9 +65,15 @@
               },
               {
                 "type": "remotePrivate",
-                "url": "http://localhost:8081/repository/remote-basic-auth",
-                "username": "user",
-                "password": "user1234",
+                "url": {
+                  "variable": "MAVEN_REPO_URL"
+                },
+                "username": {
+                  "variable": "MAVEN_REPO_USERNAME"
+                },
+                "password": {
+                  "variable": "MAVEN_REPO_PASSWORD"
+                },
                 "allowInsecure": true
               }
             ]

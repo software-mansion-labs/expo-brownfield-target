@@ -4,6 +4,7 @@ import {
   LocalDirectoryPublication,
   Publication,
   RemotePrivateBasicPublication,
+  RemotePrivatePublicationInternal,
   RemotePublicPublication,
 } from '../types';
 
@@ -42,7 +43,7 @@ const repositoryTemplates = {
   },
   remotePrivate: (
     count: number,
-    publication: RemotePrivateBasicPublication,
+    publication: RemotePrivatePublicationInternal,
     _projectRoot: string,
   ) => {
     const nameOrPlaceholder = publication.name ?? `remotePrivate${count + 1}`;
@@ -71,6 +72,9 @@ export const addRepository = (
     case 'remotePublic':
     case 'remotePrivate':
       const count = countOccurences(lines, `type = "${publication.type}"`);
+      if (publication.type === 'remotePrivate') {
+        publication = resolveEnv(publication);
+      }
       return repositoryTemplates[publication.type](
         count,
         // @ts-expect-error - TypeScript can't narrow union in fall-through case
@@ -90,4 +94,36 @@ const countOccurences = (lines: string[], pattern: string) => {
 
 const standardizePath = (url: string, projectRoot: string) => {
   return path.isAbsolute(url) ? url : path.join(projectRoot, url);
+};
+
+const resolveEnv = (
+  publication: RemotePrivateBasicPublication,
+): RemotePrivatePublicationInternal => {
+  const publicationInternal = {
+    ...publication,
+  };
+
+  if (typeof publication.url === 'object') {
+    publicationInternal.url = findEnvOrThrow(publication.url.variable);
+  }
+
+  if (typeof publication.username === 'object') {
+    publicationInternal.username = findEnvOrThrow(publication.username.variable);
+  }
+
+  if (typeof publication.password === 'object') {
+    publicationInternal.password = findEnvOrThrow(publication.password.variable);
+  }
+
+  return publicationInternal as RemotePrivatePublicationInternal;
+};
+
+const findEnvOrThrow = (envVariable: string) => {
+  if (process.env[envVariable]) {
+    return process.env[envVariable];
+  }
+
+  throw new Error(
+    `Environment variable: "${envVariable}" used to define publishing configuration not found`,
+  );
 };
