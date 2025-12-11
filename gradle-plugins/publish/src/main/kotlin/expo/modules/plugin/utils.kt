@@ -10,18 +10,40 @@ import groovy.util.Node
 import org.gradle.api.XmlProvider
 import java.io.File
 
-internal fun findAppProject(project: Project): Project {
+/**
+ * Find the app project in the root project.
+ * 
+ * @param project The project to find the app project in.
+ * @return The app project.
+ * @throws IllegalStateException if the app project is not found.
+ */
+fun findAppProject(project: Project): Project {
   val appProject = project.rootProject.subprojects.firstOrNull { it.plugins.hasPlugin("com.android.application") }
     ?: throw IllegalStateException("App project not found in the root project")
   return appProject
 }
 
+/**
+ * Get the Brownfield project.
+ * 
+ * @param rootProject The root project to get the Brownfield project for.
+ * @param libraryName The name of the Brownfield project to get.
+ * @return The Brownfield project.
+ * @throws IllegalStateException if the Brownfield project is not found.
+ */
 internal fun getBrownfieldProject(rootProject: Project, libraryName: String): Project {
   val brownfieldProject = rootProject.project(":${libraryName}")
     ?: throw IllegalStateException("Brownfield project with name \"${libraryName}\" not found in the root project")
   return brownfieldProject
 }
 
+/**
+ * Get the Expo prebuilt projects.
+ * 
+ * @param rootProject The root project to get the Expo prebuilt projects for.
+ * @return The Expo prebuilt projects.
+ * @throws IllegalStateException if the Expo prebuilt projects are not found.
+ */
 internal fun getExpoPrebuiltProjects(rootProject: Project): List<GradleProject> {
   val gradleExtension = rootProject.gradle.extensions.findByType(ExpoGradleExtension::class.java)
       ?: throw IllegalStateException("`ExpoGradleExtension` not found. Please, make sure that `useExpoModules` was called in `settings.gradle`.")
@@ -31,12 +53,26 @@ internal fun getExpoPrebuiltProjects(rootProject: Project): List<GradleProject> 
   return projects
 }
 
+/**
+ * Get the publication information for the project.
+ * 
+ * @param gradleProject The project to get the publication information for.
+ * @return The publication information for the project.
+ * @throws IllegalStateException if the publication information is not found.
+ */
 internal fun getPublicationInformation(gradleProject: GradleProject): Triple<String, String, String> {
   val publication = gradleProject.publication
     ?: throw IllegalStateException("Publication information not found for project ${gradleProject.name}")
   return Triple(publication.groupId, publication.artifactId, publication.version)
 }
 
+/**
+ * Get the publishing extension.
+ * 
+ * @param project The project to get the publishing extension for.
+ * @return The publishing extension.
+ * @throws IllegalStateException if the publishing extension is not found.
+ */
 internal fun getPublishingExtension(project: Project): PublishingExtension {
   return project.extensions.findByName("publishing")
     as? org.gradle.api.publish.PublishingExtension
@@ -45,6 +81,13 @@ internal fun getPublishingExtension(project: Project): PublishingExtension {
     )
 }
 
+/**
+ * Get the Expo Publish extension.
+ * 
+ * @param project The project to get the Expo Publish extension for.
+ * @return The Expo Publish extension.
+ * @throws IllegalStateException if the Expo Publish extension is not found.
+ */
 internal fun getConfigExtension(project: Project): ExpoPublishExtension {
   return project.rootProject.extensions
     .findByType(ExpoPublishExtension::class.java)
