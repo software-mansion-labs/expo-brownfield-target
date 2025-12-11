@@ -5,13 +5,8 @@ import com.android.build.gradle.LibraryExtension
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.XmlProvider
 import org.gradle.api.tasks.Copy
 import java.io.File
-import groovy.util.Node
-import groovy.util.NodeList
-import groovy.json.JsonSlurper
-import groovy.json.JsonOutput
 
 /**
  * Set up artifact publishing for the project.
@@ -37,16 +32,20 @@ internal fun setupPublishing(project: Project) {
         return@afterEvaluate
       }
 
+      val rnVersion = if (project.name == configExtension.libraryName.get()) {
+        getReactNativeVersion(project)
+      } else { null }
+      
       variants.forEach { variant ->
         publicationExtension.createPublication(
           variant, 
           project, 
           libraryExtension, 
-          project.name == configExtension.libraryName.get()
+          rnVersion
         )
       }
       
-      removeReactNativeDependencyModule(project)
+      createModuleRelatedTasks(project, rnVersion)
       setupRepositories(publicationExtension, project, configExtension)
     }
   }
@@ -76,44 +75,26 @@ internal fun setupRepositories(
 }
 
 /**
- * Remove react-native dependency from the POM file.
+ * Create tasks to remove react-native dependency from the module.json file
+ * and set the version for react-android and hermes-android
+ * to match the React Native version of the npm project.
  * 
  * com.facebook.react:react-native is deprecated and has to be stripped
  * similarly to what React Native Gradle plugin does.
  * 
- * @param xml The XML provider to modify.
- */
-internal fun removeReactNativeDependencyPom(xml: XmlProvider) {
-  val dependencyNodes = xml.dependencyNodes()
-  val toRemove = mutableListOf<Node>()
-  
-  dependencyNodes.forEach { dependency ->
-    if (
-      dependency.groupId() == "com.facebook.react" && 
-      dependency.artifactId() == "react-native"
-    ) {
-      toRemove.add(dependency)
-    }
-  }
-  
-  val dependenciesNode = xml.dependenciesNode()
-  toRemove.forEach { dependency ->
-    dependenciesNode?.remove(dependency)
-  }
-}
-
-/**
- * Remove react-native dependency from the module.json file.
- * 
- * com.facebook.react:react-native is deprecated and has to be stripped
- * similarly to what React Native Gradle plugin does.
+ * Versions for com.facebook.react:react-android and com.facebook.react:hermes-android
+ * are set to the same version as the React Native version of the npm project.
  * 
  * @param project The project to remove react-native dependency from.
+ * @param isBrownfieldProject Whether the project is the brownfield project.
  */
-internal fun removeReactNativeDependencyModule(project: Project) {
+internal fun createModuleRelatedTasks(project: Project, rnVersion: String?) {
   val vairants = listOf("brownfieldDebug", "brownfieldRelease", "brownfieldAll")
   vairants.forEach { variant ->
     createRemoveReactNativeDependencyModuleTask(project, variant)
+    if (rnVersion != null) {
+      createSetReactNativeVersionModuleTask(project, variant, rnVersion)
+    }
   }
 }
 
@@ -127,39 +108,67 @@ internal fun removeReactNativeDependencyModule(project: Project) {
  * @param project The project to remove react-native dependency from.
  * @param variant The variant name.
  */
-internal fun createRemoveReactNativeDependencyModuleTask(project: Project, variant: String) {
+internal fun createRemoveReactNativeDependencyModuleTask(
+  project: Project, 
+  variant: String,
+) {
   val removeDependenciesTask = project.tasks.register("removeRNDependencyFromModuleFile$variant") { task ->
     task.doLast {
-      val moduleBuildDir = project.layout.buildDirectory.get().asFile
-      val moduleFile = File(moduleBuildDir, "publications/$variant/module.json")
-      if (!moduleFile.exists()) {
-        println("WARNING: Module file for project: ${project.name} does not exist at: ${moduleFile.path}")
+      val moduleFile = project.moduleFile(variant)
+      if (moduleFile == null) {
+        println("WARNING: Module file for project: ${project.name} does not exist")
         println("This file might not need to be modified. Continuing tasks...")
         return@doLast
       }
 
-      @Suppress("UNCHECKED_CAST")
-      val moduleJson = JsonSlurper().parseText(moduleFile.readText()) as? Map<String, Any>
-      if (moduleJson == null) {
-        println("WARNING: Failed to parse module file for project: ${project.name}")
-        println("This file might not need to be modified. Continuing tasks...")
-        return@doLast
-      }
-
-      @Suppress("UNCHECKED_CAST")
-      (moduleJson["variants"] as? List<MutableMap<String, Any>>)?.forEach { variant ->
-        @Suppress("UNCHECKED_CAST")
-        (variant["dependencies"] as? MutableList<MutableMap<String, Any>>)?.removeAll {
+      val moduleJson = parseModuleJson(moduleFile)
+      moduleJson?.dependencyLists()?.forEach { dependencies ->
+        dependencies.removeAll {
           it["group"] == "com.facebook.react" && it["module"] == "react-native"
         }
       }
 
-      moduleFile.writeText(JsonOutput.prettyPrint(JsonOutput.toJson(moduleJson)))
+      moduleJson?.writeJson(moduleFile)
     }
   }
 
-  val taskName = "generateMetadataFileFor${variant.capitalized()}Publication"
-  project.tasks.named(taskName).configure {
-    it.finalizedBy(removeDependenciesTask)
+  project.registerTaskAfterMetadataGeneration(removeDependenciesTask, variant)
+}
+
+/**
+ * Create and register a task to set the version for react-android and hermes-android
+ * to match the React Native version of the npm project.
+ * 
+ * @param project The project to set the version for react-android and hermes-android for.
+ * @param variant The variant name.
+ */
+internal fun createSetReactNativeVersionModuleTask(
+  project: Project,
+  variant: String, 
+  rnVersion: String
+) {
+  val setVersionTask = project.tasks.register("setRNDependencyVersionInModuleFile$variant") { task ->
+    task.doLast {
+      val moduleFile = project.moduleFile(variant)
+      if (moduleFile == null) {
+        println("WARNING: Module file for project: ${project.name} does not exist")
+        println("This file might not need to be modified. Continuing tasks...")
+        return@doLast
+      }
+
+      val moduleJson = parseModuleJson(moduleFile)
+      moduleJson?.dependencies()?.forEach { dependency ->
+        if (
+          dependency["group"] == "com.facebook.react" && 
+          (dependency["module"] == "react-android" || dependency["module"] == "hermes-android")
+        ) {
+          dependency["version"] = mapOf("requires" to rnVersion)
+        }
+      }
+
+      moduleJson?.writeJson(moduleFile)
+    }
   }
+
+  project.registerTaskAfterMetadataGeneration(setVersionTask, variant)
 }

@@ -13,8 +13,11 @@ import org.gradle.api.artifacts.repositories.PasswordCredentials
 import org.gradle.api.artifacts.repositories.AuthenticationSupported
 import org.gradle.authentication.http.HttpHeaderAuthentication
 import org.gradle.api.credentials.HttpHeaderCredentials
+import org.gradle.api.tasks.TaskProvider
+import org.gradle.api.Task
 import expo.modules.plugin.configuration.GradleProject
 import java.io.File
+import groovy.json.JsonOutput
 
 // SECTION: LibraryExtension
 /**
@@ -101,6 +104,23 @@ internal fun Node.artifactId(): String? {
 
   return artifactIdNode?.text()
 }
+
+/**
+ * Set the version of the dependency.
+ * 
+ * @param version The version to set.
+ */
+internal fun Node.setVersion(version: String) {
+  val versionNode = this.children().firstOrNull {
+    it is Node && it.name() == "version"
+  } as? Node
+
+  if (versionNode != null) {
+    versionNode.setValue(version)
+  } else {
+    this.appendNode("version", version)
+  }
+}
 // END SECTION: Node
 
 // SECTION: String
@@ -159,15 +179,15 @@ internal fun PublishingExtension.setupRepository(publication: PublicationConfig,
  * @param from The variant to create the publication for.
  * @param project The project to create the publication for.
  * @param libraryExtension The library extension to use.
- * @param isBrownfieldProject Whether the project is a brownfield project.
+ * @param rnVersion The React Native version to set (not null only for brownfield project).
  */
 internal fun PublishingExtension.createPublication(
   from: String,
   project: Project,
   libraryExtension: LibraryExtension,
-  isBrownfieldProject: Boolean = false
+  rnVersion: String?
 ) {
-  val _artifactId = if (isBrownfieldProject) {
+  val _artifactId = if (rnVersion != null) {
     project.name
   } else {
     requireNotNull(libraryExtension.namespace)
@@ -185,6 +205,9 @@ internal fun PublishingExtension.createPublication(
 
       pom.withXml { xml ->
         removeReactNativeDependencyPom(xml)
+        if (rnVersion != null) {
+          setReactNativeVersionPom(xml, rnVersion)
+        }
       }
     }
   }
@@ -226,4 +249,76 @@ internal fun Project.shouldBeSkipped(): Boolean {
     project.extensions.findByType(LibraryExtension::class.java) == null ||
     project == appProject
 }
+
+/**
+ * Register a task to be finalized by the metadata generation task.
+ * 
+ * @param task The task to register.
+ * @param variant The variant name.
+ */
+internal fun Project.registerTaskAfterMetadataGeneration(task: TaskProvider<Task>, variant: String) {
+  val taskName = "generateMetadataFileFor${variant.capitalized()}Publication"
+  tasks.named(taskName).configure {
+    it.finalizedBy(task)
+  }
+}
+
+/**
+ * Get the module file for the project.
+ * 
+ * @param variant The variant name.
+ * @return The module file for the project, or null if not found.
+ */
+internal fun Project.moduleFile(variant: String): File? {
+  val moduleBuildDir = layout.buildDirectory.get().asFile
+  return File(moduleBuildDir, "publications/$variant/module.json")
+    .takeIf { it.exists() }
+}
 // END SECTION: Project
+
+// SECTION: Map<String, Any>
+/**
+ * Get the variants from the module.json file.
+ * 
+ * @return The variants from the module.json file, or null if not found.
+ */
+internal fun Map<String, Any>.variants(): List<MutableMap<String, Any>> {
+  @Suppress("UNCHECKED_CAST")
+  return this["variants"] as? List<MutableMap<String, Any>>
+    ?: emptyList()
+}
+
+/**
+ * Get the dependencies from the module.json file.
+ * 
+ * @return The dependencies from the module.json file, or null if not found.
+ */
+internal fun Map<String, Any>.dependencies(): MutableList<MutableMap<String, Any>>? {
+  return variants().flatMap { it["dependencies"] as? MutableList<MutableMap<String, Any>> ?: emptyList() } 
+    as? MutableList<MutableMap<String, Any>>
+    ?: null
+}
+
+/**
+ * Get the dependency lists from the module.json file.
+ * 
+ * @return The dependency lists from the module.json file, or empty list if not found.
+ */
+internal fun Map<String, Any>.dependencyLists(): List<MutableList<MutableMap<String, Any>>> {
+  return variants().mapNotNull {
+    @Suppress("UNCHECKED_CAST")
+    it["dependencies"] as? MutableList<MutableMap<String, Any>>
+  }
+}
+
+/**
+ * Write the JSON to the file.
+ * 
+ * @param file The file to write the JSON to.
+ */
+internal fun Map<String, Any>.writeJson(
+  file: File
+) {
+  file.writeText(JsonOutput.prettyPrint(JsonOutput.toJson(this)))
+}
+// END SECTION: Map<String, Any>

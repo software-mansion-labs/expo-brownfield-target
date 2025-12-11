@@ -5,16 +5,38 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.Copy
 import java.io.File
+import groovy.json.JsonSlurper
 
 class ExpoBrownfieldSetupPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     project.evaluationDependsOn(":expo")
+    setupDependencySubstitution(project)
+
     project.afterEvaluate { project ->
       setupSourceSets(project)
       setupCopyingAutolinking(project)
       setupBundleDependencyForRelease(project)
       setupCopyingNativeLibsForType(project, "Release")
       setupCopyingNativeLibsForType(project, "Debug")
+    }
+  }
+
+  /**
+   * Setup the dependency substitution for `react-android` and `hermes-android`.
+   * 
+   * @param project The project to setup the dependency substitution for.
+   */
+  private fun setupDependencySubstitution(
+    project: Project
+  ) {
+    val rnVersion = getReactNativeVersion(project)
+    project.logger.lifecycle("Resolved React Native version: $rnVersion")
+
+    project.configurations.configureEach { config ->
+      config.resolutionStrategy {
+        it.force("com.facebook.react:react-android:$rnVersion")
+        it.force("com.facebook.react:hermes-android:$rnVersion")
+      }
     }
   }
 
@@ -152,5 +174,66 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
    */
   private fun getLibraryExtension(project: Project): LibraryExtension {
     return project.extensions.getByType(LibraryExtension::class.java)
+  }
+
+  /**
+   * Get the React Native version for the project.
+   * 
+   * @param project The project to get the React Native version for.
+   * @return The React Native version for the project.
+   * @throws IllegalStateException if the React Native version cannot be inferred.
+   */
+  private fun getReactNativeVersion(project: Project): String {
+    return try {
+      val process = ProcessBuilder(
+        "node",
+        "--print",
+        "require('react-native/package.json').version"
+      )
+        .directory(project.rootProject.projectDir)
+        .redirectErrorStream(true)
+        .start()
+  
+      val version = process.inputStream.bufferedReader().readText().trim()
+      process.waitFor()
+      
+      if (process.exitValue() == 0 && version.isNotEmpty()) {
+        return version
+      }
+
+      throw IllegalStateException("Failed to infer React Native version via Node")      
+    } catch (e: Exception) {
+      project.logger.warn("Failed to infer React Native version via Node")
+      project.logger.warn("Falling back to reading from package.json...")
+      return getReactNativeVersionFromPackageJson(project)
+    }
+  }
+
+  /**
+   * Get the React Native version from the package.json file.
+   * 
+   * This method is used as a fallback when the React Native version cannot be inferred via Node.
+   * 
+   * @param project The project to get the React Native version from the package.json file for.
+   * @return The React Native version from the package.json file.
+   * @throws IllegalStateException if the React Native version cannot be inferred from the package.json file.
+   */
+  private fun getReactNativeVersionFromPackageJson(project: Project): String {
+    val packageJson = project.rootProject.projectDir.parentFile.resolve("package.json")
+    if (!packageJson.exists()) {
+      throw IllegalStateException("package.json not found in ${project.rootProject.projectDir}")
+    }
+
+    val slurper = JsonSlurper()
+    val json = slurper.parse(packageJson) as Map<*, *>
+    
+    val dependencies = json["dependencies"] as? Map<*, *>
+    val devDependencies = json["devDependencies"] as? Map<*, *>
+    
+    val version = (dependencies?.get("react-native") as? String)
+      ?: (devDependencies?.get("react-native") as? String)
+      ?: throw IllegalStateException("react-native not found in package.json dependencies")
+    
+    return version.removePrefix("^").removePrefix("~")
   }
 }
