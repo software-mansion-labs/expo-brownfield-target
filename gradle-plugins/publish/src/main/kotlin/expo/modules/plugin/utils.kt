@@ -1,5 +1,6 @@
 package expo.modules.plugin
 
+import com.android.build.gradle.LibraryExtension
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import expo.modules.plugin.ExpoGradleExtension
@@ -168,4 +169,20 @@ internal fun setReactNativeVersionPom(xml: XmlProvider, rnVersion: String) {
       dependency.setVersion(rnVersion)
     }
   }
+}
+
+/**
+ * Get the version of the project.
+ * 
+ * @param project The project to get the version for.
+ * @param libraryExtension The library extension to get the version for.
+ * @return The version of the project.
+ */
+internal fun getVersion(project: Project, libraryExtension: LibraryExtension): String {
+  val versionName = libraryExtension.defaultConfig.versionName
+  if (versionName is String && versionName.isNotEmpty()) {
+    return versionName
+  }
+
+  return project.version as? String ?: "1.0.0"
 }

@@ -201,7 +201,7 @@ internal fun PublishingExtension.createPublication(
       from(project.components.getByName(from))
       groupId = project.group.toString()
       artifactId = _artifactId
-      version = requireNotNull(libraryExtension.defaultConfig.versionName ?: "1.0.0")
+      version = getVersion(project, libraryExtension)
 
       pom.withXml { xml ->
         removeReactNativeDependencyPom(xml)

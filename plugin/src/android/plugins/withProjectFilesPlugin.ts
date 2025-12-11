@@ -22,10 +22,6 @@ const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (
       pluginConfig.packagePath,
     );
 
-    // Define groupId by splitting packageId
-    const lastDotIndex = pluginConfig.package.lastIndexOf('.');
-    const groupId = pluginConfig.package.substring(0, lastDotIndex);
-
     // Create directory for the brownfield library sources
     // (and all intermediate directories)
     mkdir(brownfieldSourcesPath, true);
@@ -50,7 +46,8 @@ const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (
     });
     createFileFromTemplate('build.gradle.kts', brownfieldPath, {
       packageId: pluginConfig.package,
-      groupId,
+      groupId: pluginConfig.group,
+      version: pluginConfig.version,
     });
     createFileFromTemplate('proguard-rules.pro', brownfieldPath);
     createFileFromTemplate('consumer-rules.pro', brownfieldPath);

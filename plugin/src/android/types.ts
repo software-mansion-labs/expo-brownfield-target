@@ -38,16 +38,18 @@ export type Publication =
   | RemotePrivateBasicPublication;
 
 export interface PluginConfig {
+  group: string;
   libraryName: string;
   package: string;
   packagePath: string;
   projectRoot: string;
   publishing: Publication[];
+  version: string;
 }
 
 export type AndroidPluginProps = Pick<
   PluginConfig,
-  'libraryName' | 'package' | 'publishing'
+  'group' | 'libraryName' | 'package' | 'publishing' | 'version'
 >;
 
 export type PluginProps = Partial<AndroidPluginProps> | undefined;

@@ -1,13 +1,12 @@
-// TODO: Hardocded value/investigate
-// group = "com.pmleczek.expobrownfieldtargetexample"
-// version = "0.0.1"
-
 plugins {
   id("com.android.library")
   id("org.jetbrains.kotlin.android")
   id("com.facebook.react")
   id("expo-brownfield-setup")
 }
+
+group = "${{groupId}}"
+version = "${{version}}"
 
 react {
   autolinkLibrariesWithApp()
