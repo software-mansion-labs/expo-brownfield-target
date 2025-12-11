@@ -58,7 +58,7 @@ Note: `.brownfield-templates` supports both flat and per-platform directory stru
 | File | Default template | Description | Interpolated variable |
 | --- | --- | --- | --- |
 | AndroidManifest.xml | [AndroidManifest.xml](./plugin/templates/android/AndroidManifest.xml) | Simple Android manifest for the brownfield library | - |
-| build.gradle.kts | [build.gradle.kts](./plugin/templates/android/build.gradle.kts) | Gradle build settings for the brownfield library | `${{packageId}}`, `${{groupId}}`, `${{artifactId}}` |
+| build.gradle.kts | [build.gradle.kts](./plugin/templates/android/build.gradle.kts) | Gradle build settings for the brownfield library | `${{packageId}}`, `${{groupId}}`, `${{version}}` |
 | consumer-rules.pro | [consumer-rules.pro](./plugin/templates/android/consumer-rules.pro) | Empty consumer-rules file | - |
 | proguard-rules.pro | [proguard-rules.pro](./plugin/templates/android/proguard-rules.pro) | Default set of Proguard rules for the brownfield library | - |
 | ReactNativeHostManager.kt | [ReactNativeHostManager.kt](./plugin/templates/android/ReactNativeHostManager.kt) | React Native host manager used to initialize and intergrate RN app with the native app lifecycle | `${{packageId}}` |
@@ -72,7 +72,7 @@ Note: `.brownfield-templates` supports both flat and per-platform directory stru
 | --- | --- | --- |
 | packageId | Java/Kotlin package identifier. Aligned with the directory structure of the brownfield library | `com.swmansion.brownfield-project.brownfield` |
 | groupId | Package identifier stripped of the last component. Used for publihsing artifacts to Maven | `com.swmansion.brownfield-project` |
-| artifactId | Artifact identifier. Last component of the package identifier. Used for publihsing artifacts to Maven | `brownfield` |
+| version | Specifies version for the brownfield library. Used for publishing to Maven repositories |
 
 <a name="ios"></a>
 ## iOS
