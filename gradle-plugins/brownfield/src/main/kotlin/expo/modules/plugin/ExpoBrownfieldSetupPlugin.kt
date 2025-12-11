@@ -71,9 +71,8 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
       task.into(intoDir)
 
       val rnEntryPointTask = appProject.tasks.findByName("generateReactNativeEntryPoint")
-      if (rnEntryPointTask != null) {
-        task.dependsOn(rnEntryPointTask)
-      }
+        ?: throw IllegalStateException("`generateReactNativeEntryPoint` task not found")
+      task.dependsOn(rnEntryPointTask)
 
       task.doLast {
         val sourceFile = File(moduleBuildDir.get().asFile, "$path/com/facebook/react/ReactNativeApplicationEntryPoint.java")
