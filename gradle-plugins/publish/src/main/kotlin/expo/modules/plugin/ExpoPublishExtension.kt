@@ -32,6 +32,7 @@ abstract class PublicationConfig @Inject constructor(
  * This allows users to configure the plugin in their build script via a DSL block, e.g.:
  *
  * expoBrownfieldPublishPlugin {
+ *     libraryName = "brownfield"
  *     publications {
  *         localDefault {
  *             type = "localMaven"

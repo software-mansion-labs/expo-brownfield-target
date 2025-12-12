@@ -101,7 +101,7 @@ const createPublicationConfigurations = (
 };
 
 const getBrownfieldLibraryConfiguration = (libraryName: string): string => {
-  return `libraryName = "${libraryName}"`;
+  return `  libraryName = "${libraryName}"`;
 };
 
 export default withProjectBuildGradlePlugin;

@@ -5,7 +5,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.Copy
 import java.io.File
-import groovy.json.JsonSlurper
+import org.json.JSONObject
 
 class ExpoBrownfieldSetupPlugin : Plugin<Project> {
   override fun apply(project: Project) {
@@ -224,14 +224,14 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
       throw IllegalStateException("package.json not found in ${project.rootProject.projectDir}")
     }
 
-    val slurper = JsonSlurper()
-    val json = slurper.parse(packageJson) as Map<*, *>
+    val content = packageJson.readText()
+    val json = JSONObject(content)
     
-    val dependencies = json["dependencies"] as? Map<*, *>
-    val devDependencies = json["devDependencies"] as? Map<*, *>
+    val dependencies = json.optJSONObject("dependencies")
+    val devDependencies = json.optJSONObject("devDependencies")
     
-    val version = (dependencies?.get("react-native") as? String)
-      ?: (devDependencies?.get("react-native") as? String)
+    val version = dependencies?.optString("react-native")
+      ?: devDependencies?.optString("react-native")
       ?: throw IllegalStateException("react-native not found in package.json dependencies")
     
     return version.removePrefix("^").removePrefix("~")

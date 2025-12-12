@@ -6,6 +6,7 @@ import org.gradle.api.publish.PublishingExtension
 import expo.modules.plugin.ExpoGradleExtension
 import expo.modules.plugin.configuration.GradleProject
 import groovy.json.JsonSlurper
+import org.json.JSONObject
 import groovy.util.Node
 import org.gradle.api.XmlProvider
 import java.io.File
@@ -140,14 +141,14 @@ internal fun getReactNativeVersionFromPackageJson(project: Project): String {
     throw IllegalStateException("package.json not found in ${project.rootProject.projectDir}")
   }
 
-  val slurper = JsonSlurper()
-  val json = slurper.parse(packageJson) as Map<*, *>
+  val content = packageJson.readText()
+  val json = JSONObject(content)
   
-  val dependencies = json["dependencies"] as? Map<*, *>
-  val devDependencies = json["devDependencies"] as? Map<*, *>
+  val dependencies = json.optJSONObject("dependencies")
+  val devDependencies = json.optJSONObject("devDependencies")
   
-  val version = (dependencies?.get("react-native") as? String)
-    ?: (devDependencies?.get("react-native") as? String)
+  val version = dependencies?.optString("react-native")
+    ?: devDependencies?.optString("react-native")
     ?: throw IllegalStateException("react-native not found in package.json dependencies")
   
   return version.removePrefix("^").removePrefix("~")
