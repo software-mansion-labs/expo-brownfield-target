@@ -214,10 +214,53 @@ plugins {
 }
 ```
 
-<a name="android-plugins"></a>
+The plugins will be compiled along with the Android project.
+
+<a name="android-building"></a>
 ### Building
 
-TODO: Continue
+#### Tasks
+
+The tasks that can be used to build and publish artifacts follow the below name convention:
+
+```
+publishBrownfield(All|Debug|Release)PublicationTo<Repository name>
+```
+
+Where `All`, `Debug` and `Release` specifies if both or only debug or release variants should be published. Repository name is based on the block names passed in `build.gradle` in PascalCase convention (first character of each word capitalized) and suffixed with `Repository`. For example:
+
+TODO: Write about exception for Maven Local?
+
+```bash
+# For the default Maven repository
+publishBrownfieldAllPublicationToMavenLocal
+# For repository named: `customLocal`
+publishBrownfieldDebugPublicationToCustomLocalRepository
+```
+
+You can view all available tasks by running:
+
+```bash
+./gradlew tasks --all
+```
+
+Optionally you can filter out only the tasks that follow the above convention (if your library name is different pass it instead of `brownfield` in the below command):
+
+```bash
+./gradlew tasks --all | grep -E 'brownfield:publishBrownfield.*PublicationTo'
+```
+
+#### Building
+
+You can run the tasks described aboce to invoke the build and publishing process for the brownfield library and all of its dependencies:
+
+```bash
+./gradlew publishBrownfieldAllPublicationToCustomLocalRepository
+```
+
+You can also invoke them using the CLI:
+
+TODO: Add sub-section about the CLI
 
 <!-- END SECTION: ANDROID -->
 
@@ -241,7 +284,7 @@ After confirming with `Finish` a new directory named the same as the new target 
 <a name="#ios-files"></a>
 ### Files
 
-Content of the files can be copied from the default templates used by the plugin: [templates/ios](./plugin/templates/ios/). Please keep in mind that some of those templates contain interplation placeholders (in format of `${{variableName}}`) which should be replaced with values suitable for your project
+Content of the files can be copied from the default templates used by the plugin: [templates/ios](./plugin/templates/ios/). Please keep in mind that some of those templates contain interplation placeholders (in format of `${{variableName}}`) which should be replaced with values suitable for your project. For example:
 
 ```xml
 <key>CFBundleName</key>
@@ -249,15 +292,19 @@ Content of the files can be copied from the default templates used by the plugin
 <key>CFBundlePackageType</key>
 ```
 
-You can find full reference on values used by each template and the variable interpolation in [TEMPLATES.md](./TEMPLATES.md)
+You can find full reference on values used by each template and the variable interpolation in [TEMPLATES.md](./TEMPLATES.md).
 
 Add the following files to the framework directory:
 
 - `ExpoApp.swift`
 - `Info.plist`
+- `Messaging.swift` (if you want to include support for the bi-directional messaging API)
 - `ReactNativeView.swift` (if you want to include SwiftUI support)
+- `ReactNativeViewController.swift` (if you want to include UIKit view controller)
 
-Copy the contents of `Template.entitlements` file to a new file named `<target-name>` (e.g. `MyBrownfield.entitlements`) at the framework directory
+Copy the contents of `Template.entitlements` file to a new file named `<target-name>` (e.g. `MyBrownfield.entitlements`) at the framework directory.
+
+The `patch-expo.sh` template shouldn't be copied anywhere and will come into use later to define a run script phase for patching `ExpoModulesProvider.swift` file.
 
 <a name="#ios-config"></a>
 ### Build configuration
@@ -271,9 +318,9 @@ In the project view select the `Build Settings` tab and make sure you're editing
 | Skip Install | No |
 | Enable Module Verifier | No |
 
-Then navigate to the `Build Phases` of the app target and copy the contents of the `Bundle React Native code and images` step. Create a new `Run Script Phase` in the brownfield target and paste the copied contents to it. Place it after the `Copy Bundle Resources` step
+Then navigate to the `Build Phases` of the app target and copy the contents of the `Bundle React Native code and images` step. Create a new `Run Script Phase` in the brownfield target and paste the copied contents to it. Place it after the `Copy Bundle Resources` step.
 
-Make sure that to also copy the `Input Files` values of the phase
+Make sure that to also copy the `Input Files` values of the phase.
 
 Add the framework target to the app target in the `Podfile`:
 
@@ -286,7 +333,7 @@ target '<app-target>' do
 end
 ```
 
-Add another `Run Script Phase` to the brownfield target:
+Add another `Run Script Phase` to the brownfield target (based on the `patch-expo.sh` template):
 
 ```sh
 FILE="${SRCROOT}/Pods/Target Support Files/Pods-${{projectName}}-${{targetName}}/ExpoModulesProvider.swift"
@@ -302,7 +349,7 @@ if [ -f "$FILE" ]; then
 fi
 ```
 
-Make sure to replace the variable placeholders (`${{projectName}}`, `${{targetName}}`) with the values  from your project. Place the value after a step named `[Expo] Configure project`
+Make sure to replace the variable placeholders (`${{projectName}}`, `${{targetName}}`) with the values suitable for your project. Place the value after a step named `[Expo] Configure project`
 
 <a name="#ios-xcf"></a>
 ### Building XCFramework 
@@ -314,14 +361,18 @@ rm -rf Pods Podfile.lock
 USE_FRAMEWORKS=static pod install
 ```
 
-The XCFramework can be built manually - please use [build-xcframework.sh](./example/scripts/build-xcframework.sh) as the reference or with the CLI:
+The XCFramework can be built manually - please use [build-xcframework.sh](./example/scripts/build-xcframework.sh) as the reference.
+
+It can also be built using the CLI:
 
 ```
 npx expo-brownfield-target build-ios
 ```
 
-Please see [README.md](./README.md) for full CLI reference
+Please see [README.md](./README.md) for the full reference for the CLI.
 
-When the build finishes an XCFramework named `<target-name>.xcframework` should be created. Make sure to copy the `hermes.xcframework` file from Pods (`Pods/hermes-engine/destroot/Library/Frameworks/universal/hermes.xcframework`) and ship it/include it in the Swift Package along with the brownfield XCFramework
+When the build finishes an XCFramework named `<target-name>.xcframework` should be created. Make sure to copy the `hermes.xcframework` file from Pods (`Pods/hermes-engine/destroot/Library/Frameworks/universal/hermes.xcframework`) and ship it/include it in the Swift Package along with the brownfield XCFramework.
+
+For examples of usage in the native apps and reference for the available APIs please see [README.md](./README.md).
 
 <!-- END SECTION: IOS -->
