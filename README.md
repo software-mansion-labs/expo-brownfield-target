@@ -48,9 +48,9 @@ Brownfield approach enables integrating React Native apps into native Android an
 - Enables easy integration with the Expo project via config plugin interface
 - Enables building the brownfield as an XCFramework or an AAR which simplifies usage in the native projects
 - Customizable through file templates and the config plugin options
-- Supports navigating out of React Native view
+- Supports navigating out of React Native view and communication between the brownfield and native apps
 
-**Note:** Our goal is maximum customizability, so if you feel like anything else needs to be customizable, please feel free to cut an issue.
+**Note:** Our goal is maximum customizability, so if you feel like anything else needs to be customizable, please feel free to cut an issue or a discussion.
 
 <a name="compat"></a>
 ## Platform & Expo SDK compatibility
@@ -687,7 +687,137 @@ npx expo-brownfield-target build-ios [options]
 | Property | Description | Default value |
 | --- | --- | --- |
 | `library` | Name of the Android library used for the brownfield | `brownfield` |
-| `package` | Package identifier for the brownfield library | `android.package` appended with `.brownfield` or `com.example.brownfield` if `android.package` is undefined  |
+| `package` | Package identifier for the brownfield library | `android.package` appended with `.brownfield` or `com.example.brownfield` if `android.package` is undefined |
+| `group` | Group property for the brownfield library | Resolved value of the `package` stripped of the last component |
+| `version` | Version of the brownfield library | 1.0.0 |
+| `publishing` | An array of Maven publishing configurations. For more detailed reference see the next section | `[{ type: 'localMaven' }]` |
+
+#### Publishing configuration
+
+`publishing` property accepts an array of zero or more repository configuratons of the following types. Each type of repository configuration may be used more than once (though duplicate entries for Maven Local will be merged).
+
+- Maven Local
+
+  Default `mavenLocal()` repository.
+
+  **Type:**
+
+  ```ts
+  type LocalMavenPublication = {
+    type: 'localMaven';
+  }
+  ```
+
+  **Example:**
+
+  ```json
+  {
+    "type": "localDirectory"
+  }
+  ```
+
+- Custom local directory
+
+  A custom directory path. Can be an absolute path or a relative path (resolved against the Expo project root).
+
+  Name property is optional and is used to define the publishing Gradle tasks. If not passed a default name suffixed with a number will be automatically generated: `localDirectory1`, `localDirectory2`, ...
+
+  **Type:**
+
+  ```ts
+  type LocalDirectoryPublication = {
+    type: 'localDirectory';
+    name?: string;
+    path: string;
+  }
+  ```
+
+  **Example:**
+
+  ```json
+  {
+    "type": "localDirectory",
+    "name": "customLocal",
+    "path": "./maven"
+  }
+  ```
+
+- Public remote repository
+
+  A remote repository without authentication.
+
+  Name property is optional and is used to define the publishing Gradle tasks. If not passed a default name suffixed with a number will be automatically generated: `remotePublic1`, `remotePublic2`, ...
+
+  Accepts optional `allowInsecure` setting which translates to Maven's [isAllowInsecureProtocol](https://docs.gradle.org/current/kotlin-dsl/gradle/org.gradle.api.artifacts.repositories/-url-artifact-repository/is-allow-insecure-protocol.html) and specifies whether it is possible to communicate with a repository via an insecure connection. 
+
+  **Type:**
+
+  ```ts
+  type RemotePublicPublication = {
+    type: 'remotePublic';
+    name?: string;
+    url: string;
+    allowInsecure?: boolean;
+  }
+  ```
+
+  **Example:**
+
+  ```json
+  {
+    "type": "remotePublic",
+    "name": "remotePublic",
+    "url": "http://localhost:8081/repository/remote-public",
+    "allowInsecure": true
+  }
+  ```
+
+- Private remote repository
+
+  A remote repository with password-based authentication.
+
+  Name property is optional and is used to define the publishing Gradle tasks. If not passed a default name suffixed with a number will be automatically generated: `remotePrivate1`, `remotePrivate2`, ...
+
+  Username, password and the URL can be either passed as simple strings or as objects with `variable` property if you want them to be read from the environment variables (which you can pass e.g. by providing an `.env` file at the root of the Expo project).
+
+  > [!WARNING]  
+  > If the values are read from environment variables they will be inserted into android project's `build.gradle` file on prebuild. Watch out to not commit the prebuilt native project to GitHub.
+
+  Accepts optional `allowInsecure` setting which translates to Maven's [isAllowInsecureProtocol](https://docs.gradle.org/current/kotlin-dsl/gradle/org.gradle.api.artifacts.repositories/-url-artifact-repository/is-allow-insecure-protocol.html) and specifies whether it is possible to communicate with a repository via an insecure connection. 
+
+  **Type:**
+
+  ```ts
+  type EnvValue = {
+    variable: string;
+  }
+  
+  type RemotePrivateBasicPublication = {
+    type: 'remotePrivate';
+    name?: string;
+    url: string | EnvValue;
+    username: string | EnvValue;
+    password: string | EnvValue;
+    allowInsecure?: boolean;
+  }
+  ```
+
+  **Example:**
+
+  ```json
+  {
+    "type": "remotePrivate",
+    "url": {
+      "variable": "MAVEN_REPO_URL"
+    },
+    "username": {
+      "variable": "MAVEN_REPO_USERNAME"
+    },
+    "password": {
+      "variable": "MAVEN_REPO_PASSWORD"
+    },
+  }
+  ```
 
 <a name="configuration-ios"></a>
 ### iOS
