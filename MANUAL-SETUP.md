@@ -3,18 +3,13 @@
 All steps performed by the plugin can be also perfomed manually (e.g. in project that don't use Continuous Native Generation). The below sections cover manual set up of brownfield for iOS and Android (either using **Android Studio** or manually)
 
 ### Table of contents
-- [Android (Android Studio)](#android-android-studio)
-  - [Open the project](#android-as-open)
-  - [Library setup](#android-as-lib)
-  - [Project structure](#android-as-structure)
-  - [Files](#android-as-files)
-  - [react-native-brownfield plugin](#android-as-plugin)
-  - [Building AAR](#android-as-building)
-- [Android (Manually)](#android-manually)
-  - [Project structure](#android-m-structure)
-  - [Files](#android-m-files)
-  - [react-native-brownfield-plugin](#android-m-plugin)
-  - [Building AAR](#android-m-building)
+- [Android](#android)
+  - [Library setup](#android-library)
+    - [Manual setup](#android-lib-ms)
+    - [Android Studio](#android-lib-as)
+  - [Files](#android-files)
+  - [Plugins](#android-plugins)
+  - [Building](#android-building)
 - [iOS](#ios)
   - [Open the project](#ios-open)
   - [Framework setup](#ios-framework)
@@ -22,26 +17,67 @@ All steps performed by the plugin can be also perfomed manually (e.g. in project
   - [Build configuration](#ios-config)
   - [Building XCFramework](#ios-xcf)
 
-<!-- SECTION: ANDROID STUDIO -->
-<a name="#android-android-studio"></a>
-## Android (Android Studio)
+<!-- SECTION: ANDROID -->
 
-<a name="#android-as-open"></a>
-### Open the project
+<a name="android"></a>
+## Android
 
-Open the `android/` directory of your Expo project with **Android Studio**
-
-<a name="#android-as-lib"></a>
+<a name="android-library"></a>
 ### Library setup
 
-Select `File` > `New` > `New Module...` in the menu. Select `Android Library` template and configure the properties (**Module name**, **Package name**, etc.) if the default values do not meet your project's requirements
+<a name="android-lib-ms"></a>
+#### Manual setup
 
-<a name="#android-as-structure"></a>
-### Project structure
+Create the directory for the brownfield library in the `android/` directory of your Expo project:
 
-**Android Studio** should automatically set up the directory structure and create some of the files:
+```bash
+android/
+|_ .gradle/
+|_ app/  # app project
+|_ brownfield/  # brownfield project
+|_ ...
+```
 
-```cpp
+Be sure to include the newly added library in the root `settings.gradle` file:
+
+```groovy
+include ':app'
+includeBuild(expoAutolinking.reactNativeGradlePlugin)
+include ':brownfield'
+```
+
+And to set up the correct directory structure for the library:
+
+```bash
+android/
+|_ .gradle/
+|_ app/  # app project
+|_ brownfield/  # brownfield project
+  |_ src/main/  # main directory of the library
+    |_ java/com/swmansion/brownfield/  # sources of the library
+|_ ...
+```
+
+<br />
+
+---
+
+<a name="android-lib-as"></a>
+#### Android Studio:
+
+Select `File > New > New Module...` in the menu. Select `Android Library` template and configure the properties (Module name, Package name, etc.) if the default values do not meet your project's requirements.
+
+Android Studio should automatically add your project to the root `settings.gradle` file:
+
+```groovy
+include ':app'
+includeBuild(expoAutolinking.reactNativeGradlePlugin)
+include ':brownfield'
+```
+
+And create some of the files and directories:
+
+```bash
 android/
 |_ .gradle/
 |_ app/  # app project
@@ -57,141 +93,24 @@ android/
   |_ proguard-rules.pro  # default Proguard rules
 ```
 
-It should also automatically include the library in the root `settings.gradle` file:
-
-```gradle
-include ':app'
-includeBuild(expoAutolinking.reactNativeGradlePlugin)
-include ':brownfield'
-```
-
-<a name="#android-as-files"></a>
+<a name="android-files"></a>
 ### Files
 
-Content of the files can be copied from the default templates used by the plugin: [templates/android](./plugin/templates/android/). Please keep in mind that some of those templates contain interplation placeholders (in format of `${{variableName}}`) which should be replaced with values suitable for your project
+Content of the files can be copied from the default templates used by the plugin: [templates/android](./plugin/src/templates/android). Please keep in mind that some of those templates contain interpolation placeholders (in format of `${{variableName}}`) which should be replaced with values suitable for your project.
 
-```kt
-package ${{packageId}}
-```
+You can find full reference on values used by each template and the variable interpolation in [TEMPLATES.md](./TEMPLATES.md).
 
-You can find full reference on values used by each template and the variable interpolation in [TEMPLATES.md](./TEMPLATES.md)
+Some of the below files might be automatically added if you used Android Studio to initialize the library. In that case it's worth to check if the contents are aligned with the template or with your intended content.
 
-Some files should be automatically created by **Android Studio** and the default contents should be enough for the library. If any of the file is missing or the contents are different then described below, please align or create the file based on the templates
-
-- `AndroidManifest.xml` - by default should contain an empty manifest
-- `proguard-rules.pro` - by default should be empty (all rules should be commented out)
-- `consumer-rules.pro` - by default should be empty
-
-Add the following files to the sources directory of the library (`java/com/swmansion/brownfield` in the example above):
-
-- `ReactNativeHostManager.kt`
-- `ReactNativeViewFactory.kt`
-- `ReactNativeFragment.kt`
-
-Update the contents of the `build.gradle.kts` file of the library based on the template or with custom configuration matching your requirements
-
-<a name="#android-as-plugin"></a>
-### react-native-brownfield plugin
-
-Add `brownfield-gradle-plugin` plugin to the root `build.gradle` of the Android project:
-
-```gradle
-buildscript {
-  ...
-  dependencies {
-    ...
-    classpath("com.callstack.react:brownfield-gradle-plugin:0.5.0")
-```
-
-Make sure that the plugin is referenced in the `build.gradle.kts` of the library:
-
-```kotlin
-plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("com.facebook.react")
-    id("com.callstack.react.brownfield")
-    `maven-publish`
-}
-```
-
-<a name="#android-as-building"></a>
-### Building AAR
-
-The library can be built manually:
-
-```sh
-./gradlew :brownfield:clean
-./gradlew :brownfield:assembleRelease
-# If you want to publish to local Maven repo
-./gradlew :brownfield:publishMavenAarPublicationToMavenLocal
-```
-
-Or with `expo-brownfield-target` CLI. Please see [README.md](./README.md) for full CLI reference:
-
-```sh
-npx expo-brownfield-target build-android
-```
-
-**Note:** If your library name is different than `brownfield` please make sure to use `build-android` with `-l` / `--library` flag:
-
-```sh
-npx expo-brownfield-target build-android -l mybrownfield
-```
-
-When the build succeeds a **fat-AAR** (i.e. AAR which also includes all needed dependencies) with brownfield and (optionally) published to the local Maven repo
-
-<!-- END SECTION: ANDROID STUDIO -->
-
-<!-- SECTION: ANDROID MANUALLY -->
-<a name="#android-manually"></a>
-## Android (Manually)
-
-<a name="#android-m-structure"></a>
-### Project structure
-
-Create the root directory for the brownfield library in the `android/` directory of your Expo project:
-
-```cpp
-android/
-|_ .gradle/
-|_ app/  # app project
-|_ brownfield/  # brownfield project
-|_ ...
-```
-
-Set up the directory structure for the library:
-
-```cpp
-android/
-|_ .gradle/
-|_ app/  # app project
-|_ brownfield/  # brownfield project
-  |_ src/main/  # main directory of the library
-    |_ java/com/swmansion/brownfield/  # sources of the library
-|_ ...
-```
-
-<a name="#android-m-files"></a>
-### Files
-
-Content of the files can be copied from the default templates used by the plugin: [templates/android](./plugin/templates/android/). Please keep in mind that some of those templates contain interplation placeholders (in format of `${{variableName}}`) which should be replaced with values suitable for your project
-
-```kt
-package ${{packageId}}
-```
-
-You can find full reference on values used by each template and the variable interpolation in [TEMPLATES.md](./TEMPLATES.md)
-
-Add the following files to the root directory of the library:
+Make sure that the root directory of the library includes the following files:
 
 - `build.gradle.kts`
 - `consumer-rules.pro`
 - `proguard-rules.pro`
 
-Add `AndroidManifest.xml` at the main directory (`src/main/` in the example above)
+The main directory (`src/main/`) should include a manifest file `AndroidManifest.xml`.
 
-Add the following files to the sources directory of the library (`java/com/swmansion/brownfield/` in the example above):
+And the sources directory (e.g. `src/main/java/com/swmansion/brownfield`) should include the three files:
 
 - `ReactNativeHostManager.kt`
 - `ReactNativeViewFactory.kt`
@@ -199,7 +118,7 @@ Add the following files to the sources directory of the library (`java/com/swman
 
 After adding the files your library structure should look like below:
 
-```
+```bash
 android/
 |_ .gradle/
 |_ app/
@@ -217,66 +136,133 @@ android/
 |_ ...
 ```
 
-Make sure to include the library project in the `settings.gradle` at the root of the Android project:
+<a name="android-plugins"></a>
+### Plugins
 
-```gradle
-include ':app'
-includeBuild(expoAutolinking.reactNativeGradlePlugin)
-include ':brownfield'
+To properly set up the brownfield library and publish all needed artifacts to Maven repositories you need to include the Gradle plugins which are shipped as part of `expo-brownfield-target` npm package.
+
+Add the following fragment to the root `settings.gradle` file:
+
+```groovy
+def brownfieldPluginsPath = new File(
+  providers.exec {
+    workingDir(rootDir)
+    commandLine("node", "--print", "require.resolve('expo-brownfield-target/package.json')")
+  }.standardOutput.asText.get().trim(),
+  "../gradle-plugins"
+).absolutePath
+includeBuild(brownfieldPluginsPath)
 ```
 
-<a name="#android-m-plugin"></a>
-### react-native-brownfield plugin
+Add the following lines to the root `build.gradle` file of the project to apply the publishing plugin:
 
-Add `brownfield-gradle-plugin` plugin to the root `build.gradle` of the Android project:
-
-```gradle
+```groovy
 buildscript {
-  ...
+  repositories {
+    ...
+  }
   dependencies {
     ...
-    classpath("com.callstack.react:brownfield-gradle-plugin:0.5.0")
++    classpath('expo.modules:publish')
+  }
+}
+
+...
+
+apply plugin: "expo-root-project"
++   apply plugin: "expo-brownfield-publish"
+apply plugin: "com.facebook.react.rootproject"
 ```
 
-Make sure that the plugin is referenced in the `build.gradle.kts` of the library:
+And add its configuration to the same file:
 
-```kotlin
-plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("com.facebook.react")
-    id("com.callstack.react.brownfield")
-    `maven-publish`
+```groovy
+expoBrownfieldPublishPlugin {
+  libraryName = "brownfield"
+  publications {
+    localDefault {
+        type = "localMaven"
+    }
+    customLocal {
+        type = "localDirectory"
+        url = "file:///Users/patrykmleczek/Desktop/expo-brownfield-target/example/app/maven"
+    }
+    remotePublic {
+        type = "remotePublic"
+        url = "http://localhost:8081/repository/remote-public"
+        allowInsecure = true
+    }
+    remotePrivate {
+        type = "remotePrivate"
+        url = "http://localhost:8081/repository/remote-basic-auth"
+        username = "user"
+        password = "user1234"
+        allowInsecure = true
+    }
+  }
 }
 ```
 
-<a name="#android-m-building"></a>
-### Building AAR
+Where `libraryName` is the name of your brownfield library project and `publications` block specifies one or more repositories that you want to publish the artifacts to. Name of each block should be unique across the publications.
 
-The library can be built manually:
+Make sure that `build.gradle.kts` file of the brownfield library includes `expo-brownfield-setup` plugin:
 
-```sh
-./gradlew :brownfield:clean
-./gradlew :brownfield:assembleRelease
-# If you want to publish to local Maven repo
-./gradlew :brownfield:publishMavenAarPublicationToMavenLocal
+```kts
+plugins {
+  ...
+  id("expo-brownfield-setup")
+}
 ```
 
-Or with `expo-brownfield-target` CLI. Please see [README.md](./README.md) for full CLI reference:
+The plugins will be compiled along with the Android project.
 
-```sh
-npx expo-brownfield-target build-android
+<a name="android-building"></a>
+### Building
+
+#### Tasks
+
+The tasks that can be used to build and publish artifacts follow the below name convention:
+
+```
+publishBrownfield(All|Debug|Release)PublicationTo<Repository name>
 ```
 
-**Note:** If your library name is different than `brownfield` please make sure to use `build-android` with `-l` / `--library` flag:
+Where `All`, `Debug` and `Release` specifies if both or only debug or release variants should be published. Repository name is based on the block names passed in `build.gradle` in PascalCase convention (first character of each word capitalized) and suffixed with `Repository`. For example:
 
-```sh
-npx expo-brownfield-target build-android -l mybrownfield
+TODO: Write about exception for Maven Local?
+
+```bash
+# For the default Maven repository
+publishBrownfieldAllPublicationToMavenLocal
+# For repository named: `customLocal`
+publishBrownfieldDebugPublicationToCustomLocalRepository
 ```
 
-When the build succeeds a **fat-AAR** (i.e. AAR which includes all) with and (optionally) published to the local Maven repo
+You can view all available tasks by running:
 
-<!-- END SECTION: ANDROID MANUALLY -->
+```bash
+./gradlew tasks --all
+```
+
+Optionally you can filter out only the tasks that follow the above convention (if your library name is different pass it instead of `brownfield` in the below command):
+
+```bash
+./gradlew tasks --all | grep -E 'brownfield:publishBrownfield.*PublicationTo'
+```
+
+#### Building
+
+You can run the tasks described aboce to invoke the build and publishing process for the brownfield library and all of its dependencies:
+
+```bash
+./gradlew publishBrownfieldAllPublicationToCustomLocalRepository
+```
+
+You can also invoke them using the CLI:
+
+TODO: Add sub-section about the CLI
+
+<!-- END SECTION: ANDROID -->
 
 <!-- SECTION: IOS -->
 
@@ -298,7 +284,7 @@ After confirming with `Finish` a new directory named the same as the new target 
 <a name="#ios-files"></a>
 ### Files
 
-Content of the files can be copied from the default templates used by the plugin: [templates/ios](./plugin/templates/ios/). Please keep in mind that some of those templates contain interplation placeholders (in format of `${{variableName}}`) which should be replaced with values suitable for your project
+Content of the files can be copied from the default templates used by the plugin: [templates/ios](./plugin/templates/ios/). Please keep in mind that some of those templates contain interplation placeholders (in format of `${{variableName}}`) which should be replaced with values suitable for your project. For example:
 
 ```xml
 <key>CFBundleName</key>
@@ -306,15 +292,19 @@ Content of the files can be copied from the default templates used by the plugin
 <key>CFBundlePackageType</key>
 ```
 
-You can find full reference on values used by each template and the variable interpolation in [TEMPLATES.md](./TEMPLATES.md)
+You can find full reference on values used by each template and the variable interpolation in [TEMPLATES.md](./TEMPLATES.md).
 
 Add the following files to the framework directory:
 
 - `ExpoApp.swift`
 - `Info.plist`
+- `Messaging.swift` (if you want to include support for the bi-directional messaging API)
 - `ReactNativeView.swift` (if you want to include SwiftUI support)
+- `ReactNativeViewController.swift` (if you want to include UIKit view controller)
 
-Copy the contents of `Template.entitlements` file to a new file named `<target-name>` (e.g. `MyBrownfield.entitlements`) at the framework directory
+Copy the contents of `Template.entitlements` file to a new file named `<target-name>` (e.g. `MyBrownfield.entitlements`) at the framework directory.
+
+The `patch-expo.sh` template shouldn't be copied anywhere and will come into use later to define a run script phase for patching `ExpoModulesProvider.swift` file.
 
 <a name="#ios-config"></a>
 ### Build configuration
@@ -328,9 +318,9 @@ In the project view select the `Build Settings` tab and make sure you're editing
 | Skip Install | No |
 | Enable Module Verifier | No |
 
-Then navigate to the `Build Phases` of the app target and copy the contents of the `Bundle React Native code and images` step. Create a new `Run Script Phase` in the brownfield target and paste the copied contents to it. Place it after the `Copy Bundle Resources` step
+Then navigate to the `Build Phases` of the app target and copy the contents of the `Bundle React Native code and images` step. Create a new `Run Script Phase` in the brownfield target and paste the copied contents to it. Place it after the `Copy Bundle Resources` step.
 
-Make sure that to also copy the `Input Files` values of the phase
+Make sure that to also copy the `Input Files` values of the phase.
 
 Add the framework target to the app target in the `Podfile`:
 
@@ -343,7 +333,7 @@ target '<app-target>' do
 end
 ```
 
-Add another `Run Script Phase` to the brownfield target:
+Add another `Run Script Phase` to the brownfield target (based on the `patch-expo.sh` template):
 
 ```sh
 FILE="${SRCROOT}/Pods/Target Support Files/Pods-${{projectName}}-${{targetName}}/ExpoModulesProvider.swift"
@@ -359,7 +349,7 @@ if [ -f "$FILE" ]; then
 fi
 ```
 
-Make sure to replace the variable placeholders (`${{projectName}}`, `${{targetName}}`) with the values  from your project. Place the value after a step named `[Expo] Configure project`
+Make sure to replace the variable placeholders (`${{projectName}}`, `${{targetName}}`) with the values suitable for your project. Place the value after a step named `[Expo] Configure project`
 
 <a name="#ios-xcf"></a>
 ### Building XCFramework 
@@ -371,14 +361,18 @@ rm -rf Pods Podfile.lock
 USE_FRAMEWORKS=static pod install
 ```
 
-The XCFramework can be built manually - please use [build-xcframework.sh](./example/scripts/build-xcframework.sh) as the reference or with the CLI:
+The XCFramework can be built manually - please use [build-xcframework.sh](./example/scripts/build-xcframework.sh) as the reference.
+
+It can also be built using the CLI:
 
 ```
 npx expo-brownfield-target build-ios
 ```
 
-Please see [README.md](./README.md) for full CLI reference
+Please see [README.md](./README.md) for the full reference for the CLI.
 
-When the build finishes an XCFramework named `<target-name>.xcframework` should be created. Make sure to copy the `hermes.xcframework` file from Pods (`Pods/hermes-engine/destroot/Library/Frameworks/universal/hermes.xcframework`) and ship it/include it in the Swift Package along with the brownfield XCFramework
+When the build finishes an XCFramework named `<target-name>.xcframework` should be created. Make sure to copy the `hermes.xcframework` file from Pods (`Pods/hermes-engine/destroot/Library/Frameworks/universal/hermes.xcframework`) and ship it/include it in the Swift Package along with the brownfield XCFramework.
+
+For examples of usage in the native apps and reference for the available APIs please see [README.md](./README.md).
 
 <!-- END SECTION: IOS -->
