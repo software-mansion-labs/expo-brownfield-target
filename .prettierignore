@@ -1,0 +1,10 @@
+/.expo/
+/.github/
+/.vscode/
+/android/
+build/
+/example/
+/ios/
+node_modules/
+/plugin/build/
+/plugin/cli/build/
