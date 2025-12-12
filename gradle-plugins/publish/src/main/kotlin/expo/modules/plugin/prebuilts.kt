@@ -27,14 +27,16 @@ internal fun setupPrebuiltsCopying(rootProject: Project) {
 
     val taskName = rootProject.gradle.startParameter.taskNames
       .firstOrNull() ?: throw IllegalStateException("Cannot find task in the Gradle start parameter")
-    val repo = parsePublishInvocation(taskName)
-    val publication = findPublicationWithRepository(configExtension.publications.toList(), repo)
-    
-    createPrebuiltsPublicationTask(
-      publication, 
-      rootProject, 
-      configExtension.libraryName.get()
-    )
+    val repo = parsePublishInvocation(rootProject, taskName)
+
+    if (repo != null) {
+      val publication = findPublicationWithRepository(configExtension.publications.toList(), repo)
+      createPrebuiltsPublicationTask(
+        publication, 
+        rootProject, 
+        configExtension.libraryName.get()
+      )
+    }
   }
 }
 
@@ -201,12 +203,14 @@ internal fun registerPrebuiltPublicationTask(
  * @param name The name of the publish task.
  * @return The repository name.
  */
-internal fun parsePublishInvocation(name: String): String {
+internal fun parsePublishInvocation(project: Project, name: String): String? {
   val regex = Regex("publishBrownfield(\\w+)PublicationTo(\\w+)")
   val match = regex.matchEntire(name)
 
   if (match == null || match.groupValues.size < 3) {
-    throw IllegalStateException("Cannot parse task: $name to infer the Maven repository")
+    project.logger.warn("Cannot parse task: $name to infer the Maven repository")
+    project.logger.warn("Skipping prebuilt artifact copying for the current task")
+    return null
   }
 
   return match.groupValues[2]
