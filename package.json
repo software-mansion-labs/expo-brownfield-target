@@ -27,6 +27,7 @@
     "android/",
     "!android/build/",
     "build/",
+    "gradle-plugins/",
     "ios/",
     "plugin/",
     "src/",

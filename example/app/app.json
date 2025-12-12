@@ -42,10 +42,41 @@
         }
       ],
       [
-        "../../app.plugin.js", 
+        "expo-brownfield-target", 
         { 
           "android": {
-            "package": "com.pmleczek.expobrownfieldtargetexample.brownfield"
+            "group": "com.pmleczek.brownfield",
+            "version": "1.2.3",
+            "package": "com.pmleczek.expobrownfieldtargetexample.brownfield",
+            "publishing": [
+              {
+                "type": "localMaven"
+              },
+              {
+                "type": "localDirectory",
+                "name": "customLocal",
+                "path": "./maven"
+              },
+              {
+                "type": "remotePublic",
+                "name": "remotePublic",
+                "url": "http://localhost:8081/repository/remote-public",
+                "allowInsecure": true
+              },
+              {
+                "type": "remotePrivate",
+                "url": {
+                  "variable": "MAVEN_REPO_URL"
+                },
+                "username": {
+                  "variable": "MAVEN_REPO_USERNAME"
+                },
+                "password": {
+                  "variable": "MAVEN_REPO_PASSWORD"
+                },
+                "allowInsecure": true
+              }
+            ]
           },
           "ios": { 
             "targetName": "MyBrownfieldApp" 
