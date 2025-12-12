@@ -5,6 +5,10 @@ APP_DIRECTORY="./example/app"
 
 # Cleanup previous tarballs
 rm -rf expo-brownfield-target-*.tgz
+TARBALL_PATH=$(find $APP_DIRECTORY -name "expo-brownfield-target-*.tgz" | head -1)
+if [ ! -z "$TARBALL_PATH" ]; then
+  rm -rf $TARBALL_PATH
+fi
 
 # Build the plugin
 npm pack
