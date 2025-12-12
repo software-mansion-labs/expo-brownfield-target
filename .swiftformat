@@ -1,0 +1,163 @@
+# ===========================
+# FILE OPTIONS
+# ===========================
+
+# Exclude build directories and generated files
+--exclude Pods,build,DerivedData,.build,*.generated.swift,ExpoModulesCore
+
+# ===========================
+# FORMATTING OPTIONS
+# ===========================
+
+# Indentation - Use 2 spaces (common in React Native/Expo ecosystem)
+--indent 2
+--tabwidth 2
+--smarttabs enabled
+--xcodeindentation enabled
+--indentcase false
+--ifdef indent
+
+# Line wrapping
+--maxwidth 120
+
+# Wrap function arguments
+--wraparguments before-first
+--wrapparameters before-first
+--wrapcollections before-first
+--closingparen balanced
+
+# Control flow
+--elseposition same-line
+--guardelse auto
+
+# Spacing around operators
+--operatorfunc spaced
+--nospaceoperators ...,..<
+--ranges spaced
+
+# Empty constructs
+--emptybraces no-space
+--empty void
+
+# Semicolons
+--semicolons inline
+
+# Comments
+--commas always
+
+# File header
+--header strip
+
+# Attributes placement
+--funcattributes prev-line
+--typeattributes prev-line
+--storedvarattributes same-line
+--computedvarattributes same-line
+
+# Organize types (for organizeDeclarations rule)
+--organizetypes class,actor,struct,enum
+--extensionacl on-extension
+
+# Void representation
+--voidtype void
+
+# Trailing commas
+--trailingcommas always
+
+# Trim whitespace
+--trimwhitespace always
+
+# Linebreaks
+--linebreaks lf
+
+# Self keyword
+--self remove
+--selfrequired 
+
+# Strip unused arguments
+--stripunusedargs closure-only
+
+# Pattern let hoisting
+--patternlet hoist
+
+# Short optionals
+--shortoptionals always
+
+# Hex literal case
+--hexliteralcase lowercase
+
+# Exponent case  
+--exponentcase lowercase
+
+# Decimal grouping (disable number formatting by default)
+--decimalgrouping none
+--binarygrouping none
+--octalgrouping none
+--hexgrouping none
+--fractiongrouping disabled
+--exponentgrouping disabled
+
+# Wrap effects
+--wrapeffects preserve
+
+# Organization mode
+--organizationmode visibility
+
+# ===========================
+# ENABLED RULES (Opt-in)
+# ===========================
+
+# These are opt-in rules that improve code quality
+--enable isEmpty
+--enable sortSwitchCases
+--enable wrapConditionalBodies
+--enable wrapLoopBodies
+--enable wrapEnumCases
+--enable wrapSwitchCases
+--enable blockComments
+--enable markTypes
+--enable docComments
+
+# ===========================
+# DISABLED RULES
+# ===========================
+
+# Disable rules that conflict with React Native patterns
+
+# Don't remove @objc (needed for RN bridge)
+--disable redundantObjc
+
+# Keep explicit self in some cases for RN bridge clarity
+--disable redundantSelf
+
+# Don't enforce trailing closures (RN bridge methods often don't use them)
+--disable trailingClosures
+
+# Don't sort imports automatically (manual grouping often better)
+--disable sortImports
+
+# Don't organize declarations automatically (can break intentional grouping)
+--disable organizeDeclarations
+
+# Don't force number formatting (can be too aggressive)
+--disable numberFormatting
+
+# Don't wrap multiline statement braces (personal preference)
+--disable wrapMultilineStatementBraces
+
+# ===========================
+# EXPO/RN SPECIFIC SETTINGS
+# ===========================
+
+# Preserve @objc attributes on separate lines for visibility
+--funcattributes prev-line
+--typeattributes prev-line
+
+# Don't strip unused arguments in RN bridge methods (they're often required)
+--stripunusedargs closure-only
+
+# ===========================
+# SWIFTLINT COMPATIBILITY
+# ===========================
+
+--swiftversion 5.9
