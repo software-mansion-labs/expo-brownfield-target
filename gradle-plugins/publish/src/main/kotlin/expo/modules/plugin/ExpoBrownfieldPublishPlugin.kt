@@ -11,7 +11,7 @@ class ExpoBrownfieldPublishPlugin : Plugin<Project> {
 
     project.afterEvaluate { project ->
       if (project.shouldBeSkipped()) {
-        println("Skipping ${project.name} as it is not a project which should be published")
+        project.logger.warn("Skipping ${project.name} as it is not a project which should be published")
         return@afterEvaluate
       }
 

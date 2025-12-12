@@ -68,9 +68,7 @@ internal fun XmlProvider.dependenciesNode(): Node? {
  */
 internal fun XmlProvider.dependencyNodes(): List<Node> {
   val dependenciesNode = dependenciesNode()
-    ?: return emptyList()
-
-  return dependenciesNode.children().filterIsInstance<Node>()
+  return dependenciesNode?.children()?.filterIsInstance<Node>() ?: emptyList()
 }
 // END SECTION: XmlProvider
 

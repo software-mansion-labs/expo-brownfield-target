@@ -28,7 +28,7 @@ internal fun setupPublishing(project: Project) {
         publicationExtension == null ||
         variants.any { project.components.getByName(it) == null }
       ) {
-        println("Skipping ${project.name} as it can't be published due to missing publishing variants (\"brownfieldDebug, etc.\") or publishing extension")
+        project.logger.warn("Skipping ${project.name} as it can't be published due to missing publishing variants (\"brownfieldDebug, etc.\") or publishing extension")
         return@afterEvaluate
       }
 
@@ -116,8 +116,8 @@ internal fun createRemoveReactNativeDependencyModuleTask(
     task.doLast {
       val moduleFile = project.moduleFile(variant)
       if (moduleFile == null) {
-        println("WARNING: Module file for project: ${project.name} does not exist")
-        println("This file might not need to be modified. Continuing tasks...")
+        project.logger.warn("WARNING: Module file for project: ${project.name} does not exist")
+        project.logger.warn("This file might not need to be modified. Continuing tasks...")
         return@doLast
       }
 
@@ -151,8 +151,8 @@ internal fun createSetReactNativeVersionModuleTask(
     task.doLast {
       val moduleFile = project.moduleFile(variant)
       if (moduleFile == null) {
-        println("WARNING: Module file for project: ${project.name} does not exist")
-        println("This file might not need to be modified. Continuing tasks...")
+        project.logger.warn("WARNING: Module file for project: ${project.name} does not exist")
+        project.logger.warn("This file might not need to be modified. Continuing tasks...")
         return@doLast
       }
 

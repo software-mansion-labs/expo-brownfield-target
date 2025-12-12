@@ -48,9 +48,7 @@ internal fun getExpoPrebuiltProjects(rootProject: Project): List<GradleProject> 
   val gradleExtension = rootProject.gradle.extensions.findByType(ExpoGradleExtension::class.java)
       ?: throw IllegalStateException("`ExpoGradleExtension` not found. Please, make sure that `useExpoModules` was called in `settings.gradle`.")
   val config = gradleExtension.config
-  val projects = config.allProjects.filter { it.usePublication }
-  
-  return projects
+  return config.allProjects.filter { it.usePublication }
 }
 
 /**
