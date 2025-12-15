@@ -25,14 +25,6 @@ abstract class PublicationConfig @Inject constructor(name: String, objects: Obje
   }
 }
 
-/**
- * The ExpoPublishExtension class defines a custom extension for the plugin. This allows users to
- * configure the plugin in their build script via a DSL block, e.g.:
- *
- * expoBrownfieldPublishPlugin { libraryName = "brownfield" publications { localDefault { type =
- * "localMaven" } private { type = "remotePrivate" url = "https://maven.example.com" username =
- * "username" password = "password" } } }
- */
 abstract class ExpoPublishExtension @Inject constructor(objects: ObjectFactory) {
   abstract var libraryName: Property<String>
   abstract var publications: NamedDomainObjectContainer<PublicationConfig>
