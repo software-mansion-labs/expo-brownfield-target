@@ -3,7 +3,10 @@
 /.vscode/
 /android/
 build/
-/example/
+/example/*
+!/example/app/
+/example/app/android/
+/example/app/ios/
 /ios/
 node_modules/
 /plugin/build/
