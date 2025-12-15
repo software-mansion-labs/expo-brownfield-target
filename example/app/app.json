@@ -42,8 +42,8 @@
         }
       ],
       [
-        "expo-brownfield-target", 
-        { 
+        "expo-brownfield-target",
+        {
           "android": {
             "group": "com.pmleczek.brownfield",
             "version": "1.2.3",
@@ -78,9 +78,9 @@
               }
             ]
           },
-          "ios": { 
-            "targetName": "MyBrownfieldApp" 
-          } 
+          "ios": {
+            "targetName": "MyBrownfieldApp"
+          }
         }
       ]
     ],
