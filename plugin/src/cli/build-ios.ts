@@ -6,13 +6,13 @@ import {
   runCommand,
   validatePrebuild,
 } from './build';
-import { BUILD_IOS_HELP_MESSAGE } from './messages';
 import { errorMessage, infoMessage, Loader, successMessage } from './output';
 import type { BuildConfigCommon, BuildConfigIOS } from './types';
+import { Help } from './constants';
 
 const maybeDisplayHelp = (options: string[]) => {
   if (options.includes('-h') || options.includes('--help')) {
-    console.log(BUILD_IOS_HELP_MESSAGE);
+    console.log(Help.IOS);
     process.exit(0);
   }
 };
