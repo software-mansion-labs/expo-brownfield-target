@@ -1,0 +1,11 @@
+{
+  "**/*.{js,ts,tsx,json,md}": [
+    "prettier --write"
+  ],
+  "**/*.{kt,kts}": [
+    "ktfmt"
+  ],
+  "**/*.swift": [
+    "swiftformat"
+  ]
+}
