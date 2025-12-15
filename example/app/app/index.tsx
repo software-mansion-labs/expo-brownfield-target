@@ -1,9 +1,4 @@
-import { Button, Platform, StyleSheet } from 'react-native';
-
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
 import ExpoBrownfieldModule from 'expo-brownfield-target';
-import { Link } from 'expo-router';
 import { RootLayout } from '@/layouts';
 import useBackHandling from '@/hooks/use-back-handling';
 import { NavigationLink } from '@/components/navigation-link';
@@ -50,10 +45,3 @@ export default function HomeScreen() {
     </RootLayout>
   );
 }
-
-const styles = StyleSheet.create({
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-});

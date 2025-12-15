@@ -24,10 +24,10 @@ export default function ExploreScreen() {
       </ThemedText>
       <Collapsible title="File-based routing">
         <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText>{' '}
-          and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
+          This app has three screens:{' '}
+          <ThemedText type="defaultSemiBold">app/index.tsx</ThemedText>,{' '}
+          <ThemedText type="defaultSemiBold">app/explore.tsx</ThemedText>, and{' '}
+          <ThemedText type="defaultSemiBold">app/communication.tsx</ThemedText>
         </ThemedText>
         <ThemedText>
           The layout file in{' '}
@@ -38,12 +38,8 @@ export default function ExploreScreen() {
           <ThemedText type="link">Learn more</ThemedText>
         </ExternalLink>
       </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the
-          web version, press <ThemedText type="defaultSemiBold">w</ThemedText>{' '}
-          in the terminal running this project.
-        </ThemedText>
+      <Collapsible title="Android and iOS support">
+        <ThemedText>You can open this project on Android and iOS.</ThemedText>
       </Collapsible>
       <Collapsible title="Images">
         <ThemedText>
