@@ -3,7 +3,8 @@
 import { version } from '../../../package.json';
 import { buildAndroid } from './build-android';
 import { buildIOS } from './build-ios';
-import { GENERAL_HELP_MESSAGE, UNKNOWN_COMMAND_MESSAGE } from './messages';
+import { Help } from './constants';
+import { UNKNOWN_COMMAND_MESSAGE } from './messages';
 import type { CLIAction } from './types';
 
 const isSupportedCommand = (command: string): command is CLIAction => {
@@ -39,7 +40,7 @@ const main = async () => {
       await buildIOS(args.slice(1));
       process.exit(0);
     case 'help':
-      console.log(GENERAL_HELP_MESSAGE);
+      console.log(Help.General);
       process.exit(0);
     case 'version':
       console.log(version);

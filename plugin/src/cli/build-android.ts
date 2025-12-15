@@ -8,13 +8,13 @@ import {
   splitOptionList,
   validatePrebuild,
 } from './build';
-import { BUILD_ANDROID_HELP_MESSAGE } from './messages';
 import { errorMessage, infoMessage, Loader, successMessage } from './output';
 import type { BuildConfigAndroid, BuildConfigCommon } from './types';
+import { Help } from './constants';
 
 const maybeDisplayHelp = (options: string[]) => {
   if (options.includes('-h') || options.includes('--help')) {
-    console.log(BUILD_ANDROID_HELP_MESSAGE);
+    console.log(Help.Android);
     process.exit(0);
   }
 };
