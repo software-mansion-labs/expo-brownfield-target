@@ -1,2 +1,2 @@
-export * from './output';
+export * from './help';
 export type * from './types';

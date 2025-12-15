@@ -16,3 +16,10 @@ export interface HelpMessageParams {
   promptCommand?: string;
   promptOptions?: string;
 }
+
+export interface HelpMessageSectionParams<T> {
+  items?: T[];
+  left: (item: T) => string;
+  right: (item: T) => string;
+  title: string;
+}
