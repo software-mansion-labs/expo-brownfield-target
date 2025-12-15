@@ -108,11 +108,15 @@ const resolveEnv = (
   }
 
   if (typeof publication.username === 'object') {
-    publicationInternal.username = findEnvOrThrow(publication.username.variable);
+    publicationInternal.username = findEnvOrThrow(
+      publication.username.variable,
+    );
   }
 
   if (typeof publication.password === 'object') {
-    publicationInternal.password = findEnvOrThrow(publication.password.variable);
+    publicationInternal.password = findEnvOrThrow(
+      publication.password.variable,
+    );
   }
 
   return publicationInternal as RemotePrivatePublicationInternal;

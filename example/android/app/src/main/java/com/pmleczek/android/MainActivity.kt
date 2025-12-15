@@ -6,11 +6,11 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        findViewById<Button>(R.id.openReactNativeButton).setOnClickListener {
-            startActivity(Intent(this, ReactNativeActivity::class.java))
-        }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_main)
+    findViewById<Button>(R.id.openReactNativeButton).setOnClickListener {
+      startActivity(Intent(this, ReactNativeActivity::class.java))
     }
+  }
 }

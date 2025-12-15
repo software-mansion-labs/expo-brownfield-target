@@ -1,24 +1,22 @@
 package expo.modules.plugin
 
+import javax.inject.Inject
 import org.gradle.api.Named
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
-import javax.inject.Inject
 
-abstract class PublicationConfig @Inject constructor(
-    name: String,
-    objects: ObjectFactory
-) : Named {
+abstract class PublicationConfig @Inject constructor(name: String, objects: ObjectFactory) : Named {
   private val _name: String = name
+
   override fun getName(): String = _name
-  
+
   abstract val type: Property<String>
   abstract val url: Property<String>
   abstract val username: Property<String>
   abstract val password: Property<String>
   abstract val allowInsecure: Property<Boolean>
-  
+
   init {
     url.convention("")
     username.convention("")
@@ -28,33 +26,23 @@ abstract class PublicationConfig @Inject constructor(
 }
 
 /**
- * The ExpoPublishExtension class defines a custom extension for the plugin.
- * This allows users to configure the plugin in their build script via a DSL block, e.g.:
+ * The ExpoPublishExtension class defines a custom extension for the plugin. This allows users to
+ * configure the plugin in their build script via a DSL block, e.g.:
  *
- * expoBrownfieldPublishPlugin {
- *     libraryName = "brownfield"
- *     publications {
- *         localDefault {
- *             type = "localMaven"
- *         }
- *         private {
- *             type = "remotePrivate"
- *             url = "https://maven.example.com"
- *             username = "username"
- *             password = "password"
- *         }
- *     }
- * }
+ * expoBrownfieldPublishPlugin { libraryName = "brownfield" publications { localDefault { type =
+ * "localMaven" } private { type = "remotePrivate" url = "https://maven.example.com" username =
+ * "username" password = "password" } } }
  */
 abstract class ExpoPublishExtension @Inject constructor(objects: ObjectFactory) {
   abstract var libraryName: Property<String>
   abstract var publications: NamedDomainObjectContainer<PublicationConfig>
-    
+
   init {
     libraryName = objects.property(String::class.java)
     libraryName.convention("")
-    publications = objects.domainObjectContainer(PublicationConfig::class.java) { name ->
+    publications =
+      objects.domainObjectContainer(PublicationConfig::class.java) { name ->
         objects.newInstance(PublicationConfig::class.java, name, objects)
-    }
+      }
   }
 }

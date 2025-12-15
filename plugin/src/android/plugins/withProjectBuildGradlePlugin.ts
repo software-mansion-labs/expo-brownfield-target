@@ -1,9 +1,7 @@
 import { type ConfigPlugin, withProjectBuildGradle } from 'expo/config-plugins';
 
 import type { PluginConfig, Publication } from '../types';
-import {
-  addRepository,
-} from '../utils';
+import { addRepository } from '../utils';
 
 const EXPO_APPLY_STATEMENT = 'apply plugin: "expo-root-project"';
 const PLUGIN_CLASSPATH = 'expo.modules:publish';

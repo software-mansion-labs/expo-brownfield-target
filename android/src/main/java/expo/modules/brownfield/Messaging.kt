@@ -3,25 +3,18 @@ package expo.modules.brownfield
 import java.util.UUID
 
 typealias BrownfieldMessage = Map<String, Any?>
+
 typealias BrownfieldCallback = (BrownfieldMessage) -> Unit
 
 object BrownfieldMessaging {
-  data class BrownfieldListener(
-    val id: String,
-    val callback: BrownfieldCallback
-  )
+  data class BrownfieldListener(val id: String, val callback: BrownfieldCallback)
 
   private val listeners = mutableSetOf<BrownfieldListener>()
   private var expoModule: ExpoBrownfieldModule? = null
 
-  fun addListener(
-    callback: BrownfieldCallback
-  ): String {
+  fun addListener(callback: BrownfieldCallback): String {
     val id = java.util.UUID.randomUUID().toString()
-    listeners.add(BrownfieldListener(
-      id,
-      callback
-    ))
+    listeners.add(BrownfieldListener(id, callback))
 
     return id
   }
@@ -31,15 +24,11 @@ object BrownfieldMessaging {
   }
 
   fun sendMessage(message: BrownfieldMessage) {
-    expoModule?.let { module ->
-      module.sendMessage(message)
-    }
+    expoModule?.let { module -> module.sendMessage(message) }
   }
 
   internal fun emit(message: BrownfieldMessage) {
-    listeners.forEach { listener ->
-      listener.callback(message)
-    }
+    listeners.forEach { listener -> listener.callback(message) }
   }
 
   internal fun setExpoModule(expoModule: ExpoBrownfieldModule?) {
