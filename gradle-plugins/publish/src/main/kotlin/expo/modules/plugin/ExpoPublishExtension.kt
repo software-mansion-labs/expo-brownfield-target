@@ -33,8 +33,8 @@ abstract class ExpoPublishExtension @Inject constructor(objects: ObjectFactory) 
     libraryName = objects.property(String::class.java)
     libraryName.convention("")
     publications =
-      objects.domainObjectContainer(PublicationConfig::class.java) { name ->
-        objects.newInstance(PublicationConfig::class.java, name, objects)
-      }
+        objects.domainObjectContainer(PublicationConfig::class.java) { name ->
+          objects.newInstance(PublicationConfig::class.java, name, objects)
+        }
   }
 }
