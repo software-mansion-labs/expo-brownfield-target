@@ -12,13 +12,9 @@ class ExpoBrownfieldModule : Module() {
 
     Events(NATIVE_MESSAGE_EVENT_NAME)
 
-    OnStartObserving {
-      BrownfieldMessaging.setExpoModule(this@ExpoBrownfieldModule)
-    }
+    OnStartObserving { BrownfieldMessaging.setExpoModule(this@ExpoBrownfieldModule) }
 
-    OnStopObserving {
-      BrownfieldMessaging.setExpoModule(null)
-    }
+    OnStopObserving { BrownfieldMessaging.setExpoModule(null) }
 
     Function("popToNative") { animated: Boolean ->
       appContext.currentActivity?.runOnUiThread {
@@ -32,9 +28,7 @@ class ExpoBrownfieldModule : Module() {
       }
     }
 
-    Function("sendMessage") { message: BrownfieldMessage ->
-      BrownfieldMessaging.emit(message)
-    }
+    Function("sendMessage") { message: BrownfieldMessage -> BrownfieldMessaging.emit(message) }
 
     Function("setNativeBackEnabled") { enabled: Boolean ->
       BrownfieldNavigationState.nativeBackEnabled = enabled

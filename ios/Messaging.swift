@@ -3,18 +3,20 @@ import Foundation
 public typealias BrownfieldMessage = [String: Any?]
 public typealias BrownfieldCallback = (BrownfieldMessage) -> Void
 
+// MARK: - BrownfieldMessagingInternal
+
 public class BrownfieldMessagingInternal {
   public static let shared = BrownfieldMessagingInternal()
 
   private var listeners: [String: BrownfieldCallback] = [:]
-  private var expoModule: ExpoBrownfieldModule? = nil
+  private var expoModule: ExpoBrownfieldModule?
 
   private init() {}
 
   @discardableResult
   public func addListener(
     _ callback: @escaping BrownfieldCallback
-  ) -> String  {
+  ) -> String {
     let id = UUID().uuidString
     listeners[id] = callback
     return id
@@ -28,13 +30,13 @@ public class BrownfieldMessagingInternal {
     expoModule?.sendMessage(message)
   }
 
-  internal func emit(_ message: BrownfieldMessage) {
-    listeners.values.forEach { listener in
+  func emit(_ message: BrownfieldMessage) {
+    for listener in listeners.values {
       listener(message)
     }
   }
 
-  internal func setExpoModule(_ expoModule: ExpoBrownfieldModule?) {
+  func setExpoModule(_ expoModule: ExpoBrownfieldModule?) {
     self.expoModule = expoModule
   }
 }

@@ -1,38 +1,31 @@
-//
-//  ContentView.swift
-//  ios-swiftui
-//
-//  Created by Patryk Mleczek on 11/12/25.
-//
-
 import SwiftUI
 import MyBrownfieldApp
 
 struct ContentView: View {
-    init() {
-        ReactNativeHostManager.shared.initialize()
-    }
-    
-    var body: some View {
-// CASE: Simple use case
+  init() {
+    ReactNativeHostManager.shared.initialize()
+  }
+
+  var body: some View {
+    // CASE: Simple use case
 //        VStack {
 //            ReactNativeView(moduleName: "main")
 //        }
-// CASE: Navigation use case
-        NavigationStack {
-            VStack {
-                NavigationLink {
-                    ReactNativeView(moduleName: "main")
-                } label: {
-                    Text("Open React Native app")
-                        .font(.largeTitle)
-                        .underline(true)
-                }
-            }
+    // CASE: Navigation use case
+    NavigationStack {
+      VStack {
+        NavigationLink {
+          ReactNativeView(moduleName: "main")
+        } label: {
+          Text("Open React Native app")
+            .font(.largeTitle)
+            .underline(true)
         }
+      }
     }
+  }
 }
 
 #Preview {
-    ContentView()
+  ContentView()
 }

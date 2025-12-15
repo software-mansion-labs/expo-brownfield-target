@@ -2,6 +2,8 @@ import ExpoModulesCore
 
 let NATIVE_MESSAGE_EVENT_NAME = "onMessage"
 
+// MARK: - ExpoBrownfieldModule
+
 public class ExpoBrownfieldModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoBrownfieldModule")
