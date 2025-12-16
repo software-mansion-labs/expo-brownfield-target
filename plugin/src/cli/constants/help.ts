@@ -1,6 +1,42 @@
 import { helpMessage } from '../utils';
 
 /**
+ * Helper function to create a help option for a command.
+ * @param command - The command to display help for.
+ * @returns The help option.
+ */
+const helpOption = (command: string = 'command') => ({
+  description: `display help for ${command}`,
+  option: '--help',
+  short: '-h',
+});
+
+/**
+ * Common build options for Android and iOS.
+ */
+const commonBuildOptions = [
+  {
+    description: 'build AAR in debug configuration',
+    option: '--debug',
+    short: '-d',
+  },
+  {
+    description: 'build AAR in release configuration',
+    option: '--release',
+    short: '-r',
+  },
+  {
+    description: 'output all subcommands output to the terminal',
+    option: '--verbose',
+  },
+  {
+    description: 'path to artifacts directory',
+    option: '--artifacts',
+    short: '-a',
+  },
+];
+
+/**
  * General help message
  */
 const generalHelp = helpMessage({
@@ -22,11 +58,7 @@ const generalHelp = helpMessage({
       option: '--version',
       short: '-v',
     },
-    {
-      description: 'display help for command',
-      option: '--help',
-      short: '-h',
-    },
+    helpOption(),
   ],
 });
 
@@ -36,38 +68,17 @@ const generalHelp = helpMessage({
 const buildAndroidHelp = helpMessage({
   promptCommand: 'build-android',
   options: [
+    helpOption("'build-android'"),
+    ...commonBuildOptions,
     {
-      description: "display help for 'build-android'",
-      option: '--help',
-      short: '-h',
-    },
-    {
-      description: 'do not publish AAR to Maven',
-      option: '--no-publish',
+      description: 'build both debug and release configurations',
+      option: '--all',
+      short: '-a',
     },
     {
       description: 'run custom tasks after building AAR',
       option: '--tasks',
       short: '-t',
-    },
-    {
-      description: 'build AAR in debug configuration',
-      option: '--debug',
-      short: '-d',
-    },
-    {
-      description: 'build AAR in release configuration',
-      option: '--release',
-      short: '-r',
-    },
-    {
-      description: 'output all subcommands output to the terminal',
-      option: '--verbose',
-    },
-    {
-      description: 'path to artifacts directory',
-      option: '--artifacts',
-      short: '-a',
     },
     {
       description: 'name of the brownfield library',
@@ -77,17 +88,19 @@ const buildAndroidHelp = helpMessage({
   ],
 });
 
+const tasksAndroidHelp = helpMessage({
+  promptCommand: 'tasks-android',
+  options: [helpOption("'tasks-android'")],
+});
+
 /**
  * Help message for 'build-ios' command
  */
 const buildIosHelp = helpMessage({
   promptCommand: 'build-ios',
   options: [
-    {
-      description: "display help for 'build-ios'",
-      option: '--help',
-      short: '-h',
-    },
+    helpOption("'build-ios'"),
+    ...commonBuildOptions,
     {
       description: 'scheme to be build',
       option: '--scheme',
@@ -97,25 +110,6 @@ const buildIosHelp = helpMessage({
       description: 'path to .xcworkspace',
       option: '--xcworkspace',
       short: '-x',
-    },
-    {
-      description: 'build xcframework in debug configuration',
-      option: '--debug',
-      short: '-d',
-    },
-    {
-      description: 'build xcframework in release configuration',
-      option: '--release',
-      short: '-r',
-    },
-    {
-      description: 'output all subcommands output to the terminal',
-      option: '--verbose',
-    },
-    {
-      description: 'path to artifacts directory',
-      option: '--artifacts',
-      short: '-a',
     },
   ],
 });
@@ -127,4 +121,5 @@ export const Help = {
   Android: buildAndroidHelp,
   General: generalHelp,
   IOS: buildIosHelp,
+  TasksAndroid: tasksAndroidHelp,
 } as const;

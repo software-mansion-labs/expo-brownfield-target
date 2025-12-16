@@ -28,6 +28,7 @@ export const helpMessage = ({
 
   const usageSection = `${chalk.bold('Usage:')} expo-brownfield-target ${promptCommand}  [${promptOptions}]`;
 
+  // TODO: Add new line at the end (check e.g. in Ghostty)?
   return `\n${usageSection}${optionsSection}${commandsSection}`;
 };
 
