@@ -18,18 +18,18 @@ const action = async () => {
 
   // TODO: Validate and run prebuild?
 
-  // Build and publish library
-  console.log('Building and publishing brownfield and dependencies');
-  for (const repository of config.repositories) {
-    const task = constructTask(config.buildType, repository);
-    console.log(`Publishing to repository: ${repository} (${task})`);
-    console.log(
-      `Running command: ./gradlew ${task} at ${path.join(process.cwd(), 'android')}`,
-    );
-    await runCommand('./gradlew', [task], {
-      cwd: path.join(process.cwd(), 'android'),
-      verbose: config.verbose,
-    });
+  let tasks = [];
+  if (config.tasks.length > 0) {
+    tasks = config.tasks;
+  } else {
+    for (const repository of config.repositories) {
+      const task = constructTask(config.buildType, repository);
+      tasks.push(task);
+    }
+  }
+
+  for (const task of tasks) {
+    await runTask(task, config.verbose);
   }
 };
 
@@ -43,4 +43,11 @@ const constructTask = (
   const repositorySuffixed =
     repository === 'MavenLocal' ? repository : `${repository}Repository`;
   return `publishBrownfield${buildTypeCapitalized}PublicationTo${repositorySuffixed}`;
+};
+
+const runTask = async (task: string, verbose: boolean) => {
+  await runCommand('./gradlew', [task], {
+    cwd: path.join(process.cwd(), 'android'),
+    verbose: verbose,
+  });
 };
