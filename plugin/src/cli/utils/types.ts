@@ -65,3 +65,12 @@ export interface RunCommandOptions {
 export interface RunCommandResult {
   stdout: string;
 }
+
+export interface WithSpinnerParams<T> {
+  operation: () => Promise<T>;
+  loaderMessage: string;
+  successMessage?: string;
+  errorMessage?: string;
+  onError?: 'error' | 'warn';
+  verbose?: boolean;
+}

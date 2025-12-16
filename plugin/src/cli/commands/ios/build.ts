@@ -1,5 +1,3 @@
-import ora, { Ora } from 'ora';
-import chalk from 'chalk';
 import fs from 'node:fs/promises';
 import { Args, Help } from '../../constants';
 import {
@@ -8,6 +6,7 @@ import {
   parseArgs,
   printConfig,
   runCommand,
+  withSpinner,
 } from '../../utils';
 
 const action = async () => {
@@ -34,105 +33,103 @@ const action = async () => {
 export default action;
 
 const cleanUpArtifacts = async (artifactsPath: string) => {
-  try {
-    await fs.access(artifactsPath);
-    const artifacts = (await fs.readdir(artifactsPath)).filter((artifact) =>
-      artifact.endsWith('.xcframework'),
-    );
+  return withSpinner({
+    operation: async () => {
+      try {
+        await fs.access(artifactsPath);
+      } catch (error) {
+        // Ignore if directory does not exist
+        return;
+      }
 
-    for (const artifact of artifacts) {
-      await fs.rm(`${artifactsPath}/${artifact}`, {
-        recursive: true,
-        force: true,
-      });
-    }
-  } catch (error) {
-    // TODO: Handle error - should continue
-    console.error(error);
-  }
+      const artifacts = (await fs.readdir(artifactsPath)).filter((artifact) =>
+        artifact.endsWith('.xcframework'),
+      );
+
+      for (const artifact of artifacts) {
+        await fs.rm(`${artifactsPath}/${artifact}`, {
+          recursive: true,
+          force: true,
+        });
+      }
+    },
+    loaderMessage: 'Cleaning up previous artifacts...',
+    successMessage: 'Cleaning up previous artifacts succeeded',
+    errorMessage: 'Cleaning up previous artifacts failed',
+  });
 };
 
 const runBuild = async (config: BuildConfigIos) => {
-  // TODO: Extract spinners to some common function?
-  let spinner: Ora | undefined;
-  try {
-    if (!config.verbose)
-      spinner = ora('Compiling brownfield framework...').start();
-    await runCommand(
-      'xcodebuild',
-      [
-        '-workspace',
-        config.workspace,
-        '-scheme',
-        config.scheme,
-        '-derivedDataPath',
-        `ios/build`,
-        '-destination',
-        'generic/platform=iphoneos',
-        '-destination',
-        'generic/platform=iphonesimulator',
-        '-configuration',
-        config.buildType,
-      ],
-      {
-        verbose: config.verbose,
-      },
-    );
-    if (!config.verbose)
-      spinner?.succeed('Compiling brownfield framework succeeded');
-  } catch (error) {
-    // TODO: Handle error
-    console.error(error);
-    return process.exit(1);
-  } finally {
-    if (!config.verbose) spinner?.stop();
-  }
+  return withSpinner({
+    operation: () =>
+      runCommand(
+        'xcodebuild',
+        [
+          '-workspace',
+          config.workspace,
+          '-scheme',
+          config.scheme,
+          '-derivedDataPath',
+          'ios/build',
+          '-destination',
+          'generic/platform=iphoneos',
+          '-destination',
+          'generic/platform=iphonesimulator',
+          '-configuration',
+          config.buildType,
+        ],
+        {
+          verbose: config.verbose,
+        },
+      ),
+    loaderMessage: 'Compiling framework...',
+    successMessage: 'Compiling framework succeeded',
+    errorMessage: 'Compiling framework failed',
+    verbose: config.verbose,
+  });
 };
 
 const packageFrameworks = async (config: BuildConfigIos) => {
-  let spinner: Ora | undefined;
-  try {
-    if (!config.verbose)
-      spinner = ora('Packaging brownfield framework...').start();
-    await runCommand(
-      'xcodebuild',
-      [
-        '-create-xcframework',
-        '-framework',
-        `ios/build/Build/Products/${config.buildType}-iphoneos/${config.scheme}.framework`,
-        '-framework',
-        `ios/build/Build/Products/${config.buildType}-iphonesimulator/${config.scheme}.framework`,
-        '-output',
-        `${config.artifacts}/${config.scheme}.xcframework`,
-      ],
-      {
-        verbose: config.verbose,
-      },
-    );
-  } catch (error) {
-    // TODO: Handle error
-    console.error(error);
-    return process.exit(1);
-  } finally {
-    if (!config.verbose) spinner?.stop();
-  }
+  return withSpinner({
+    operation: () =>
+      runCommand(
+        'xcodebuild',
+        [
+          '-create-xcframework',
+          '-framework',
+          `ios/build/Build/Products/${config.buildType}-iphoneos/${config.scheme}.framework`,
+          '-framework',
+          `ios/build/Build/Products/${config.buildType}-iphonesimulator/${config.scheme}.framework`,
+          '-output',
+          `${config.artifacts}/${config.scheme}.xcframework`,
+        ],
+        {
+          verbose: config.verbose,
+        },
+      ),
+    loaderMessage: 'Packaging framework into an XCFramework...',
+    successMessage: 'Packaging framework into an XCFramework succeeded',
+    errorMessage: 'Packaging framework into an XCFramework failed',
+    verbose: config.verbose,
+  });
 };
 
 const copyHermesFramework = async (config: BuildConfigIos) => {
-  let spinner: Ora | undefined;
-  if (!config.verbose)
-    spinner = ora(
-      'Copying hermes.xcframework to the artifacts directory...',
-    ).start();
-  await fs.cp(
-    `./ios/${config.hermesFrameworkPath}`,
-    `${config.artifacts}/hermes.xcframework`,
-    {
-      recursive: true,
-    },
-  );
-  if (!config.verbose)
-    spinner?.succeed(
-      'Successfully copied hermes.xcframework to the artifact directory',
-    );
+  return withSpinner({
+    operation: () =>
+      fs.cp(
+        `./ios/${config.hermesFrameworkPath}`,
+        `${config.artifacts}/hermes.xcframework`,
+        {
+          force: true,
+          recursive: true,
+        },
+      ),
+    loaderMessage: 'Copying hermes.xcframework to the artifacts directory...',
+    successMessage:
+      'Copying hermes.xcframework to the artifacts directory succeeded',
+    errorMessage:
+      'Copying hermes.xcframework to the artifacts directory failed',
+    verbose: config.verbose,
+  });
 };
