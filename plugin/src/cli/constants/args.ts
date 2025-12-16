@@ -1,9 +1,9 @@
-import arg from 'arg';
+import arg, { type Spec } from 'arg';
 
 /**
  * General CLI arguments
  */
-const generalArgs = {
+const generalArgs: Spec = {
   // Types
   '--help': arg.COUNT,
   '--version': arg.COUNT,
@@ -15,54 +15,70 @@ const generalArgs = {
 /**
  * Common build arguments shared by Android and iOS
  */
-const buildCommonArgs = {
+const buildCommonArgs: Spec = {
   // Types
-  '--artifacts': String,
   '--debug': arg.COUNT,
   '--help': arg.COUNT,
   '--release': arg.COUNT,
   '--verbose': arg.COUNT,
   // Aliases
-  '-a': '--artifacts',
   '-d': '--debug',
   '-h': '--help',
   '-r': '--release',
-} as const;
+};
 
 /**
  * Android build arguments
  */
-const buildAndroidArgs = {
+const buildAndroidArgs: Spec = {
   // Inherited
   ...buildCommonArgs,
   // Types
+  '--all': arg.COUNT,
   '--library': String,
-  '--no-publish': arg.COUNT,
-  '--tasks': String,
+  '--repository': [String],
+  '--task': [String],
   // Aliases
+  '-a': '--all',
   '-l': '--library',
-  '-t': '--tasks',
-} as const;
+  '-r': '--repository',
+  '-t': '--task',
+};
+
+/**
+ * Android tasks arguments
+ */
+const tasksAndroidArgs: Spec = {
+  // Types
+  '--help': arg.COUNT,
+  '--library': String,
+  // Aliases
+  '-h': '--help',
+  '-l': '--library',
+};
 
 /**
  * iOS build arguments
  */
-const buildIosArgs = {
+const buildIosArgs: Spec = {
   // Inherited
   ...buildCommonArgs,
   // Types
+  '--artifacts': String,
   '--scheme': String,
   '--xcworkspace': String,
   // Aliases
+  '-a': '--artifacts',
   '-s': '--scheme',
   '-x': '--xcworkspace',
-} as const;
+};
 
 /**
  * CLI arguments
  */
-export const Args = {
+export const Args: Record<string, Spec> = {
   Android: buildAndroidArgs,
   General: generalArgs,
   IOS: buildIosArgs,
-} as const;
+  TasksAndroid: tasksAndroidArgs,
+};
