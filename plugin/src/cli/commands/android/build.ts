@@ -6,6 +6,7 @@ import {
   parseArgs,
   printConfig,
   runCommand,
+  withSpinner,
 } from '../../utils';
 import path from 'node:path';
 
@@ -32,12 +33,8 @@ const action = async () => {
     }
   }
 
-  let spinner: Ora | undefined;
-  const verbose = config.verbose;
   for (const task of tasks) {
-    if (!verbose) spinner = ora('Running task: ' + task).start();
     await runTask(task, config.verbose);
-    if (!verbose) spinner?.succeed('Running task: ' + task + ' succeeded');
   }
 };
 
@@ -54,8 +51,15 @@ const constructTask = (
 };
 
 const runTask = async (task: string, verbose: boolean) => {
-  await runCommand('./gradlew', [task], {
-    cwd: path.join(process.cwd(), 'android'),
+  return withSpinner({
+    operation: () =>
+      runCommand('./gradlew', [task], {
+        cwd: path.join(process.cwd(), 'android'),
+        verbose: verbose,
+      }),
+    loaderMessage: 'Running task: ' + task,
+    successMessage: 'Running task: ' + task + ' succeeded',
+    errorMessage: 'Running task: ' + task + ' failed',
     verbose: verbose,
   });
 };

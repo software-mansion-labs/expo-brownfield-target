@@ -1,5 +1,6 @@
+import ora, { type Ora } from 'ora';
 import chalk from 'chalk';
-import { BuildConfigAndroid, BuildConfigIos } from './types';
+import { BuildConfigAndroid, BuildConfigIos, WithSpinnerParams } from './types';
 
 const isBuildConfigAndroid = (
   config: BuildConfigAndroid | BuildConfigIos,
@@ -32,4 +33,43 @@ export const printConfig = (config: BuildConfigAndroid | BuildConfigIos) => {
   }
 
   console.log('');
+};
+
+export const withSpinner = async <T>({
+  operation,
+  loaderMessage,
+  successMessage,
+  errorMessage,
+  onError = 'error',
+  verbose = false,
+}: WithSpinnerParams<T>) => {
+  let spinner: Ora | undefined;
+
+  try {
+    if (!verbose) {
+      spinner = ora(loaderMessage).start();
+    }
+
+    const result = await operation();
+
+    if (!verbose) {
+      spinner?.succeed(successMessage);
+    }
+
+    return result;
+  } catch (error) {
+    if (!verbose) {
+      onError === 'error'
+        ? spinner?.fail(errorMessage)
+        : spinner?.warn(errorMessage);
+    }
+
+    // TODO: Handle error
+    console.error(error);
+    return process.exit(1);
+  } finally {
+    if (!verbose && spinner?.isSpinning) {
+      spinner?.stop();
+    }
+  }
 };
