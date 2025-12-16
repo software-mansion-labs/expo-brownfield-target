@@ -7,7 +7,14 @@
 
 `expo-brownfield-target` is an Expo config plugin that allows you to easily extend your Expo app with additional native targets, enabling you to build and distribute it as a brownfield project.
 
+### 📖 Documentation
+
+- [CLI](./docs/cli.md)
+- [Communication API](./docs/api.md#communication)
+- [Navigation API](./docs/api.md#navigation)
+
 ### Table of contents
+
 - [Motivation](#motivation)
 - [Features](#features)
 - [Platform & Expo SDK compatibility](#compat)
@@ -22,14 +29,6 @@
     - [Android](#using-android)
     - [iOS (SwiftUI)](#using-swiftui)
     - [iOS (UIKit)](#using-uikit)
-  - [Navigation](#navigation)
-    - [Methods](#nav-methods)
-  - [Communication](#communication)
-    - [JavaScript Methods](#communication-methods-js)
-    - [Android Methods](#communication-methods-android)
-    - [iOS Methods](#communication-methods-ios)
-- [CLI reference](#cli)
-  - [CLI commands](#cli-commands)
 - [Configuration reference](#configuration)
   - [Android](#configuration-android)
   - [iOS](#configuration-ios)
@@ -37,11 +36,13 @@
 - [Acknowledgments](#acknowledgments)
 
 <a name="motivation"></a>
+
 ## Motivation
 
 Brownfield approach enables integrating React Native apps into native Android and iOS projects, but setting it up, especially in Expo projects using Continuous Native Generation is a manual, repetitive and pretty complex task. This plugin aims to fully automate this process on every prebuild and provides a set of configurable file templates and a CLI which streamlines brownfield distribution. Additionally such setup of brownfield allows for easy packaging it as a fat-AAR, XCFramework or Swift Package which simplifies its shipping and enables e.g. simple and more independent cooperation of native and RN teams.
 
 <a name="features"></a>
+
 ## Features
 
 - Automatically adds native projects for building brownfield to your Expo app during prebuilds
@@ -53,14 +54,17 @@ Brownfield approach enables integrating React Native apps into native Android an
 **Note:** Our goal is maximum customizability, so if you feel like anything else needs to be customizable, please feel free to cut an issue or a discussion.
 
 <a name="compat"></a>
+
 ## Platform & Expo SDK compatibility
 
 The plugin supports both Android and iOS. As of now we only support Expo SDK 54.
 
 <a name="usage"></a>
+
 ## Usage
 
 <a name="installation"></a>
+
 ### Installation
 
 ```sh
@@ -68,6 +72,7 @@ npm install expo-brownfield-target
 ```
 
 <a name="plugin-setup"></a>
+
 ### Plugin setup
 
 Add the config plugin to the `"plugins"` section in your `app.json` or `app.config.js` / `app.config.ts`:
@@ -100,7 +105,7 @@ If you want to pass any configuration options make sure to add the plugin as an 
           "android": {
             ...
           },
-          "ios": { 
+          "ios": {
             ...
           }
         }
@@ -111,11 +116,13 @@ If you want to pass any configuration options make sure to add the plugin as an 
 ```
 
 <a name="manual-setup"></a>
+
 ### Manual setup
 
 All steps performed by the plugin can also be performed manually. Please refer to [MANUAL-SETUP.MD](./MANUAL-SETUP.md) for a full guide for manual setup.
 
 <a name="generating-brownfield-targets"></a>
+
 ### Adding brownfield targets
 
 The additional targets for brownfield will be added automatically every time you prebuild the native projects:
@@ -125,6 +132,7 @@ npx expo prebuild --clean
 ```
 
 <a name="with-cli"></a>
+
 ### Building with CLI
 
 The plugin comes with a built-in CLI which can be used to build both Android and iOS targets:
@@ -137,16 +145,19 @@ npx expo-brownfield-target build-ios
 More details and full reference of the CLI commands can be found below in the [CLI Reference](#cli) section.
 
 <a name="with-manually"></a>
+
 ### Building manually
 
 Brownfields can be also built manually using the `xcodebuild` and `./gradlew` commands. Please see [build-xcframework.sh](#./example/scripts/build-xcframework.sh) and [build-aar.sh](#./example/scripts/build-aar.sh) for an example reference of manual building.
 
 <a name="using-built-artifacts"></a>
+
 ### Using built artifacts in native projects
 
 Below snippets are taken from the examples of using brownfields inside native apps at: [/examples/android](./example/android/), [/examples/ios](./example/ios/) and [/examples/ios-swiftui](./example/ios-swiftui/).
 
 <a name="using-android"></a>
+
 ### Android
 
 ```kotlin
@@ -173,6 +184,7 @@ class MainActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
 ```
 
 <a name="using-swiftui"></a>
+
 ### iOS (SwiftUI)
 
 ```swift
@@ -194,6 +206,7 @@ struct ContentView: View {
 ```
 
 <a name="using-uikit"></a>
+
 ### iOS (UIKit)
 
 ```swift
@@ -215,482 +228,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let viewController = ReactNativeViewController(moduleName: "main")
         window?.rootViewController = viewController
         window?.makeKeyAndVisible()
-        
+
         return true
     }
 }
 ```
 
-<a name="navigation"></a>
-## Navigation
-
-<a name="nav-methods"></a>
-### Methods
-
-```ts
-popToNative(animated?: boolean)
-```
-
-**Description:** A method to return to the native view which precedes the React Native brownfield in the navigation history.
-
-**Arguments:**
-
-| Name | Required | Description | Platform support | Default value |
-| --- | --- | --- | --- | --- |
-| `animated` | No | Specifies if the return to the native view should be performed with an animation | iOS (UIKit) | `false` |
-
-**Example:**
-
-```tsx
-import ExpoBrownfieldModule from 'expo-brownfield-target';
-
-// ...
-
-<Button 
-  title="Go back" 
-  onPress={() => ExpoBrownfieldModule.popToNative()} 
-/>
-
-<Button 
-  title="Go back animated" 
-  onPress={() => ExpoBrownfieldModule.popToNative(true)} 
-/>
-
-```
-
-<br />
-
-----
-
-<br />
-
-```ts
-setNativeBackEnabled(enabled: boolean)
-```
-
-**Description:** Enables or disables native handling of the back action (the back gesture on iOS or back button on Android).
-
-**Arguments:**
-
-| Name | Required | Description | Platform support | Default value |
-| --- | --- | --- | --- | --- |
-| `enabled` | Yes | If native handling of the back action should be enabled or disabled | All | - |
-
-**Example:**
-
-```tsx
-import ExpoBrownfieldModule from 'expo-brownfield-target';
-import { useNavigation } from "expo-router";
-
-// ...
-
-export default function HomeScreen() {
-  const navigation = useNavigation();
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener("state", () => {
-      // Enable native handling only when we can't further go back
-      // within the React Native app
-      const shouldEnableNativeBack = navigation.canGoBack();
-      ExpoBrownfield.setNativeBackEnabled(!shouldEnableNativeBack);
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [navigation]);
-
-  // ...
-```
-
-<a name="communication"></a>
-## Communication
-
-<a name="communication-methods-js"></a>
-### JavaScript Methods
-
-```ts
-addListener(listener: (event: MessageEvent) => void): EventSubscription
-```
-
-**Description:** Registers an `onMessage` event listener.
-
-**Arguments:**
-
-| Name | Required | Description | Platform support | Default value |
-| --- | --- | --- | --- | --- |
-| `listener` | Yes | `onMessage` event listener | All | - |
-
-**Example:**
-
-```tsx
-import ExpoBrownfieldModule, { MessageEvent } from 'expo-brownfield-target';
-
-// ...
-
-const handleEvent = (event: MessageEvent) => {
-    setLastEvent(event);
-    updateEventCount();
-};
-
-useEffect(() => {
-    ExpoBrownfield.addListener(handleEvent);
-
-// ...
-```
-
-<br />
-
-----
-
-<br />
-
-
-```ts
-listenerCount(): number
-```
-
-**Description:** Returns count of listeners registered for `onMessage` event.
-
-**Example:**
-
-```tsx
-import ExpoBrownfieldModule from 'expo-brownfield-target';
-
-// ...
-
-const activeListeners = ExpoBrownfieldModule.listenerCount();
-```
-
-<br />
-
-----
-
-<br />
-
-```ts
-removeAllListeners()
-```
-
-**Description:** Removes all listeners registered for `onMessage` event.
-
-**Example:**
-
-```tsx
-import ExpoBrownfieldModule from 'expo-brownfield-target';
-
-// ...
-
-useEffect(() => {
-  return () => {
-    ExpoBrownfieldModule.removeAllListeners();
-  };
-});
-```
-
-<br />
-
-----
-
-<br />
-
-```ts
-removeListener(listener: (event: MessageEvent) => void): EventSubscription
-```
-
-**Description:** Removes a specified `onMessage` event listener.
-
-**Arguments:**
-
-| Name | Required | Description | Platform support | Default value |
-| --- | --- | --- | --- | --- |
-| `listener` | Yes | `onMessage` event listener | All | - |
-
-**Example:**
-
-```tsx
-import ExpoBrownfieldModule, { MessageEvent } from 'expo-brownfield-target';
-
-// ...
-
-const handleEvent = (event: MessageEvent) => {
-    setLastEvent(event);
-    updateEventCount();
-};
-
-useEffect(() => {
-    ExpoBrownfield.addListener(handleEvent);
-    return () => {
-        ExpoBrownfield.removeListener(handleEvent);
-    }
-});
-// ...
-```
-
-<br />
-
-----
-
-<br />
-
-
-```ts
-sendMessage(message: Record<string, any>)
-```
-
-**Description:** Sends a message from JavaScript to the native listeners.
-
-**Arguments:**
-
-| Name | Required | Description | Platform support | Default value |
-| --- | --- | --- | --- | --- |
-| `message` | Yes | Message payload | All | - |
-
-**Example:**
-
-```tsx
-import ExpoBrownfieldModule from 'expo-brownfield-target';
-
-// ...
-
-ExpoBrownfieldModule.sendMessage({
-  type: "MyMesage",
-  data: {
-    language: "TypeScript",
-    expo: true,
-    nativePlatforms: 2,
-    platforms: ["android", "ios"],
-  },
-});
-```
-
-<a name="communication-methods-android"></a>
-### Android Methods
-
-```kotlin
-addListener(callback: (Map<String, Any?>) -> Unit)
-```
-
-**Description:** Registers a listener for messages from JavaScript. Returns the UUID of the listener which can be used to remove it.
-
-**Arguments:**
-
-| Name | Required | Description | Type | Default value |
-| --- | --- | --- | --- | --- |
-| `callback` | Yes | Callback invoked with the incoming message | (Map<String, Any?>) -> Unit | - |
-
-**Example:**
-
-```kotlin
-import expo.modules.brownfield.BrownfieldMessaging
-
-// ...
-
-val listenerId = BrownfieldMessaging.addListener { event ->
-    println("Message listener: $event")
-}
-```
-
-<br />
-
-----
-
-<br />
-
-```kotlin
-removeListener(id: String)
-```
-
-**Description:** Removes listener with the specified UUID.
-
-**Arguments:**
-
-| Name | Required | Description | Type | Default value |
-| --- | --- | --- | --- | --- |
-| `id` | Yes | UUID of the listener to be de-registered | String | - |
-
-**Example:**
-
-```kotlin
-import expo.modules.brownfield.BrownfieldMessaging
-
-// ...
-
-BrownfieldMessaging.removeListener(listenerId)
-```
-
-<br />
-
-----
-
-<br />
-
-```kotlin
-sendMessage(message: Map<String, Any?>)
-```
-
-**Description:** Emits a `onMessage` event with the message from Android to the JavaScript listeners.
-
-**Arguments:**
-
-| Name | Required | Description | Type | Default value |
-| --- | --- | --- | --- | --- |
-| `message` | Yes | Message payload | Map<String, Any?> | - |
-
-**Example:**
-
-```kotlin
-import expo.modules.brownfield.BrownfieldMessaging
-
-// ...
-
-BrownfieldMessaging.sendMessage(mapOf(
-    "type" to "MyAndroidMessage",
-    "timestamp" to System.currentTimeMillis(),
-    "nestedObject" to mapOf(
-        "platform" to "android",
-        "number" to 123.456,
-        "chunks" to listOf("Hello", "from", "Android")
-    )
-))
-```
-
-<a name="communication-methods-ios"></a>
-### iOS Methods
-
-```swift
-addListener(_ callback: @escaping ([String: Any?]) -> Void)
-```
-
-**Description:** Registers a listener for messages from JavaScript. Returns the UUID of the listener which can be used to remove it.
-
-**Arguments:**
-
-| Name | Required | Description | Type | Default value |
-| --- | --- | --- | --- | --- |
-| `callback` | Yes | Callback invoked with the incoming message | @escaping ([String: Any?]) -> Void | - |
-
-**Example:**
-
-```swift
-let listenerId = BrownfieldMessaging.addListener { event ->
-    print("Message listener: \(event)")
-}
-```
-
-<br />
-
-----
-
-<br />
-
-
-```swift
-removeListener(id: String)
-```
-
-**Description:** Removes listener with specified UUID.
-
-**Arguments:**
-
-| Name | Required | Description | Type | Default value |
-| --- | --- | --- | --- | --- |
-| `id` | Yes | UUID of the listener to be de-registered | String | - |
-
-**Example:**
-
-```swift
-BrownfieldMessaging.removeListener(id: listenerId)
-```
-
-<br />
-
-----
-
-<br />
-
-```swift
-sendMessage(_ message: [String: Any?])
-```
-
-**Description:** Emits a `onMessage` event with the message from iOS to the JavaScript listeners.
-
-**Arguments:**
-
-| Name | Required | Description | Type | Default value |
-| --- | --- | --- | --- | --- |
-| `message` | Yes | Message payload| [String: Any?] | - |
-
-**Example:**
-
-```swift
-BrownfieldMessaging.sendMessage([
-  "type": "MyIOSMessage",
-  "timestamp": Date().timeIntervalSince1970,
-  "nestedObject": [
-    "platform": "ios",
-    "number": 123.456,
-    "chunks": ["Hello", "from", "iOS"]
-  ]
-])
-```
-
-<a name="cli"></a>
-## CLI reference
-
-<a name="cli-commands"></a>
-### CLI commands
-
-#### `build-android`
-
-Builds the Android library as a fat-AAR and copies it to the artifacts directory. By default it also publishes the AAR to local Maven repository.
-
-```
-npx expo-brownfield-target build-android [options]
-```
-
-| Option | Short option | Description | Default value |
-| --- | --- | --- | --- |
-| --help | -h | Displays help message for `build-android` | - |
-| --no-publish | - | Skips publishing the AAR to local Maven repo | - |
-| --tasks | -t | Enables running specified custom tasks sequentially after `assembleDebug`/`assembleRelease` (e.g. for custom Maven publishing flow). List should be specified in the following format: `task1,task2,task3,task4` | - |
-| --debug | -d | Specifies to build the framework with **Debug** configuration. If both `--debug` and `--release` are passed `--release` takes precedence | If no option for configuration is passed framework will be built in **Release** |
-| --release | -r | Specifies to build the framework with **Release** configuration. If both options are passed `--release` takes precedence over `--debug` | If no option for configuration is passed framework will be built in **Release** |
-| --verbose | - | Output of all commands ran by the CLI (e.g. `./gradlew assembleRelease`) will be printed in the terminal | - |
-| --artifacts | -a | Directory where built artifacts (XCFrameworks and AAR) should be placed | `./artifacts` (relative to the Expo project root) |
-| --library | -l | The name of the Android library for brownfield | `brownfield` |
-
-#### `build-ios`
-
-Builds the iOS framework, packages it as an XCFramework and places it in the artifacts directory (`artifacts/`) along with the `hermes.xcframework` copied from Pods.
-
-```
-npx expo-brownfield-target build-ios [options]
-```
-
-| Option | Short option | Description | Default value |
-| --- | --- | --- | --- |
-| --help | -h | Displays help message for `build-ios` | - |
-| --scheme | -s | Scheme for brownfield target which should be build | Scheme name automatically inferred from the native project |
-| --xcworkspace | -x | Path to **.xcworkspace** file | Path automatically inferred from the native project |
-| --debug | -d | Specifies to build the framework with **Debug** configuration. If both `--debug` and `--release` are passed `--release` takes precedence | If no option for configuration is passed framework will be built in **Release** |
-| --release | -r | Specifies to build the framework with **Release** configuration. If both options are passed `--release` takes precedence over `--debug` | If no option for configuration is passed framework will be built in **Release** |
-| --verbose | - | Output of all commands ran by the CLI (e.g. `./gradlew assembleRelease`) will be printed in the terminal | - |
-| --artifacts | -a | Directory where built artifacts (XCFrameworks and AAR) should be placed | `./artifacts` (relative to the Expo project root) |
-
 <a name="configuration"></a>
-## Configuration reference 
+
+## Configuration reference
 
 <a name="configuration-android"></a>
+
 ### Android
 
-| Property | Description | Default value |
-| --- | --- | --- |
-| `library` | Name of the Android library used for the brownfield | `brownfield` |
-| `package` | Package identifier for the brownfield library | `android.package` appended with `.brownfield` or `com.example.brownfield` if `android.package` is undefined |
-| `group` | Group property for the brownfield library | Resolved value of the `package` stripped of the last component |
-| `version` | Version of the brownfield library | 1.0.0 |
-| `publishing` | An array of Maven publishing configurations. For more detailed reference see the next section | `[{ type: 'localMaven' }]` |
+| Property     | Description                                                                                   | Default value                                                                                               |
+| ------------ | --------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `library`    | Name of the Android library used for the brownfield                                           | `brownfield`                                                                                                |
+| `package`    | Package identifier for the brownfield library                                                 | `android.package` appended with `.brownfield` or `com.example.brownfield` if `android.package` is undefined |
+| `group`      | Group property for the brownfield library                                                     | Resolved value of the `package` stripped of the last component                                              |
+| `version`    | Version of the brownfield library                                                             | 1.0.0                                                                                                       |
+| `publishing` | An array of Maven publishing configurations. For more detailed reference see the next section | `[{ type: 'localMaven' }]`                                                                                  |
 
 #### Publishing configuration
 
@@ -705,7 +263,7 @@ npx expo-brownfield-target build-ios [options]
   ```ts
   type LocalMavenPublication = {
     type: 'localMaven';
-  }
+  };
   ```
 
   **Example:**
@@ -729,7 +287,7 @@ npx expo-brownfield-target build-ios [options]
     type: 'localDirectory';
     name?: string;
     path: string;
-  }
+  };
   ```
 
   **Example:**
@@ -748,7 +306,7 @@ npx expo-brownfield-target build-ios [options]
 
   Name property is optional and is used to define the publishing Gradle tasks. If not passed a default name suffixed with a number will be automatically generated: `remotePublic1`, `remotePublic2`, ...
 
-  Accepts optional `allowInsecure` setting which translates to Maven's [isAllowInsecureProtocol](https://docs.gradle.org/current/kotlin-dsl/gradle/org.gradle.api.artifacts.repositories/-url-artifact-repository/is-allow-insecure-protocol.html) and specifies whether it is possible to communicate with a repository via an insecure connection. 
+  Accepts optional `allowInsecure` setting which translates to Maven's [isAllowInsecureProtocol](https://docs.gradle.org/current/kotlin-dsl/gradle/org.gradle.api.artifacts.repositories/-url-artifact-repository/is-allow-insecure-protocol.html) and specifies whether it is possible to communicate with a repository via an insecure connection.
 
   **Type:**
 
@@ -758,7 +316,7 @@ npx expo-brownfield-target build-ios [options]
     name?: string;
     url: string;
     allowInsecure?: boolean;
-  }
+  };
   ```
 
   **Example:**
@@ -783,15 +341,15 @@ npx expo-brownfield-target build-ios [options]
   > [!WARNING]  
   > If the values are read from environment variables they will be inserted into android project's `build.gradle` file on prebuild. Watch out to not commit the prebuilt native project to GitHub.
 
-  Accepts optional `allowInsecure` setting which translates to Maven's [isAllowInsecureProtocol](https://docs.gradle.org/current/kotlin-dsl/gradle/org.gradle.api.artifacts.repositories/-url-artifact-repository/is-allow-insecure-protocol.html) and specifies whether it is possible to communicate with a repository via an insecure connection. 
+  Accepts optional `allowInsecure` setting which translates to Maven's [isAllowInsecureProtocol](https://docs.gradle.org/current/kotlin-dsl/gradle/org.gradle.api.artifacts.repositories/-url-artifact-repository/is-allow-insecure-protocol.html) and specifies whether it is possible to communicate with a repository via an insecure connection.
 
   **Type:**
 
   ```ts
   type EnvValue = {
     variable: string;
-  }
-  
+  };
+
   type RemotePrivateBasicPublication = {
     type: 'remotePrivate';
     name?: string;
@@ -799,7 +357,7 @@ npx expo-brownfield-target build-ios [options]
     username: string | EnvValue;
     password: string | EnvValue;
     allowInsecure?: boolean;
-  }
+  };
   ```
 
   **Example:**
@@ -815,24 +373,27 @@ npx expo-brownfield-target build-ios [options]
     },
     "password": {
       "variable": "MAVEN_REPO_PASSWORD"
-    },
+    }
   }
   ```
 
 <a name="configuration-ios"></a>
+
 ### iOS
 
-| Property | Description | Default value |
-| --- | --- | --- |
-| `bundleIdentifier` | Bundle identifier for the brownfield native target. | `ios.bundleIdentifier` with last component replaced with the target name or `com.example.<target-name>` if `ios.bundleIdentifier` is undefined. |
-| `targetName` | Name of the brownfield native target. Also used as the name of the directory containing brownfield files. The value is sanitized to only contain alphanumeric characters and start with a letter. | `config.scheme` or `config.ios.scheme` appended with `brownfield`, if either value is defined and a single string. If not defaults to to `<slug>brownfield`, where `<slug>` is sanitized slug from the Expo project config |
+| Property           | Description                                                                                                                                                                                       | Default value                                                                                                                                                                                                              |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bundleIdentifier` | Bundle identifier for the brownfield native target.                                                                                                                                               | `ios.bundleIdentifier` with last component replaced with the target name or `com.example.<target-name>` if `ios.bundleIdentifier` is undefined.                                                                            |
+| `targetName`       | Name of the brownfield native target. Also used as the name of the directory containing brownfield files. The value is sanitized to only contain alphanumeric characters and start with a letter. | `config.scheme` or `config.ios.scheme` appended with `brownfield`, if either value is defined and a single string. If not defaults to to `<slug>brownfield`, where `<slug>` is sanitized slug from the Expo project config |
 
 <a name="file-templates"></a>
+
 ### File templates
 
 You can also overwrite the templates which are used to generate the files to even better suit the plugin behavior to your requirements. More information about overwriting the templates can be found in [TEMPLATES.md](./TEMPLATES.md).
 
 <a name="acknowledgments"></a>
+
 ### Acknowledgments
 
 Huge thanks to:

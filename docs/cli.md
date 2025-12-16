@@ -13,8 +13,6 @@
 <a href="usage"></a>
 ## Usage
 
-Basic syntax:
-
 ```
 npx expo-brownfield-target [command] [options]
 ```
