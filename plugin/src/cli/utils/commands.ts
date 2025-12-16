@@ -73,7 +73,7 @@ export const runCommand = (
         process.exit(130);
       } else {
         const errorMessage = `Command '${command} ${args.join(' ')}' failed with code ${code}
-        \n${stdErr.substring(0, 300)}`;
+        \n${stdErr}`;
         reject(errorMessage);
       }
     });

@@ -27,5 +27,6 @@ npm uninstall expo-brownfield-target
 npm install $TARBALL_PATH
 
 # Perform clean prebuild
-rm -rf .expo android ios
-yes | npx expo prebuild --clean
+# TODO: Hide behind a flag/variable
+# rm -rf .expo android ios
+# yes | npx expo prebuild --clean

@@ -62,3 +62,6 @@ plugin/tsconfig.tsbuildinfo
 
 # Local Maven repository
 maven/
+
+# Jest coverage
+coverage

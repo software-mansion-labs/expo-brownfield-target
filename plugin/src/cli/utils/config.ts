@@ -2,11 +2,13 @@ import type { Result, Spec } from 'arg';
 import type {
   BuildConfigAndroid,
   BuildConfigCommon,
+  BuildConfigIos,
   BuildTypeAndroid,
   BuildTypeCommon,
 } from './types';
 import { Defaults } from '../constants';
-import { inferAndroidLibrary } from './infer';
+import { inferAndroidLibrary, inferScheme, inferXCWorkspace } from './infer';
+import path from 'node:path';
 
 export const getCommonConfig = (args: Result<Spec>): BuildConfigCommon => {
   return {
@@ -27,11 +29,20 @@ export const getAndroidConfig = async (
   };
 };
 
-export const getIosConfig = (args: Result<Spec>) => {
+export const getIosConfig = async (
+  args: Result<Spec>,
+): Promise<BuildConfigIos> => {
   return {
     ...getCommonConfig(args),
-    artifacts: args['--artifacts'] || Defaults.artifactsPath,
+    artifacts: path.join(
+      process.cwd(),
+      args['--artifacts'] || Defaults.artifactsPath,
+    ),
     buildType: getBuildTypeCommon(args),
+    hermesFrameworkPath:
+      args['--hermes-framework'] || Defaults.hermesFrameworkPath,
+    scheme: args['--scheme'] || (await inferScheme()),
+    workspace: args['--workspace'] || (await inferXCWorkspace()),
   };
 };
 

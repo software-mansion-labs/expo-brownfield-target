@@ -1,8 +1,10 @@
+import ora, { Ora } from 'ora';
 import { Args, Help } from '../../constants';
 import {
   BuildTypeAndroid,
   getAndroidConfig,
   parseArgs,
+  printConfig,
   runCommand,
 } from '../../utils';
 import path from 'node:path';
@@ -18,6 +20,8 @@ const action = async () => {
 
   // TODO: Validate and run prebuild?
 
+  printConfig(config);
+
   let tasks = [];
   if (config.tasks.length > 0) {
     tasks = config.tasks;
@@ -28,8 +32,12 @@ const action = async () => {
     }
   }
 
+  let spinner: Ora | undefined;
+  const verbose = config.verbose;
   for (const task of tasks) {
+    if (!verbose) spinner = ora('Running task: ' + task).start();
     await runTask(task, config.verbose);
+    if (!verbose) spinner?.succeed('Running task: ' + task + ' succeeded');
   }
 };
 
