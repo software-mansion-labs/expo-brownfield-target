@@ -1,3 +1,4 @@
+import ora, { Ora } from 'ora';
 import path from 'node:path';
 import chalk from 'chalk';
 import { Args, Help } from '../../constants';
@@ -15,6 +16,9 @@ const action = async () => {
     return process.exit(0);
   }
 
+  let spinner: Ora | undefined;
+  if (!config.verbose)
+    spinner = ora('Reading publish tasks from the android project...').start();
   const { stdout } = await runCommand(
     './gradlew',
     [`${config.libraryName}:tasks`, '--group', 'publishing'],
@@ -22,6 +26,10 @@ const action = async () => {
       cwd: path.join(process.cwd(), 'android'),
     },
   );
+  if (!config.verbose)
+    spinner?.succeed(
+      'Successfully read publish tasks from the android project\n',
+    );
 
   const regex = /^publishBrownfield[a-zA-Z0-9_-]*/i;
   const publishTasks = stdout
