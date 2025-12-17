@@ -38,7 +38,6 @@ const cleanUpArtifacts = async (artifactsPath: string) => {
       try {
         await fs.access(artifactsPath);
       } catch (error) {
-        // Ignore if directory does not exist
         return;
       }
 
@@ -70,7 +69,7 @@ const runBuild = async (config: BuildConfigIos) => {
           '-scheme',
           config.scheme,
           '-derivedDataPath',
-          'ios/build',
+          config.derivedDataPath,
           '-destination',
           'generic/platform=iphoneos',
           '-destination',
@@ -97,9 +96,9 @@ const packageFrameworks = async (config: BuildConfigIos) => {
         [
           '-create-xcframework',
           '-framework',
-          `ios/build/Build/Products/${config.buildType}-iphoneos/${config.scheme}.framework`,
+          `${config.device}/${config.scheme}.framework`,
           '-framework',
-          `ios/build/Build/Products/${config.buildType}-iphonesimulator/${config.scheme}.framework`,
+          `${config.simulator}/${config.scheme}.framework`,
           '-output',
           `${config.artifacts}/${config.scheme}.xcframework`,
         ],

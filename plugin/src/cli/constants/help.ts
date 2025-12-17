@@ -90,7 +90,18 @@ const buildAndroidHelp = helpMessage({
 
 const tasksAndroidHelp = helpMessage({
   promptCommand: 'tasks-android',
-  options: [helpOption("'tasks-android'")],
+  options: [
+    helpOption("'tasks-android'"),
+    {
+      description: 'output all subcommands output to the terminal',
+      option: '--verbose',
+    },
+    {
+      description: 'name of the brownfield library',
+      option: '--library',
+      short: '-l',
+    },
+  ],
 });
 
 /**

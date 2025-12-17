@@ -1,35 +1,41 @@
-import ora, { Ora } from 'ora';
 import path from 'node:path';
 import chalk from 'chalk';
 import { Args, Help } from '../../constants';
-import { getAndroidConfig, parseArgs, runCommand } from '../../utils';
+import {
+  getTasksAndroidConfig,
+  parseArgs,
+  runCommand,
+  withSpinner,
+} from '../../utils';
 
 const action = async () => {
   const args = parseArgs({
     spec: Args.TasksAndroid,
     argv: process.argv.slice(2),
   });
-  const config = await getAndroidConfig(args);
+  const config = await getTasksAndroidConfig(args);
 
   if (config.help) {
     console.log(Help.TasksAndroid);
     return process.exit(0);
   }
 
-  let spinner: Ora | undefined;
-  if (!config.verbose)
-    spinner = ora('Reading publish tasks from the android project...').start();
-  const { stdout } = await runCommand(
-    './gradlew',
-    [`${config.libraryName}:tasks`, '--group', 'publishing'],
-    {
-      cwd: path.join(process.cwd(), 'android'),
-    },
-  );
-  if (!config.verbose)
-    spinner?.succeed(
+  const { stdout } = await withSpinner({
+    operation: () =>
+      runCommand(
+        './gradlew',
+        [`${config.libraryName}:tasks`, '--group', 'publishing'],
+        {
+          cwd: path.join(process.cwd(), 'android'),
+          verbose: config.verbose,
+        },
+      ),
+    loaderMessage: 'Reading publish tasks from the android project...',
+    successMessage:
       'Successfully read publish tasks from the android project\n',
-    );
+    errorMessage: 'Failed to read publish tasks from the android project',
+    verbose: config.verbose,
+  });
 
   const regex = /^publishBrownfield[a-zA-Z0-9_-]*/i;
   const publishTasks = stdout

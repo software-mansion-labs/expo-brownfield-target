@@ -52,6 +52,7 @@ const tasksAndroidArgs: Spec = {
   // Types
   '--help': arg.COUNT,
   '--library': String,
+  '--verbose': arg.COUNT,
   // Aliases
   '-h': '--help',
   '-l': '--library',

@@ -50,9 +50,12 @@ export interface BuildConfigAndroid extends BuildConfigCommon {
 
 export interface BuildConfigIos extends BuildConfigCommon {
   artifacts: string;
-  hermesFrameworkPath: string;
   buildType: BuildTypeCommon;
+  derivedDataPath: string;
+  device: string;
+  hermesFrameworkPath: string;
   scheme: string;
+  simulator: string;
   workspace: string;
 }
 
