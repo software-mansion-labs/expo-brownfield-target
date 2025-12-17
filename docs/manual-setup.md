@@ -3,6 +3,7 @@
 All steps performed by the plugin can be also perfomed manually (e.g. in project that don't use Continuous Native Generation). The below sections cover manual set up of brownfield for iOS and Android (either using **Android Studio** or manually)
 
 ### Table of contents
+
 - [Android](#android)
   - [Library setup](#android-library)
     - [Manual setup](#android-lib-ms)
@@ -20,12 +21,15 @@ All steps performed by the plugin can be also perfomed manually (e.g. in project
 <!-- SECTION: ANDROID -->
 
 <a name="android"></a>
+
 ## Android
 
 <a name="android-library"></a>
+
 ### Library setup
 
 <a name="android-lib-ms"></a>
+
 #### Manual setup
 
 Create the directory for the brownfield library in the `android/` directory of your Expo project:
@@ -63,6 +67,7 @@ android/
 ---
 
 <a name="android-lib-as"></a>
+
 #### Android Studio:
 
 Select `File > New > New Module...` in the menu. Select `Android Library` template and configure the properties (Module name, Package name, etc.) if the default values do not meet your project's requirements.
@@ -94,11 +99,12 @@ android/
 ```
 
 <a name="android-files"></a>
+
 ### Files
 
 Content of the files can be copied from the default templates used by the plugin: [templates/android](./plugin/src/templates/android). Please keep in mind that some of those templates contain interpolation placeholders (in format of `${{variableName}}`) which should be replaced with values suitable for your project.
 
-You can find full reference on values used by each template and the variable interpolation in [TEMPLATES.md](./TEMPLATES.md).
+You can find full reference on values used by each template and the variable interpolation in [TEMPLATES.md](./templates.md).
 
 Some of the below files might be automatically added if you used Android Studio to initialize the library. In that case it's worth to check if the contents are aligned with the template or with your intended content.
 
@@ -137,6 +143,7 @@ android/
 ```
 
 <a name="android-plugins"></a>
+
 ### Plugins
 
 To properly set up the brownfield library and publish all needed artifacts to Maven repositories you need to include the Gradle plugins which are shipped as part of `expo-brownfield-target` npm package.
@@ -217,6 +224,7 @@ plugins {
 The plugins will be compiled along with the Android project.
 
 <a name="android-building"></a>
+
 ### Building
 
 #### Tasks
@@ -267,14 +275,17 @@ TODO: Add sub-section about the CLI
 <!-- SECTION: IOS -->
 
 <a name="ios"></a>
+
 ## iOS
 
 <a name="#ios-open"></a>
+
 ### Open the project
 
 Open the `ios/` directory of your Expo project with **Xcode**
 
 <a name="#ios-framework"></a>
+
 ### Framework setup
 
 Select `File` > `+ New` > `Target...` in the menu to create a new target in the project. Choose the `Framework & Library` > `Framework` template from the `iOS` tab. Configure the properties (Product Name, identifiers, etc.) to meet your project's requirements
@@ -282,6 +293,7 @@ Select `File` > `+ New` > `Target...` in the menu to create a new target in the 
 After confirming with `Finish` a new directory named the same as the new target should become visible in the Project Navigator. Right-click on it to open the menu and select `Convert to Group` as CocoaPods has some issues when working with the references
 
 <a name="#ios-files"></a>
+
 ### Files
 
 Content of the files can be copied from the default templates used by the plugin: [templates/ios](./plugin/templates/ios/). Please keep in mind that some of those templates contain interplation placeholders (in format of `${{variableName}}`) which should be replaced with values suitable for your project. For example:
@@ -292,7 +304,7 @@ Content of the files can be copied from the default templates used by the plugin
 <key>CFBundlePackageType</key>
 ```
 
-You can find full reference on values used by each template and the variable interpolation in [TEMPLATES.md](./TEMPLATES.md).
+You can find full reference on values used by each template and the variable interpolation in [TEMPLATES.md](./templates.md).
 
 Add the following files to the framework directory:
 
@@ -307,16 +319,17 @@ Copy the contents of `Template.entitlements` file to a new file named `<target-n
 The `patch-expo.sh` template shouldn't be copied anywhere and will come into use later to define a run script phase for patching `ExpoModulesProvider.swift` file.
 
 <a name="#ios-config"></a>
+
 ### Build configuration
 
 In the project view select the `Build Settings` tab and make sure you're editing the framework target. Select the `All` tab to be able to edit all values. Ensure that the following settings have the right values:
 
-| Setting | Value |
-|---|---|
-| Build Libraries for Distribution | Yes |
-| User Script Sandboxing | No |
-| Skip Install | No |
-| Enable Module Verifier | No |
+| Setting                          | Value |
+| -------------------------------- | ----- |
+| Build Libraries for Distribution | Yes   |
+| User Script Sandboxing           | No    |
+| Skip Install                     | No    |
+| Enable Module Verifier           | No    |
 
 Then navigate to the `Build Phases` of the app target and copy the contents of the `Bundle React Native code and images` step. Create a new `Run Script Phase` in the brownfield target and paste the copied contents to it. Place it after the `Copy Bundle Resources` step.
 
@@ -352,11 +365,12 @@ fi
 Make sure to replace the variable placeholders (`${{projectName}}`, `${{targetName}}`) with the values suitable for your project. Place the value after a step named `[Expo] Configure project`
 
 <a name="#ios-xcf"></a>
-### Building XCFramework 
+
+### Building XCFramework
 
 Reinstall the pods with static linking enabled:
 
-```sh 
+```sh
 rm -rf Pods Podfile.lock
 USE_FRAMEWORKS=static pod install
 ```
@@ -369,10 +383,10 @@ It can also be built using the CLI:
 npx expo-brownfield-target build-ios
 ```
 
-Please see [README.md](./README.md) for the full reference for the CLI.
+Please see [cli.md](./cli.md) for the full reference for the CLI.
 
 When the build finishes an XCFramework named `<target-name>.xcframework` should be created. Make sure to copy the `hermes.xcframework` file from Pods (`Pods/hermes-engine/destroot/Library/Frameworks/universal/hermes.xcframework`) and ship it/include it in the Swift Package along with the brownfield XCFramework.
 
-For examples of usage in the native apps and reference for the available APIs please see [README.md](./README.md).
+For examples of usage in the native apps and reference for the available APIs please see [README.md](../README.md) and [api.md](./api.md).
 
 <!-- END SECTION: IOS -->

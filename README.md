@@ -5,13 +5,17 @@
 
 # expo-brownfield-target
 
-`expo-brownfield-target` is an Expo config plugin that allows you to easily extend your Expo app with additional native targets, enabling you to build and distribute it as a brownfield project.
+`expo-brownfield-target` is a library which includes an Expo config plugin that automates brownfield setup in the project, CLI for building the brownfield artifacts and built-in APIs for communication and navigation between the apps.
 
 ### 📖 Documentation
 
+- [Android Publishing](./docs/publishing.md)
 - [CLI](./docs/cli.md)
 - [Communication API](./docs/api.md#communication)
+- [Configuration](./docs/configuration.md)
+- [Manual Setup](./docs/manual-setup.md)
 - [Navigation API](./docs/api.md#navigation)
+- [Templates](./docs/templates.md)
 
 ### Table of contents
 
@@ -29,29 +33,27 @@
     - [Android](#using-android)
     - [iOS (SwiftUI)](#using-swiftui)
     - [iOS (UIKit)](#using-uikit)
-- [Configuration reference](#configuration)
-  - [Android](#configuration-android)
-  - [iOS](#configuration-ios)
-  - [File templates](#file-templates)
 - [Acknowledgments](#acknowledgments)
 
 <a name="motivation"></a>
 
 ## Motivation
 
-Brownfield approach enables integrating React Native apps into native Android and iOS projects, but setting it up, especially in Expo projects using Continuous Native Generation is a manual, repetitive and pretty complex task. This plugin aims to fully automate this process on every prebuild and provides a set of configurable file templates and a CLI which streamlines brownfield distribution. Additionally such setup of brownfield allows for easy packaging it as a fat-AAR, XCFramework or Swift Package which simplifies its shipping and enables e.g. simple and more independent cooperation of native and RN teams.
+Brownfield approach enables integrating React Native apps into native Android and iOS projects, but setting it up, especially in Expo projects using Continuous Native Generation is a manual, repetitive and pretty complex task. 
+
+This library aims to fully automate and simplifiy brownfield setup by including a config plugin that configures your project on every prebuild, built-in APIs for common functionalities and CLI which builds the brownfield artifacts.
+
+Such setup of brownfield allows for easy publishing to Maven, as XCFramework or using Swift Packag Manager which enables e.g. simple and more independent cooperation of native and RN teams.
 
 <a name="features"></a>
 
 ## Features
 
-- Automatically adds native projects for building brownfield to your Expo app during prebuilds
-- Enables easy integration with the Expo project via config plugin interface
-- Enables building the brownfield as an XCFramework or an AAR which simplifies usage in the native projects
-- Customizable through file templates and the config plugin options
-- Supports navigating out of React Native view and communication between the brownfield and native apps
-
-**Note:** Our goal is maximum customizability, so if you feel like anything else needs to be customizable, please feel free to cut an issue or a discussion.
+- Automatic extension of native projects with brownfield targets
+- Easy integration with Expo project via config plugin interface
+- Artifact publishing using XCFramework for iOS and Maven for Android
+- Configurability & customizability
+- APIs for bi-directional communication and navigation between the apps
 
 <a name="compat"></a>
 
@@ -115,11 +117,13 @@ If you want to pass any configuration options make sure to add the plugin as an 
 }
 ```
 
+See [configuration.md](./docs/configuration.md) for full reference of configurable options.
+
 <a name="manual-setup"></a>
 
 ### Manual setup
 
-All steps performed by the plugin can also be performed manually. Please refer to [MANUAL-SETUP.MD](./MANUAL-SETUP.md) for a full guide for manual setup.
+All steps performed by the plugin can also be performed manually. Please refer to [manual-setup.md](./docs/manual-setup.md) for a full guide for manual setup.
 
 <a name="generating-brownfield-targets"></a>
 
@@ -128,7 +132,7 @@ All steps performed by the plugin can also be performed manually. Please refer t
 The additional targets for brownfield will be added automatically every time you prebuild the native projects:
 
 ```sh
-npx expo prebuild --clean
+npx expo prebuild
 ```
 
 <a name="with-cli"></a>
@@ -138,17 +142,42 @@ npx expo prebuild --clean
 The plugin comes with a built-in CLI which can be used to build both Android and iOS targets:
 
 ```sh
-npx expo-brownfield-target build-android
+npx expo-brownfield-target build-android -r MavenLocal
+
 npx expo-brownfield-target build-ios
 ```
 
-More details and full reference of the CLI commands can be found below in the [CLI Reference](#cli) section.
+More details and full reference of the CLI commands and options can be found below in the [cli.md ](./docs/cli.md) section.
 
 <a name="with-manually"></a>
 
 ### Building manually
 
-Brownfields can be also built manually using the `xcodebuild` and `./gradlew` commands. Please see [build-xcframework.sh](#./example/scripts/build-xcframework.sh) and [build-aar.sh](#./example/scripts/build-aar.sh) for an example reference of manual building.
+Brownfields can be also built manually using the `xcodebuild` and `./gradlew` commands.
+
+``` bash
+# Compile the framework
+xcodebuild \
+    -workspace "ios/myexpoapp.xcworkspace" \
+    -scheme "MyBrownfield" \
+    -derivedDataPath "ios/build" \
+    -destination "generic/platform=iphoneos" \
+    -destination "generic/platform=iphonesimulator" \
+    -configuration "Release"
+
+# Package it as an XCFramework
+xcodebuild \
+    -create-xcframework \
+    -framework "ios/build/Build/Products/Release-iphoneos/MyBrownfield.framework" \
+    -framework "ios/build/Build/Products/Release-iphonesimulator/MyBrownfield.framework" \
+    -output "artifacts/MyBrownfield.xcframework"
+```
+
+```bash
+./gradlew publishBrownfieldAllPublicationToMavenLocal
+```
+
+See [publishing.md](./docs/publishing.md#gradle-tasks) for more details about the publishing tasks.
 
 <a name="using-built-artifacts"></a>
 
@@ -233,164 +262,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 }
 ```
-
-<a name="configuration"></a>
-
-## Configuration reference
-
-<a name="configuration-android"></a>
-
-### Android
-
-| Property     | Description                                                                                   | Default value                                                                                               |
-| ------------ | --------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `library`    | Name of the Android library used for the brownfield                                           | `brownfield`                                                                                                |
-| `package`    | Package identifier for the brownfield library                                                 | `android.package` appended with `.brownfield` or `com.example.brownfield` if `android.package` is undefined |
-| `group`      | Group property for the brownfield library                                                     | Resolved value of the `package` stripped of the last component                                              |
-| `version`    | Version of the brownfield library                                                             | 1.0.0                                                                                                       |
-| `publishing` | An array of Maven publishing configurations. For more detailed reference see the next section | `[{ type: 'localMaven' }]`                                                                                  |
-
-#### Publishing configuration
-
-`publishing` property accepts an array of zero or more repository configuratons of the following types. Each type of repository configuration may be used more than once (though duplicate entries for Maven Local will be merged).
-
-- Maven Local
-
-  Default `mavenLocal()` repository.
-
-  **Type:**
-
-  ```ts
-  type LocalMavenPublication = {
-    type: 'localMaven';
-  };
-  ```
-
-  **Example:**
-
-  ```json
-  {
-    "type": "localDirectory"
-  }
-  ```
-
-- Custom local directory
-
-  A custom directory path. Can be an absolute path or a relative path (resolved against the Expo project root).
-
-  Name property is optional and is used to define the publishing Gradle tasks. If not passed a default name suffixed with a number will be automatically generated: `localDirectory1`, `localDirectory2`, ...
-
-  **Type:**
-
-  ```ts
-  type LocalDirectoryPublication = {
-    type: 'localDirectory';
-    name?: string;
-    path: string;
-  };
-  ```
-
-  **Example:**
-
-  ```json
-  {
-    "type": "localDirectory",
-    "name": "customLocal",
-    "path": "./maven"
-  }
-  ```
-
-- Public remote repository
-
-  A remote repository without authentication.
-
-  Name property is optional and is used to define the publishing Gradle tasks. If not passed a default name suffixed with a number will be automatically generated: `remotePublic1`, `remotePublic2`, ...
-
-  Accepts optional `allowInsecure` setting which translates to Maven's [isAllowInsecureProtocol](https://docs.gradle.org/current/kotlin-dsl/gradle/org.gradle.api.artifacts.repositories/-url-artifact-repository/is-allow-insecure-protocol.html) and specifies whether it is possible to communicate with a repository via an insecure connection.
-
-  **Type:**
-
-  ```ts
-  type RemotePublicPublication = {
-    type: 'remotePublic';
-    name?: string;
-    url: string;
-    allowInsecure?: boolean;
-  };
-  ```
-
-  **Example:**
-
-  ```json
-  {
-    "type": "remotePublic",
-    "name": "remotePublic",
-    "url": "http://localhost:8081/repository/remote-public",
-    "allowInsecure": true
-  }
-  ```
-
-- Private remote repository
-
-  A remote repository with password-based authentication.
-
-  Name property is optional and is used to define the publishing Gradle tasks. If not passed a default name suffixed with a number will be automatically generated: `remotePrivate1`, `remotePrivate2`, ...
-
-  Username, password and the URL can be either passed as simple strings or as objects with `variable` property if you want them to be read from the environment variables (which you can pass e.g. by providing an `.env` file at the root of the Expo project).
-
-  > [!WARNING]  
-  > If the values are read from environment variables they will be inserted into android project's `build.gradle` file on prebuild. Watch out to not commit the prebuilt native project to GitHub.
-
-  Accepts optional `allowInsecure` setting which translates to Maven's [isAllowInsecureProtocol](https://docs.gradle.org/current/kotlin-dsl/gradle/org.gradle.api.artifacts.repositories/-url-artifact-repository/is-allow-insecure-protocol.html) and specifies whether it is possible to communicate with a repository via an insecure connection.
-
-  **Type:**
-
-  ```ts
-  type EnvValue = {
-    variable: string;
-  };
-
-  type RemotePrivateBasicPublication = {
-    type: 'remotePrivate';
-    name?: string;
-    url: string | EnvValue;
-    username: string | EnvValue;
-    password: string | EnvValue;
-    allowInsecure?: boolean;
-  };
-  ```
-
-  **Example:**
-
-  ```json
-  {
-    "type": "remotePrivate",
-    "url": {
-      "variable": "MAVEN_REPO_URL"
-    },
-    "username": {
-      "variable": "MAVEN_REPO_USERNAME"
-    },
-    "password": {
-      "variable": "MAVEN_REPO_PASSWORD"
-    }
-  }
-  ```
-
-<a name="configuration-ios"></a>
-
-### iOS
-
-| Property           | Description                                                                                                                                                                                       | Default value                                                                                                                                                                                                              |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `bundleIdentifier` | Bundle identifier for the brownfield native target.                                                                                                                                               | `ios.bundleIdentifier` with last component replaced with the target name or `com.example.<target-name>` if `ios.bundleIdentifier` is undefined.                                                                            |
-| `targetName`       | Name of the brownfield native target. Also used as the name of the directory containing brownfield files. The value is sanitized to only contain alphanumeric characters and start with a letter. | `config.scheme` or `config.ios.scheme` appended with `brownfield`, if either value is defined and a single string. If not defaults to to `<slug>brownfield`, where `<slug>` is sanitized slug from the Expo project config |
-
-<a name="file-templates"></a>
-
-### File templates
-
-You can also overwrite the templates which are used to generate the files to even better suit the plugin behavior to your requirements. More information about overwriting the templates can be found in [TEMPLATES.md](./TEMPLATES.md).
 
 <a name="acknowledgments"></a>
 
