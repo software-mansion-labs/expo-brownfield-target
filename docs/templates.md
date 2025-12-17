@@ -57,13 +57,13 @@ Note: `.brownfield-templates` supports both flat and per-platform directory stru
 
 | File | Default template | Description | Interpolated variable |
 | --- | --- | --- | --- |
-| AndroidManifest.xml | [AndroidManifest.xml](./plugin/templates/android/AndroidManifest.xml) | Simple Android manifest for the brownfield library | - |
-| build.gradle.kts | [build.gradle.kts](./plugin/templates/android/build.gradle.kts) | Gradle build settings for the brownfield library | `${{packageId}}`, `${{groupId}}`, `${{version}}` |
-| consumer-rules.pro | [consumer-rules.pro](./plugin/templates/android/consumer-rules.pro) | Empty consumer-rules file | - |
-| proguard-rules.pro | [proguard-rules.pro](./plugin/templates/android/proguard-rules.pro) | Default set of Proguard rules for the brownfield library | - |
-| ReactNativeHostManager.kt | [ReactNativeHostManager.kt](./plugin/templates/android/ReactNativeHostManager.kt) | React Native host manager used to initialize and intergrate RN app with the native app lifecycle | `${{packageId}}` |
-| ReactNativeViewFactory.kt | [ReactNativeViewFactory.kt](./plugin/templates/android/ReactNativeViewFactory.kt) | React Native view factory used to create views hosting the React Native app | `${{packageId}}` |
-| ReactNativeFragment.kt | [ReactNativeFragment.kt](./plugin/templates/android/ReactNativeFragment.kt) | Android fragment used to display the React Native app | `${{packageId}}` |
+| AndroidManifest.xml | [AndroidManifest.xml](../plugin/src/templates/android/AndroidManifest.xml) | Simple Android manifest for the brownfield library | - |
+| build.gradle.kts | [build.gradle.kts](../plugin/src/templates/android/build.gradle.kts) | Gradle build settings for the brownfield library | `${{packageId}}`, `${{groupId}}`, `${{version}}` |
+| consumer-rules.pro | [consumer-rules.pro](../plugin/src/templates/android/consumer-rules.pro) | Empty consumer-rules file | - |
+| proguard-rules.pro | [proguard-rules.pro](../plugin/src/templates/android/proguard-rules.pro) | Default set of Proguard rules for the brownfield library | - |
+| ReactNativeHostManager.kt | [ReactNativeHostManager.kt](../plugin/src/templates/android/ReactNativeHostManager.kt) | React Native host manager used to initialize and intergrate RN app with the native app lifecycle | `${{packageId}}` |
+| ReactNativeViewFactory.kt | [ReactNativeViewFactory.kt](../plugin/src/templates/android/ReactNativeViewFactory.kt) | React Native view factory used to create views hosting the React Native app | `${{packageId}}` |
+| ReactNativeFragment.kt | [ReactNativeFragment.kt](../plugin/src/templates/android/ReactNativeFragment.kt) | Android fragment used to display the React Native app | `${{packageId}}` |
 
 <a name="android-variables"></a>
 ### Variables
@@ -82,13 +82,13 @@ Note: `.brownfield-templates` supports both flat and per-platform directory stru
 
 | File | Default template | Description | Interpolated variable |
 | --- | --- | --- | --- |
-| ExpoApp.swift | [ExpoApp.swift](./plugin/templates/ios/ExpoApp.swift) | React Native host manager used to initialize and integrate RN app with the native app lifecycle. Also used for loading the view hosting the React Native app | - |
-| Messaging.swift | [Messaging.swift](./plugin/templates/ios/Messaging.swift) | Exposes bi-directional communication methods | - |
-| Info.plist | [Info.plist](./plugin/templates/ios/Info.plist) | Contains native target metadata and settings. Required by Xcode | `${{bundleIdentifier}}`, `${{targetName}}` |
-| patch-expo.sh | [patch-expo.sh](./plugin/templates/ios/patch-expo.sh) | Script embedded within the build steps of the brownfield target. Used to patch Expo Modules | `${{projectName}}`, `${{targetName}}` |
-| ReactNativeView.swift | [ReactNativeView.swift](./plugin/templates/ios/ReactNativeView.swift) | Brownfield entrypoint for SwiftUI apps | - |
-| &lt;target-name&gt;.entitlements | [Target.entitlements](./plugin/templates/ios/Target.entitlements) | The `.entitlements` configuration file for the brownfield target. The name is dynamically set to match the brownfield target name | - |
-| ReactNativeViewController.swift | [ReactNativeViewController.swift](./plugin/templates/ios/ReactNativeViewController.swift) | View controller for rendering React Native app in a UIKit application | - |
+| ExpoApp.swift | [ExpoApp.swift](../plugin/src/templates/ios/ExpoApp.swift) | React Native host manager used to initialize and integrate RN app with the native app lifecycle. Also used for loading the view hosting the React Native app | - |
+| Messaging.swift | [Messaging.swift](../plugin/src/templates/ios/Messaging.swift) | Exposes bi-directional communication methods | - |
+| Info.plist | [Info.plist](../plugin/src/templates/ios/Info.plist) | Contains native target metadata and settings. Required by Xcode | `${{bundleIdentifier}}`, `${{targetName}}` |
+| patch-expo.sh | [patch-expo.sh](../plugin/src/templates/ios/patch-expo.sh) | Script embedded within the build steps of the brownfield target. Used to patch Expo Modules | `${{projectName}}`, `${{targetName}}` |
+| ReactNativeView.swift | [ReactNativeView.swift](../plugin/src/templates/ios/ReactNativeView.swift) | Brownfield entrypoint for SwiftUI apps | - |
+| &lt;target-name&gt;.entitlements | [Target.entitlements](../plugin/src/templates/ios/Target.entitlements) | The `.entitlements` configuration file for the brownfield target. The name is dynamically set to match the brownfield target name | - |
+| ReactNativeViewController.swift | [ReactNativeViewController.swift](../plugin/src/templates/ios/ReactNativeViewController.swift) | View controller for rendering React Native app in a UIKit application | - |
 
 <a name="ios-variables"></a>
 ### Variables
