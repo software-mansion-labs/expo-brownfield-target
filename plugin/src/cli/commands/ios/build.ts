@@ -77,7 +77,7 @@ const runBuild = async (config: BuildConfigIos) => {
           '-destination',
           'generic/platform=iphonesimulator',
           '-configuration',
-          config.buildType,
+          config.buildType.charAt(0).toUpperCase() + config.buildType.slice(1),
         ],
         {
           verbose: config.verbose,
