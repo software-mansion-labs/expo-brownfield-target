@@ -14,6 +14,19 @@ const genericError = (error: unknown) => {
   return process.exit(1);
 };
 
+/**
+ * Prints the error message for failed inference.
+ */
+const inferenceError = (valueName: string) => {
+  console.error(
+    `Error: Value of ${valueName} could not be inferred from the project`,
+  );
+  return process.exit(1);
+};
+
+/**
+ * Prints the error message for failed argument parsing.
+ */
 const parseArgsError = () => {
   console.error('Error: failed to parse arguments');
   return process.exit(1);
@@ -42,6 +55,7 @@ const unkownOptionError = (argError: ArgError) => {
 
 export const Errors = {
   generic: genericError,
+  inference: inferenceError,
   parseArgs: parseArgsError,
   unknownCommand: unknownCommandError,
   unknownOption: unkownOptionError,

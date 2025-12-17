@@ -1,6 +1,10 @@
 import ora, { type Ora } from 'ora';
 import chalk from 'chalk';
+import prompts from 'prompts';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import { BuildConfigAndroid, BuildConfigIos, WithSpinnerParams } from './types';
+import { runCommand } from './commands';
 
 const isBuildConfigAndroid = (
   config: BuildConfigAndroid | BuildConfigIos,
@@ -71,5 +75,52 @@ export const withSpinner = async <T>({
     if (!verbose && spinner?.isSpinning) {
       spinner?.stop();
     }
+  }
+};
+
+export const checkPrebuild = async (
+  platform: 'android' | 'ios',
+): Promise<boolean> => {
+  const nativeProjectPath = path.join(process.cwd(), platform);
+  try {
+    await fs.access(nativeProjectPath);
+  } catch (error) {
+    return false;
+  }
+
+  return true;
+};
+
+export const maybeRunPrebuild = async (platform: 'android' | 'ios') => {
+  console.info(
+    `${chalk.yellow('⚠')} Prebuild for platform: ${platform} is missing`,
+  );
+  const response = await prompts({
+    type: 'confirm',
+    name: 'shouldRunPrebuild',
+    message: 'Do you want to run the prebuild now?',
+    initial: false,
+  });
+
+  if (response.shouldRunPrebuild) {
+    return withSpinner({
+      operation: () =>
+        runCommand('npx', ['expo', 'prebuild', '--platform', platform]),
+      loaderMessage: `Running 'npx expo prebuild' for platform: ${platform}...`,
+      successMessage: `Prebuild for ${platform} completed\n`,
+      errorMessage: `Prebuild for ${platform} failed`,
+      verbose: false,
+    });
+  } else {
+    console.error(
+      `${chalk.red('✖')} Brownfield cannot be built without prebuild`,
+    );
+    return process.exit(1);
+  }
+};
+
+export const ensurePrebuild = async (platform: 'android' | 'ios') => {
+  if (!(await checkPrebuild(platform))) {
+    await maybeRunPrebuild(platform);
   }
 };
