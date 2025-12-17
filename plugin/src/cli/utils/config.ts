@@ -32,13 +32,20 @@ export const getAndroidConfig = async (
 export const getIosConfig = async (
   args: Result<Spec>,
 ): Promise<BuildConfigIos> => {
+  const buildType = getBuildTypeCommon(args);
+  const derivedDataPath = path.join(process.cwd(), 'ios/build');
+  const buildProductsPath = path.join(derivedDataPath, 'Build/Products');
+
   return {
     ...getCommonConfig(args),
     artifacts: path.join(
       process.cwd(),
       args['--artifacts'] || Defaults.artifactsPath,
     ),
-    buildType: getBuildTypeCommon(args),
+    buildType,
+    derivedDataPath,
+    device: path.join(buildProductsPath, `${buildType}-iphoneos`),
+    simulator: path.join(buildProductsPath, `${buildType}-iphonesimulator`),
     hermesFrameworkPath:
       args['--hermes-framework'] || Defaults.hermesFrameworkPath,
     scheme: args['--scheme'] || (await inferScheme()),

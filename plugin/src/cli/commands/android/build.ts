@@ -1,4 +1,3 @@
-import ora, { Ora } from 'ora';
 import { Args, Help } from '../../constants';
 import {
   BuildTypeAndroid,
