@@ -1,9 +1,6 @@
 import chalk from 'chalk';
 import type { HelpMessageParams, HelpMessageSectionParams } from './types';
-
-// TODO: Extract to constants file?
-// Number of spaces to use for spacing between command/option and description
-const SPACING = 30;
+import { Output } from '../constants/output';
 
 export const helpMessage = ({
   commands,
@@ -28,8 +25,7 @@ export const helpMessage = ({
 
   const usageSection = `${chalk.bold('Usage:')} expo-brownfield-target ${promptCommand}  [${promptOptions}]`;
 
-  // TODO: Add new line at the end (check e.g. in Ghostty)?
-  return `\n${usageSection}${optionsSection}${commandsSection}`;
+  return `\n${usageSection}${optionsSection}${commandsSection}\n`;
 };
 
 export const helpMessageSection = <T>({
@@ -45,7 +41,7 @@ export const helpMessageSection = <T>({
   const content = items.reduce<string>((acc, item) => {
     const ls = left(item);
     const rs = right(item);
-    const spacing = ' '.repeat(SPACING - ls.length);
+    const spacing = ' '.repeat(Output.HelpSpacing - ls.length);
     return `${acc}\n  ${ls}${spacing}${rs}`;
   }, '');
 

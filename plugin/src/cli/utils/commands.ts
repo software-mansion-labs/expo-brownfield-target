@@ -8,8 +8,7 @@ const killChildProcess = () => {
   if (subprocess != null && !subprocess.killed && !isExiting) {
     isExiting = true;
     console.log('\n');
-    // TODO: Handle error message
-    // errorMessage('Command interrupted');
+    console.error('Command interrupted');
     subprocess.kill('SIGTERM');
 
     const forceKillTimeout = setTimeout(() => {

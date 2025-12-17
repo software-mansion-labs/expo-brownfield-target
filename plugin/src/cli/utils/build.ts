@@ -5,6 +5,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { BuildConfigAndroid, BuildConfigIos, WithSpinnerParams } from './types';
 import { runCommand } from './commands';
+import { Errors } from '../constants';
 
 const isBuildConfigAndroid = (
   config: BuildConfigAndroid | BuildConfigIos,
@@ -68,9 +69,7 @@ export const withSpinner = async <T>({
         : spinner?.warn(errorMessage);
     }
 
-    // TODO: Handle error
-    console.error(error);
-    return process.exit(1);
+    return Errors.generic(error);
   } finally {
     if (!verbose && spinner?.isSpinning) {
       spinner?.stop();
