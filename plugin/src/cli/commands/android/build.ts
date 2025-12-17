@@ -1,6 +1,7 @@
 import { Args, Help } from '../../constants';
 import {
   BuildTypeAndroid,
+  ensurePrebuild,
   getAndroidConfig,
   parseArgs,
   printConfig,
@@ -11,14 +12,14 @@ import path from 'node:path';
 
 const action = async () => {
   const args = parseArgs({ spec: Args.Android, argv: process.argv.slice(2) });
-  const config = await getAndroidConfig(args);
 
+  await ensurePrebuild('android');
+
+  const config = await getAndroidConfig(args);
   if (config.help) {
     console.log(Help.Android);
     return process.exit(0);
   }
-
-  // TODO: Validate and run prebuild?
 
   printConfig(config);
 

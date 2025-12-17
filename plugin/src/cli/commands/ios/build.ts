@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import { Args, Help } from '../../constants';
 import {
   BuildConfigIos,
+  ensurePrebuild,
   getIosConfig,
   parseArgs,
   printConfig,
@@ -14,16 +15,17 @@ const action = async () => {
     spec: Args.IOS,
     argv: process.argv.slice(2),
   });
-  const config = await getIosConfig(args);
 
+  await ensurePrebuild('ios');
+
+  const config = await getIosConfig(args);
   if (config.help) {
     console.log(Help.IOS);
     return process.exit(0);
   }
 
-  // TODO: Validate and run prebuild?
-
   printConfig(config);
+
   await cleanUpArtifacts(config.artifacts);
   await runBuild(config);
   await packageFrameworks(config);

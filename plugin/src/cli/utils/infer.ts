@@ -1,5 +1,5 @@
 import fs from 'node:fs/promises';
-import { Defaults } from '../constants';
+import { Defaults, Errors } from '../constants';
 import path from 'node:path';
 
 export const inferAndroidLibrary = async (): Promise<string> => {
@@ -22,10 +22,9 @@ export const inferAndroidLibrary = async (): Promise<string> => {
       }
     }
 
-    return Defaults.libraryName;
+    throw new Error();
   } catch (error) {
-    // TODO: Handle error
-    return process.exit(1);
+    return Errors.inference('Android library name');
   }
 };
 
@@ -38,11 +37,9 @@ export const inferXCWorkspace = async (): Promise<string> => {
       return path.join(xcworkspace.parentPath, xcworkspace.name);
     }
 
-    // TODO: Handle error
-    return process.exit(1);
+    throw new Error();
   } catch (error) {
-    // TODO: Handle error
-    return process.exit(1);
+    return Errors.inference('iOS Workspace (.xcworkspace)');
   }
 };
 
@@ -63,10 +60,8 @@ export const inferScheme = async (): Promise<string> => {
       return scheme;
     }
 
-    // TODO: Handle error
-    return process.exit(1);
+    throw new Error();
   } catch (error) {
-    // TODO: Handle error
-    return process.exit(1);
+    return Errors.inference('iOS Scheme');
   }
 };

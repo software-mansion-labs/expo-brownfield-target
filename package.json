@@ -73,6 +73,7 @@
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
+    "@types/prompts": "^2.4.9",
     "@types/react": "^19.2.7",
     "eslint": "^9.38.0",
     "eslint-config-prettier": "^10.1.8",
