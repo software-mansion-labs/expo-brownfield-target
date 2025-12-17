@@ -4,6 +4,7 @@ import {
   getBuildTypeAndroid,
   getBuildTypeCommon,
   getCommonConfig,
+  // getIosConfig,
   getTasksAndroidConfig,
 } from '../../../plugin/src/cli/utils/config';
 import { inferAndroidLibrary } from '../../../plugin/src/cli/utils/infer';

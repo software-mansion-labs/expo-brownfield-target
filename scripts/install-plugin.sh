@@ -2,6 +2,7 @@
 set -e
 
 APP_DIRECTORY="./example/app"
+SKIP_PREBUILD=${SKIP_PREBUILD:-"false"}
 
 # Cleanup previous tarballs
 rm -rf expo-brownfield-target-*.tgz
@@ -27,6 +28,7 @@ npm uninstall expo-brownfield-target
 npm install $TARBALL_PATH
 
 # Perform clean prebuild
-# TODO: Hide behind a flag/variable
-# rm -rf .expo android ios
-# yes | npx expo prebuild --clean
+if [ "$SKIP_PREBUILD" == "false" ]; then
+  rm -rf .expo android ios
+  yes | npx expo prebuild --clean
+fi
