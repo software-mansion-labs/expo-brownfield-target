@@ -235,9 +235,7 @@ The tasks that can be used to build and publish artifacts follow the below name 
 publishBrownfield(All|Debug|Release)PublicationTo<Repository name>
 ```
 
-Where `All`, `Debug` and `Release` specifies if both or only debug or release variants should be published. Repository name is based on the block names passed in `build.gradle` in PascalCase convention (first character of each word capitalized) and suffixed with `Repository`. For example:
-
-TODO: Write about exception for Maven Local?
+Where `All`, `Debug` and `Release` specifies if both or only debug or release variants should be published. Repository name is based on the block names passed in `build.gradle` in PascalCase convention (first character of each word capitalized) and suffixed with `Repository` (with exception for `MavenLocal` which doesn't include any suffix). For example:
 
 ```bash
 # For the default Maven repository
@@ -268,7 +266,13 @@ You can run the tasks described aboce to invoke the build and publishing process
 
 You can also invoke them using the CLI:
 
-TODO: Add sub-section about the CLI
+```
+npx expo-brownfield-target build-android \
+  -t publishBrownfieldAllPublicationToCustomLocalRepository \
+  -t publishBrownfieldAllPublicationToMavenLocal
+```
+
+For full CLI reference see [cli.md](./docs/cli.md).
 
 <!-- END SECTION: ANDROID -->
 

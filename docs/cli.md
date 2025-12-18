@@ -39,7 +39,7 @@ Options:
 
 - `-h, --help` - Display help message
 
-- `--verbose` - Include all logs from subprocesses (e.g. `xcodebuild`)
+- `--verbose` - Include all logs from subprocesses (e.g. `./gradlew`)
 
 - `-d, --debug` - Build the brownfield in debug mode
 
@@ -49,7 +49,7 @@ Options:
 
 - `-l, --library` - Specify brownfield library name (default: inferred from the project)
 
-- `-r, --repository` - Specify one or more Maven repositories to publish artifacts to by their names. Can be passed multiple times to specify multiple repositories
+- `--repo, --repository` - Specify one or more Maven repositories to publish artifacts to by their names. Can be passed multiple times to specify multiple repositories
 
 - `-t, --task` - Specify one or more Gradle publish tasks to be run. Can be passed multiple times to specify multiple tasks 
 
@@ -96,6 +96,8 @@ npx expo-brownfield-target tasks-android [options]
 Options:
 
 - `-h, --help` - Display help message
+
+- `--verbose` - Include all logs from subprocesses (e.g. `./gradlew`)
 
 - `-l, --library` - Specify brownfield library name (default: inferred from the project)
 
@@ -204,7 +206,7 @@ npx expo-brownfield-target build-ios --verbose
 Ensure you are specifying the configuration either using only repositories:
 
 ```
-npx expo-brownfield-target -r repo1 --repository repo2
+npx expo-brownfield-target --repo repo1 --repository repo2
 ```
 
 Or only the task names:
