@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "2600"
+   LastUpgradeVersion = "2620"
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -15,10 +15,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "870283292EB363F300A9E139"
-               BuildableName = "ios.app"
-               BlueprintName = "ios"
-               ReferencedContainer = "container:ios.xcodeproj">
+               BlueprintIdentifier = "878D275B2EC4AB6F001987F4"
+               BuildableName = "ios-swiftui.app"
+               BlueprintName = "ios-swiftui"
+               ReferencedContainer = "container:ios-swiftui.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -31,7 +31,7 @@
       shouldAutocreateTestPlan = "YES">
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Debug"
+      buildConfiguration = "Release"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
@@ -44,10 +44,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "870283292EB363F300A9E139"
-            BuildableName = "ios.app"
-            BlueprintName = "ios"
-            ReferencedContainer = "container:ios.xcodeproj">
+            BlueprintIdentifier = "878D275B2EC4AB6F001987F4"
+            BuildableName = "ios-swiftui.app"
+            BlueprintName = "ios-swiftui"
+            ReferencedContainer = "container:ios-swiftui.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -61,10 +61,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "870283292EB363F300A9E139"
-            BuildableName = "ios.app"
-            BlueprintName = "ios"
-            ReferencedContainer = "container:ios.xcodeproj">
+            BlueprintIdentifier = "878D275B2EC4AB6F001987F4"
+            BuildableName = "ios-swiftui.app"
+            BlueprintName = "ios-swiftui"
+            ReferencedContainer = "container:ios-swiftui.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
