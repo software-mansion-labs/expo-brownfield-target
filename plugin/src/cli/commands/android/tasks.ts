@@ -37,6 +37,11 @@ const action = async () => {
     verbose: config.verbose,
   });
 
+  if (config.verbose) {
+    // stdout is already printed to the console
+    return;
+  }
+
   const regex = /^publishBrownfield[a-zA-Z0-9_-]*/i;
   const publishTasks = stdout
     .split('\n')
