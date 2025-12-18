@@ -33,6 +33,7 @@
     - [Android](#using-android)
     - [iOS (SwiftUI)](#using-swiftui)
     - [iOS (UIKit)](#using-uikit)
+  - [Using with Metro Bundler](#metro)
 - [Acknowledgments](#acknowledgments)
 
 <a name="motivation"></a>
@@ -262,6 +263,44 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 }
 ```
+
+<a name="metro"></a>
+
+### Using with Metro Bundler
+
+Debug builds use bundle hosted by Metro server (hosted over `localhost:8081`) instead of the bundle included in the brownfield framework.
+
+Be sure to start Metro server by running the following command in your Expo project:
+
+```
+npm start
+```
+
+#### Android
+
+To be able to use Metro create a separate debug-only Manifest with the following contents in your native app which will host the brownfield:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <application
+        android:usesCleartextTraffic="true"
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:replace="android:usesCleartextTraffic"
+        tools:targetApi="28" />
+</manifest>
+```
+
+Then be sure to build nad publish the artifacts using either `All` (includes both debug and release) or `Debug` configuration and to use the debug variant in the native app. Also, don't forget to reverse the port 8081 (if necessary):
+
+```
+adb reverse tcp:8081 tcp:8081
+```
+
+#### iOS
+
+To use Metro server instead of bundle included at the build time, compile the brownfield framework using `Debug` configuration (`-d`/`--debug` flag when using the CLI). `Debug` XCFramework should automatically source the bundle from the Metro server.
 
 <a name="acknowledgments"></a>
 

@@ -16,23 +16,18 @@ const helpOption = (command: string = 'command') => ({
  */
 const commonBuildOptions = [
   {
-    description: 'build AAR in debug configuration',
+    description: 'build in debug configuration',
     option: '--debug',
     short: '-d',
   },
   {
-    description: 'build AAR in release configuration',
+    description: 'build in release configuration',
     option: '--release',
     short: '-r',
   },
   {
-    description: 'output all subcommands output to the terminal',
+    description: 'forward all output to the terminal',
     option: '--verbose',
-  },
-  {
-    description: 'path to artifacts directory',
-    option: '--artifacts',
-    short: '-a',
   },
 ];
 
@@ -49,6 +44,12 @@ const generalHelp = helpMessage({
     {
       command: 'build-ios',
       description: 'build iOS brownfield artifacts',
+      hasOptions: true,
+    },
+    {
+      command: 'tasks-android',
+      description:
+        'list available publishing tasks and repositories for android',
       hasOptions: true,
     },
   ],
@@ -76,8 +77,14 @@ const buildAndroidHelp = helpMessage({
       short: '-a',
     },
     {
-      description: 'run custom tasks after building AAR',
-      option: '--tasks',
+      description:
+        'maven repository for publishing artifacts (multiple can be passed)',
+      option: '--repository',
+      short: '--repo',
+    },
+    {
+      description: 'publishing task to be run (multiple can be passed)',
+      option: '--task',
       short: '-t',
     },
     {
@@ -113,12 +120,17 @@ const buildIosHelp = helpMessage({
     helpOption("'build-ios'"),
     ...commonBuildOptions,
     {
-      description: 'scheme to be build',
+      description: 'path to artifacts directory',
+      option: '--artifacts',
+      short: '-a',
+    },
+    {
+      description: 'scheme to be built',
       option: '--scheme',
       short: '-s',
     },
     {
-      description: 'path to .xcworkspace',
+      description: 'path to Xcode workspace (.xcworkspace)',
       option: '--xcworkspace',
       short: '-x',
     },

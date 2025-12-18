@@ -53,11 +53,18 @@ class ViewController: UIViewController {
   }
 
   private func startSendingMessages() {
-    timer = Timer.scheduledTimer(
-      withTimeInterval: 5.0,
-      repeats: true
-    ) { [weak self] _ in
-      self?.sendMessage()
+    // Run on background thread so that interaction like scrolling
+    // don't block the messaging
+    DispatchQueue.global(qos: .background).async {
+      self.timer = Timer.scheduledTimer(
+        withTimeInterval: 5.0,
+        repeats: true
+      ) { [weak self] _ in
+        self?.sendMessage()
+      }
+      let runLoop = RunLoop.current
+      runLoop.add(self.timer as! Timer, forMode: .default)
+      runLoop.run()
     }
   }
 
