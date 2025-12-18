@@ -41,7 +41,7 @@ const buildAndroidArgs: Spec = {
   // Aliases
   '-a': '--all',
   '-l': '--library',
-  '-r': '--repository',
+  '--repo': '--repository',
   '-t': '--task',
 };
 
