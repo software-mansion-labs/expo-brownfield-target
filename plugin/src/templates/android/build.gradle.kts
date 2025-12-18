@@ -6,45 +6,49 @@ plugins {
 }
 
 group = "${{groupId}}"
+
 version = "${{version}}"
 
-react {
-  autolinkLibrariesWithApp()
-}
+react { autolinkLibrariesWithApp() }
 
 android {
   namespace = "${{packageId}}"
   compileSdk = 36
 
-  buildFeatures {
-    buildConfig = true
-  }
+  buildFeatures { buildConfig = true }
 
   defaultConfig {
     minSdk = 24
     consumerProguardFiles("consumer-rules.pro")
-    buildConfigField("boolean", "IS_NEW_ARCHITECTURE_ENABLED", properties["newArchEnabled"].toString())
+    buildConfigField(
+        "boolean",
+        "IS_NEW_ARCHITECTURE_ENABLED",
+        properties["newArchEnabled"].toString(),
+    )
     buildConfigField("boolean", "IS_HERMES_ENABLED", properties["hermesEnabled"].toString())
-    buildConfigField("boolean", "IS_EDGE_TO_EDGE_ENABLED", "false")
-    buildConfigField("String", "REACT_NATIVE_RELEASE_LEVEL", "\"${findProperty("reactNativeReleaseLevel") ?: "stable"}\"")
+    buildConfigField(
+        "boolean",
+        "IS_EDGE_TO_EDGE_ENABLED",
+        properties["edgeToEdgeEnabled"].toString(),
+    )
+    buildConfigField(
+        "String",
+        "REACT_NATIVE_RELEASE_LEVEL",
+        "\"${findProperty("reactNativeReleaseLevel") ?: "stable"}\"",
+    )
   }
 
   buildTypes {
     release {
       isMinifyEnabled = false
-      proguardFiles(
-        getDefaultProguardFile("proguard-android-optimize.txt"),
-        "proguard-rules.pro"
-      )
+      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
     }
   }
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
   }
-  kotlinOptions {
-    jvmTarget = "17"
-  }
+  kotlinOptions { jvmTarget = "17" }
 }
 
 dependencies {
