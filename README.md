@@ -148,7 +148,7 @@ npx expo-brownfield-target build-android -r MavenLocal
 npx expo-brownfield-target build-ios
 ```
 
-More details and full reference of the CLI commands and options can be found in the [cli.md](./docs/cli.md) section.
+More details and full reference of the CLI commands and options can be found in [cli.md](./docs/cli.md).
 
 <a name="with-manually"></a>
 
