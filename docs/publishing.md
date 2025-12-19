@@ -12,9 +12,9 @@
 
   - [Custom Local](#custom-local)
 
-  - [Remote Public](#remote-public)
+  - [Public Remote](#remote-public)
 
-  - [Remote Private](#remote-private)
+  - [Private Remote](#remote-private)
 
 - [Gradle Tasks](#tasks)
 
