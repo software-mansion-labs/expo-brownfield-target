@@ -10,17 +10,17 @@
 
 - [File templates](#templates)
 
-<a href="overview"></a>
+<a id="overview"></a>
 
 ## Overview
 
 The brownfield setup can be configured by passing the options via the config plugin interface or using the file templates.
 
-Our goal is maximum configurability, so if you feel like anything else needs to be customizable, please feel free to cut an issue or a discussion with a feature request.
+Our goal is maximum configurability, so if you feel like anything else needs to be customizable, please feel free to open an issue or a discussion with the feature request.
 
-<a href="options"></a>
+<a id="options"></a>
 
-## Configuration
+## Configuration Options
 
 You can configure various properties of the native projects like package identifiers, target names or versions via the config plugin interface in `app.json`/`app.config.js`/`app.config.ts` file.
 
@@ -40,7 +40,7 @@ You can configure various properties of the native projects like package identif
 ]
 ```
 
-<a href="options-android"></a>
+<a id="options-android"></a>
 
 ### Android
 
@@ -54,17 +54,17 @@ You can configure various properties of the native projects like package identif
 
 See [publishing.md](./publishing.md) for full reference of the Android publishing configuration.
 
-<a href="options-ios"></a>
+<a id="options-ios"></a>
 
 ### iOS
 
 | Property           | Description                                                                                                                                                                                       | Default value                                                                                                                                                                                                              |
 | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `bundleIdentifier` | Bundle identifier for the brownfield native target.                                                                                                                                               | `ios.bundleIdentifier` with last component replaced with the target name or `com.example.<target-name>` if `ios.bundleIdentifier` is undefined.                                                                            |
-| `targetName`       | Name of the brownfield native target. Also used as the name of the directory containing brownfield files. The value is sanitized to only contain alphanumeric characters and start with a letter. | `config.scheme` or `config.ios.scheme` appended with `brownfield`, if either value is defined and a single string. If not defaults to to `<slug>brownfield`, where `<slug>` is sanitized slug from the Expo project config |
+| `targetName`       | Name of the brownfield native target. Also used as the name of the directory containing brownfield files. The value is sanitized to only contain alphanumeric characters and start with a letter. | `config.scheme` or `config.ios.scheme` appended with `brownfield`, if either value is defined and a single string. If not defaults to `<slug>brownfield`, where `<slug>` is sanitized slug from the Expo project config |
 
-<a href="templates"></a>
+<a id="templates"></a>
 
 ## File templates
 
-You can also overwrite the templates which are used to generate the files to even better suit the plugin behavior to your requirements. More information about overwriting the templates can be found in [templates.md](./templates.md).
+You can also overwrite the templates which are used to generate the files to better suit the plugin behavior to your requirements. More information about overwriting the templates can be found in [templates.md](./templates.md).
