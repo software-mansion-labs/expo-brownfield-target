@@ -10,7 +10,7 @@
 
 - [Troubleshooting](#troubleshooting)
 
-<a href="usage"></a>
+<a id="usage"></a>
 ## Usage
 
 ```
@@ -24,12 +24,12 @@ npx expo-brownfield-target --help
 npx expo-brownfield-target [command] --help
 ```
 
-<a href="commands"></a>
+<a id="commands"></a>
 ## Commands
 
 `build-android`
 
-Builds and publishes brownfield and its dependencies
+Builds and publishes brownfield and its dependencies.
 
 ```
 npx expo-brownfield-target build-android [options]
@@ -45,13 +45,13 @@ Options:
 
 - `-r, --release` - Build the brownfield in release mode
 
-- `-a, --all` - Build brownfield in both debug and release mode. Equivalent to specifying both `--debug` and `--release` at once. Default behavior
+- `-a, --all` - Build brownfield in both debug and release mode. Equivalent to specifying both `--debug` and `--release` at once. Default build type if none is specified
 
 - `-l, --library` - Specify brownfield library name (default: inferred from the project)
 
 - `--repo, --repository` - Specify one or more Maven repositories to publish artifacts to by their names. Can be passed multiple times to specify multiple repositories
 
-- `-t, --task` - Specify one or more Gradle publish tasks to be run. Can be passed multiple times to specify multiple tasks 
+- `-t, --task` - Specify one or more Gradle publish tasks to be run. Can be passed multiple times to specify multiple tasks
 
 ----
 
@@ -101,7 +101,7 @@ Options:
 
 - `-l, --library` - Specify brownfield library name (default: inferred from the project)
 
-<a href="examples"></a>
+<a id="examples"></a>
 ## Examples
 
 ### Building for Android:
@@ -161,7 +161,7 @@ Build configuration:
 Build the brownfield XCFramework and copy hermes XCFramework:
 
 ```
-npx expo-brownfield-target
+npx expo-brownfield-target build-ios
 ```
 
 ```
@@ -184,29 +184,29 @@ MyBrownfieldApp.xcframework
 hermes.xcframework
 ```
 
-<a href="troubleshooting"></a>
+<a id="troubleshooting"></a>
 ## Troubleshooting
 
 ### Build configuration inference fails (e.g. for Android library name or Xcode workspace)
 
-**Solution**: Verify if you're running CLI commands from the root of the Expo project and if you have run `npx expo prebuild` before using them
+**Solution**: Verify if you're running CLI commands from the root of the Expo project and if you have run `npx expo prebuild` before using them.
 
 ### Build fails with an unclear error
 
-**Solution:** Ensure you are running the command with `--verbose` option. If the issue still persists please cut an issue on GitHub
+**Solution:** Ensure you are running the command with `--verbose` option. If the issue still persists please open an issue on GitHub.
 
 ```
 npx expo-brownfield-target build-ios --verbose
 ```
 
-### Only part of specified repositories and tasks is build
+### Only part of specified repositories and tasks is built
 
-**Solution:** The CLI allows specifying the configuration both with task names and repository names, but if both variants are used, tasks take precedence over repositories 
+**Solution:** The CLI allows specifying the configuration both with task names and repository names, but if both variants are used, tasks take precedence over repositories.
 
 Ensure you are specifying the configuration either using only repositories:
 
 ```
-npx expo-brownfield-target --repo repo1 --repository repo2
+npx expo-brownfield-target build-android --repo repo1 --repository repo2
 ```
 
 Or only the task names:
