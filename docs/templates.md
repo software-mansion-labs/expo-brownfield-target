@@ -11,24 +11,24 @@
   - [Templates](#ios-templates)
   - [Variables](#ios-variables)
 
-<a name="overview"></a>
+<a id="overview"></a>
 ## Overview
 
-Various files, including the app entrypoints, build configurations or some other configuration files are created based on the templates from 
+Various files, including the app entrypoints, build configurations or some other configuration files are created based on the templates from [templates directory](../plugin/src/templates/).
 
-<a name="interpolation"></a>
+<a id="interpolation"></a>
 ## Variable interpolation
 
-Some of the values used by the file templates cannot be predefined as they depend on the plugin configuration resolved during the prebuild and are interpolated during the file generation. Interpolated variables are prefixed by `${{` and end with `}}`, everything between the characters is a case-sensitive variable name e.g.:
+Some of the values used by the file templates cannot be predefined as they depend on the plugin configuration resolved during the prebuild and are interpolated during the file generation. Interpolated variables are prefixed by `${{` and end with `}}`, everything between these characters is a case-sensitive variable name e.g.:
 
 ```
 // Expects variable `packageId` to be present during file generation
 package ${{packageId}}
 ```
 
-If you're overwriting any of the templates please pay attention if the default template for the file uses any of the inerpolated values. Variables used in each template and their references can be found in the tables below
+If you're overwriting any of the templates please pay attention if the default template for the file uses any interpolated values. Variables used in each template and their references can be found in the tables below.
 
-<a name="overwriting"></a>
+<a id="overwriting"></a>
 ## Overwriting templates
 
 To overwrite any of the templates listed in the below tables create a `.brownfield-templates` directory at the root of your Expo project and make sure it includes the templates which you want to overwrite. The names of the overwritten templates have to exactly match the names of the original templates.
@@ -49,10 +49,10 @@ Note: `.brownfield-templates` supports both flat and per-platform directory stru
     |__ build.gradle.kts
 ```
 
-<a name="android"></a>
+<a id="android"></a>
 ## Android
 
-<a name="android-templates"></a>
+<a id="android-templates"></a>
 ### Templates
 
 | File | Default template | Description | Interpolated variable |
@@ -61,23 +61,23 @@ Note: `.brownfield-templates` supports both flat and per-platform directory stru
 | build.gradle.kts | [build.gradle.kts](../plugin/src/templates/android/build.gradle.kts) | Gradle build settings for the brownfield library | `${{packageId}}`, `${{groupId}}`, `${{version}}` |
 | consumer-rules.pro | [consumer-rules.pro](../plugin/src/templates/android/consumer-rules.pro) | Empty consumer-rules file | - |
 | proguard-rules.pro | [proguard-rules.pro](../plugin/src/templates/android/proguard-rules.pro) | Default set of Proguard rules for the brownfield library | - |
-| ReactNativeHostManager.kt | [ReactNativeHostManager.kt](../plugin/src/templates/android/ReactNativeHostManager.kt) | React Native host manager used to initialize and intergrate RN app with the native app lifecycle | `${{packageId}}` |
+| ReactNativeHostManager.kt | [ReactNativeHostManager.kt](../plugin/src/templates/android/ReactNativeHostManager.kt) | React Native host manager used to initialize and integrate RN app with the native app lifecycle | `${{packageId}}` |
 | ReactNativeViewFactory.kt | [ReactNativeViewFactory.kt](../plugin/src/templates/android/ReactNativeViewFactory.kt) | React Native view factory used to create views hosting the React Native app | `${{packageId}}` |
 | ReactNativeFragment.kt | [ReactNativeFragment.kt](../plugin/src/templates/android/ReactNativeFragment.kt) | Android fragment used to display the React Native app | `${{packageId}}` |
 
-<a name="android-variables"></a>
+<a id="android-variables"></a>
 ### Variables
 
 | Variable | Description | Example value |
 | --- | --- | --- |
 | packageId | Java/Kotlin package identifier. Aligned with the directory structure of the brownfield library | `com.swmansion.brownfield-project.brownfield` |
-| groupId | Package identifier stripped of the last component. Used for publihsing artifacts to Maven | `com.swmansion.brownfield-project` |
+| groupId | Package identifier stripped of the last component. Used for publishing artifacts to Maven | `com.swmansion.brownfield-project` |
 | version | Specifies version for the brownfield library. Used for publishing to Maven repositories |
 
-<a name="ios"></a>
+<a id="ios"></a>
 ## iOS
 
-<a name="ios-templates"></a>
+<a id="ios-templates"></a>
 ### Templates
 
 | File | Default template | Description | Interpolated variable |
@@ -90,7 +90,7 @@ Note: `.brownfield-templates` supports both flat and per-platform directory stru
 | &lt;target-name&gt;.entitlements | [Target.entitlements](../plugin/src/templates/ios/Target.entitlements) | The `.entitlements` configuration file for the brownfield target. The name is dynamically set to match the brownfield target name | - |
 | ReactNativeViewController.swift | [ReactNativeViewController.swift](../plugin/src/templates/ios/ReactNativeViewController.swift) | View controller for rendering React Native app in a UIKit application | - |
 
-<a name="ios-variables"></a>
+<a id="ios-variables"></a>
 ### Variables
 
 | Variable | Description | Example value |

@@ -12,11 +12,15 @@
 
   - [Custom Local](#custom-local)
 
+  - [Public Remote](#remote-public)
+
+  - [Private Remote](#remote-private)
+
 - [Gradle Tasks](#tasks)
 
 - [Troubleshooting](#troubleshooting)
 
-<a href="overview"></a>
+<a id="overview"></a>
 
 ## Overview
 
@@ -34,7 +38,7 @@ Based on the publishing configuration specified in `app.json` / `app.config` fil
 
 For the manual setup of the publishing please see [manual-setup.md](./manual-setup.md).
 
-<a href="configuration"></a>
+<a id="configuration"></a>
 
 ## Configuration
 
@@ -78,6 +82,8 @@ If no repository is specified (the `publishing` option is not specified at all) 
 
 If an empty array is passed no publishing configuration will be generated.
 
+<a id="env-vars"></a>
+
 ### Environment variables
 
 The following properties of `remotePrivate` repositories:
@@ -101,11 +107,11 @@ Can be specified either as plain strings or as objects to be read from the envir
 > [!WARNING]  
 > When the values are read from environment variables they will be inserted into android project's `build.gradle` file on prebuild. Watch out to not commit the prebuilt native project to GitHub to avoid leaking those variables.
 
-<a href="repositories"></a>
+<a id="repositories"></a>
 
 ## Repositories
 
-<a href="maven-local"></a>
+<a id="maven-local"></a>
 
 ### Default Maven Local
 
@@ -127,7 +133,7 @@ Example:
 }
 ```
 
-<a href="custom-local"></a>
+<a id="custom-local"></a>
 
 ### Custom Local
 
@@ -153,7 +159,7 @@ Example:
 }
 ```
 
-<a href="remote-public"></a>
+<a id="remote-public"></a>
 
 ### Public Remote
 
@@ -183,7 +189,7 @@ Example:
 }
 ```
 
-<a href="remote-private"></a>
+<a id="remote-private"></a>
 
 ### Private Remote
 
@@ -225,11 +231,11 @@ Example:
 }
 ```
 
-<a href="tasks"></a>
+<a id="tasks"></a>
 
 ## Gradle Tasks
 
-Each publishing configuration is mapped to three for `Debug`, `Release` and `All` configurations. So, for example following configuration:
+Each publishing configuration is mapped to three tasks for `Debug`, `Release` and `All` configurations. So, for example following configuration:
 
 ```json
 {
@@ -263,7 +269,7 @@ Or list them manually:
 
 For full reference of the CLI and `tasks-android` command please see [cli.md](./cli.md).
 
-<a href="troubleshooting"></a>
+<a id="troubleshooting"></a>
 
 ## Troubleshooting
 
@@ -277,8 +283,8 @@ For full reference of the CLI and `tasks-android` command please see [cli.md](./
 
 ### The artifacts can't be published to my remote repository
 
-**Solution:** Ensure that the credentials are correct and provided via environment variables (if you are sourcing them from there). If your repository is hosted via unsafe network protocl be sure to include `allowInsecure` set to `true` option in the configuration.
+**Solution:** Ensure that the credentials are correct and provided via environment variables (if you are sourcing them from there). If your repository is hosted via unsafe network protocol be sure to include `allowInsecure` set to `true` option in the configuration.
 
 ### My authentication method is not supported by the library
 
-**Solution:** We currently only support the password-based authentication. If your repository requires other way of authentication which can be easily configure feel free to cut an issue or start a discussion with feature request.
+**Solution:** We currently only support the password-based authentication. If your repository requires other way of authentication which can be configured from Gradle feel free to open an issue or start a discussion with the feature request.

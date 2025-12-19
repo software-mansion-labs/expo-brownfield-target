@@ -1,6 +1,6 @@
 # Manual Setup
 
-All steps performed by the plugin can be also perfomed manually (e.g. in project that don't use Continuous Native Generation). The below sections cover manual set up of brownfield for iOS and Android (either using **Android Studio** or manually)
+All steps performed by the plugin can be also perfomed manually (e.g. in projects that don't use Continuous Native Generation). The below sections cover manual set up of brownfield for iOS and Android (either using **Android Studio** or manually).
 
 ### Table of contents
 
@@ -20,15 +20,15 @@ All steps performed by the plugin can be also perfomed manually (e.g. in project
 
 <!-- SECTION: ANDROID -->
 
-<a name="android"></a>
+<a id="android"></a>
 
 ## Android
 
-<a name="android-library"></a>
+<a id="android-library"></a>
 
 ### Library setup
 
-<a name="android-lib-ms"></a>
+<a id="android-lib-ms"></a>
 
 #### Manual setup
 
@@ -66,7 +66,7 @@ android/
 
 ---
 
-<a name="android-lib-as"></a>
+<a id="android-lib-as"></a>
 
 #### Android Studio:
 
@@ -98,7 +98,7 @@ android/
   |_ proguard-rules.pro  # default Proguard rules
 ```
 
-<a name="android-files"></a>
+<a id="android-files"></a>
 
 ### Files
 
@@ -142,7 +142,7 @@ android/
 |_ ...
 ```
 
-<a name="android-plugins"></a>
+<a id="android-plugins"></a>
 
 ### Plugins
 
@@ -223,7 +223,7 @@ plugins {
 
 The plugins will be compiled along with the Android project.
 
-<a name="android-building"></a>
+<a id="android-building"></a>
 
 ### Building
 
@@ -258,7 +258,7 @@ Optionally you can filter out only the tasks that follow the above convention (i
 
 #### Building
 
-You can run the tasks described aboce to invoke the build and publishing process for the brownfield library and all of its dependencies:
+You can run the tasks described above to invoke the build and publishing process for the brownfield library and all of its dependencies:
 
 ```bash
 ./gradlew publishBrownfieldAllPublicationToCustomLocalRepository
@@ -272,35 +272,35 @@ npx expo-brownfield-target build-android \
   -t publishBrownfieldAllPublicationToMavenLocal
 ```
 
-For full CLI reference see [cli.md](./docs/cli.md).
+For full CLI reference see [cli.md](./cli.md).
 
 <!-- END SECTION: ANDROID -->
 
 <!-- SECTION: IOS -->
 
-<a name="ios"></a>
+<a id="ios"></a>
 
 ## iOS
 
-<a name="#ios-open"></a>
+<a id="ios-open"></a>
 
 ### Open the project
 
-Open the `ios/` directory of your Expo project with **Xcode**
+Open the `ios/` directory of your Expo project with **Xcode**.
 
-<a name="#ios-framework"></a>
+<a id="ios-framework"></a>
 
 ### Framework setup
 
-Select `File` > `+ New` > `Target...` in the menu to create a new target in the project. Choose the `Framework & Library` > `Framework` template from the `iOS` tab. Configure the properties (Product Name, identifiers, etc.) to meet your project's requirements
+Select `File` > `+ New` > `Target...` in the menu to create a new target in the project. Choose the `Framework & Library` > `Framework` template from the `iOS` tab. Configure the properties (Product Name, identifiers, etc.) to meet your project's requirements.
 
-After confirming with `Finish` a new directory named the same as the new target should become visible in the Project Navigator. Right-click on it to open the menu and select `Convert to Group` as CocoaPods has some issues when working with the references
+After confirming with `Finish` a new directory named the same as the new target should become visible in the Project Navigator. Right-click on it to open the menu and select `Convert to Group` as CocoaPods has some issues when working with the references.
 
-<a name="#ios-files"></a>
+<a id="ios-files"></a>
 
 ### Files
 
-Content of the files can be copied from the default templates used by the plugin: [templates/ios](./plugin/templates/ios/). Please keep in mind that some of those templates contain interplation placeholders (in format of `${{variableName}}`) which should be replaced with values suitable for your project. For example:
+Content of the files can be copied from the default templates used by the plugin: [templates/ios](./plugin/src/templates/ios/). Please keep in mind that some of those templates contain interpolation placeholders (in format of `${{variableName}}`) which should be replaced with values suitable for your project. For example:
 
 ```xml
 <key>CFBundleName</key>
@@ -322,7 +322,7 @@ Copy the contents of `Template.entitlements` file to a new file named `<target-n
 
 The `patch-expo.sh` template shouldn't be copied anywhere and will come into use later to define a run script phase for patching `ExpoModulesProvider.swift` file.
 
-<a name="#ios-config"></a>
+<a id="ios-config"></a>
 
 ### Build configuration
 
@@ -337,7 +337,7 @@ In the project view select the `Build Settings` tab and make sure you're editing
 
 Then navigate to the `Build Phases` of the app target and copy the contents of the `Bundle React Native code and images` step. Create a new `Run Script Phase` in the brownfield target and paste the copied contents to it. Place it after the `Copy Bundle Resources` step.
 
-Make sure that to also copy the `Input Files` values of the phase.
+Make sure to also copy the `Input Files` values of the phase.
 
 Add the framework target to the app target in the `Podfile`:
 
@@ -366,9 +366,9 @@ if [ -f "$FILE" ]; then
 fi
 ```
 
-Make sure to replace the variable placeholders (`${{projectName}}`, `${{targetName}}`) with the values suitable for your project. Place the value after a step named `[Expo] Configure project`
+Make sure to replace the variable placeholders (`${{projectName}}`, `${{targetName}}`) with the values suitable for your project. Place the value after a step named `[Expo] Configure project`.
 
-<a name="#ios-xcf"></a>
+<a id="ios-xcf"></a>
 
 ### Building XCFramework
 

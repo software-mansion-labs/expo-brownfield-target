@@ -40,11 +40,11 @@
 
 ## Motivation
 
-Brownfield approach enables integrating React Native apps into native Android and iOS projects, but setting it up, especially in Expo projects using Continuous Native Generation is a manual, repetitive and pretty complex task. 
+Brownfield approach enables integrating React Native apps into native Android and iOS projects, but setting it up, especially in Expo projects using Continuous Native Generation is a manual, repetitive, and pretty complex task. 
 
-This library aims to fully automate and simplifiy brownfield setup by including a config plugin that configures your project on every prebuild, built-in APIs for common functionalities and CLI which builds the brownfield artifacts.
+This library aims to fully automate and simplify brownfield setup by including a config plugin that configures your project on every prebuild, built-in APIs for common use cases and CLI which builds the brownfield artifacts.
 
-Such setup of brownfield allows for easy publishing to Maven, as XCFramework or using Swift Packag Manager which enables e.g. simple and more independent cooperation of native and RN teams.
+Such setup of brownfield allows for easy publishing to Maven, as XCFramework or using Swift Package Manager which enables e.g. simple and more independent cooperation of native and RN teams.
 
 <a name="features"></a>
 
@@ -148,7 +148,7 @@ npx expo-brownfield-target build-android -r MavenLocal
 npx expo-brownfield-target build-ios
 ```
 
-More details and full reference of the CLI commands and options can be found below in the [cli.md ](./docs/cli.md) section.
+More details and full reference of the CLI commands and options can be found in the [cli.md](./docs/cli.md) section.
 
 <a name="with-manually"></a>
 
@@ -178,13 +178,13 @@ xcodebuild \
 ./gradlew publishBrownfieldAllPublicationToMavenLocal
 ```
 
-See [publishing.md](./docs/publishing.md#gradle-tasks) for more details about the publishing tasks.
+See [publishing.md](./docs/publishing.md#tasks) for more details about the publishing tasks.
 
 <a name="using-built-artifacts"></a>
 
 ### Using built artifacts in native projects
 
-Below snippets are taken from the examples of using brownfields inside native apps at: [/examples/android](./example/android/), [/examples/ios](./example/ios/) and [/examples/ios-swiftui](./example/ios-swiftui/).
+Below snippets are taken from the examples of using brownfields inside native apps at: [example/android](./example/android/), [example/ios](./example/ios/) and [example/ios-swiftui](./example/ios-swiftui/).
 
 <a name="using-android"></a>
 
@@ -251,7 +251,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(
       _ application: UIApplication,
       didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
-    ) -> Bool{
+    ) -> Bool {
         ReactNativeHostManager.shared.initialize()
 
         window = UIWindow(frame: UIScreen.main.bounds)
@@ -292,7 +292,7 @@ To be able to use Metro create a separate debug-only Manifest with the following
 </manifest>
 ```
 
-Then be sure to build nad publish the artifacts using either `All` (includes both debug and release) or `Debug` configuration and to use the debug variant in the native app. Also, don't forget to reverse the port 8081 (if necessary):
+Then be sure to build and publish the artifacts using either `All` (includes both debug and release) or `Debug` configuration and to use the debug variant in the native app. Also, don't forget to reverse the port 8081 (if necessary):
 
 ```
 adb reverse tcp:8081 tcp:8081

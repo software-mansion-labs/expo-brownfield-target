@@ -18,10 +18,10 @@
 
   - [React Native API](#navigation-api-js)
 
-<a href="communication"></a>
+<a id="communication"></a>
 ## Communication
 
-<a href="communication-overview"></a>
+<a id="communication-overview"></a>
 ### Overview
 
 Communication API enables bi-directional, message-based communication between the native (host) app and the brownfield app. Messages are defined as:
@@ -32,12 +32,12 @@ Communication API enables bi-directional, message-based communication between th
 
 - `Map<String, Any?>` in Kotlin
 
-<a href="communication-api-js"></a>
+<a id="communication-api-js"></a>
 ### React Native API 
 
 `addListener`
 
-Registers a listener for the `onMessage` event
+Registers a listener for the `onMessage` event.
 
 ```ts
 ExpoBrownfieldModule.addListener(listener: (event: MessageEvent) => void): EventSubscription
@@ -62,7 +62,7 @@ const handleEvent = (event: MessageEvent) => {
 };
 
 useEffect(() => {
-    ExpoBrownfield.addListener(handleEvent);
+    ExpoBrownfieldModule.addListener(handleEvent);
 
 // ...
 ```
@@ -73,7 +73,7 @@ useEffect(() => {
 
 `listenerCount`
 
-Returns the count of listeners registered for the `onMessage` event
+Returns the count of listeners registered for the `onMessage` event.
 
 ```ts
 listenerCount(): number
@@ -121,7 +121,7 @@ useEffect(() => {
 
 `removeListener`
 
-Removes the specified `onMessage` event listener
+Removes the specified `onMessage` event listener.
 
 ```ts
 removeListener(listener: (event: MessageEvent) => void): EventSubscription
@@ -146,9 +146,9 @@ const handleEvent = (event: MessageEvent) => {
 };
 
 useEffect(() => {
-    ExpoBrownfield.addListener(handleEvent);
+    ExpoBrownfieldModule.addListener(handleEvent);
     return () => {
-        ExpoBrownfield.removeListener(handleEvent);
+        ExpoBrownfieldModule.removeListener(handleEvent);
     }
 });
 // ...
@@ -160,7 +160,7 @@ useEffect(() => {
 
 `sendMessage`
 
-Sends a message from JavaScript to the native apps
+Sends a message from JavaScript to the native apps.
 
 ```ts
 sendMessage(message: Record<string, any>): void
@@ -180,7 +180,7 @@ import ExpoBrownfieldModule from 'expo-brownfield-target';
 // ...
 
 ExpoBrownfieldModule.sendMessage({
-  type: "MyMesage",
+  type: "MyMessage",
   data: {
     language: "TypeScript",
     expo: true,
@@ -190,12 +190,12 @@ ExpoBrownfieldModule.sendMessage({
 });
 ```
 
-<a href="communication-api-android"></a>
+<a id="communication-api-android"></a>
 ### Android API
 
 `addListener`
 
-Registers a listener for messages from JavaScript. Returns the UUID of the listener which can be used to remove it
+Registers a listener for messages from JavaScript. Returns the UUID of the listener which can be used to remove it.
 
 ```kotlin
 addListener(callback: (Map<String, Any?>) -> Unit)
@@ -225,7 +225,7 @@ val listenerId = BrownfieldMessaging.addListener { event ->
 
 `removeListener`
 
-Removes listener with the specified UUID
+Removes listener with the specified UUID.
 
 ```kotlin
 removeListener(id: String)
@@ -253,7 +253,7 @@ BrownfieldMessaging.removeListener(listenerId)
 
 `sendMessage`
 
-Emits a `onMessage` event with the message from Android to the JavaScript listeners
+Emits a `onMessage` event with the message from Android to the JavaScript listeners.
 
 ```kotlin
 sendMessage(message: Map<String, Any?>)
@@ -283,12 +283,12 @@ BrownfieldMessaging.sendMessage(mapOf(
 ))
 ```
 
-<a href="communication-api-ios"></a>
+<a id="communication-api-ios"></a>
 ### iOS API
 
 `addListener`
 
-Registers a listener for messages from JavaScript. Returns the UUID of the listener which can be used to remove it
+Registers a listener for messages from JavaScript. Returns the UUID of the listener which can be used to remove it.
 
 ```swift
 addListener(_ callback: @escaping ([String: Any?]) -> Void)
@@ -303,8 +303,8 @@ Arguments:
 Example:
 
 ```swift
-let listenerId = BrownfieldMessaging.addListener { event ->
-    print("Message listener: \(event)")
+let listenerId = BrownfieldMessaging.addListener { message in
+    print("Message listener: \(message)")
 }
 ```
 
@@ -314,7 +314,7 @@ let listenerId = BrownfieldMessaging.addListener { event ->
 
 `removeListener`
 
-Removes listener with specified UUID
+Removes listener with specified UUID.
 
 ```swift
 removeListener(id: String)
@@ -336,7 +336,7 @@ BrownfieldMessaging.removeListener(id: listenerId)
 
 `sendMessage`
 
-Emits an `onMessage` event with the message from iOS to the JavaScript listeners
+Emits an `onMessage` event with the message from iOS to the JavaScript listeners.
 
 ```swift
 sendMessage(_ message: [String: Any?])
@@ -346,7 +346,7 @@ Arguments:
 
 | Name | Required | Description | Type | Default value |
 | --- | --- | --- | --- | --- |
-| `message` | Yes | Message payload| [String: Any?] | - |
+| `message` | Yes | Message payload | [String: Any?] | - |
 
 Example:
 
@@ -362,20 +362,20 @@ BrownfieldMessaging.sendMessage([
 ])
 ```
 
-<a href="navigation"></a>
+<a id="navigation"></a>
 ## Navigation
 
-<a href="navigation-overview"></a>
+<a id="navigation-overview"></a>
 ### Overview
 
 Navigation API provides two JavaScript methods for implementing common brownfield patterns like returning to the native (host) app (regardless of React Native navigation state) and controlling whether back button/back gesture should be handled by host or React Native app.
 
-<a href="communication-api-js"></a>
+<a id="navigation-api-js"></a>
 ### React Native API
 
 `popToNative`
 
-A method to return to the native view which precedes the React Native brownfield in the navigation history
+A method to return to the native view which precedes the React Native brownfield in the navigation history.
 
 ```ts
 popToNative(animated?: boolean)
@@ -440,7 +440,7 @@ export default function HomeScreen() {
       // Enable native handling only when we can't further go back
       // within the React Native app
       const shouldEnableNativeBack = navigation.canGoBack();
-      ExpoBrownfield.setNativeBackEnabled(!shouldEnableNativeBack);
+      ExpoBrownfieldModule.setNativeBackEnabled(!shouldEnableNativeBack);
     });
 
     return () => {
