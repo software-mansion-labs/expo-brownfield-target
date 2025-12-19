@@ -20,15 +20,15 @@ All steps performed by the plugin can be also perfomed manually (e.g. in project
 
 <!-- SECTION: ANDROID -->
 
-<a name="android"></a>
+<a id="android"></a>
 
 ## Android
 
-<a name="android-library"></a>
+<a id="android-library"></a>
 
 ### Library setup
 
-<a name="android-lib-ms"></a>
+<a id="android-lib-ms"></a>
 
 #### Manual setup
 
@@ -66,7 +66,7 @@ android/
 
 ---
 
-<a name="android-lib-as"></a>
+<a id="android-lib-as"></a>
 
 #### Android Studio:
 
@@ -98,7 +98,7 @@ android/
   |_ proguard-rules.pro  # default Proguard rules
 ```
 
-<a name="android-files"></a>
+<a id="android-files"></a>
 
 ### Files
 
@@ -142,7 +142,7 @@ android/
 |_ ...
 ```
 
-<a name="android-plugins"></a>
+<a id="android-plugins"></a>
 
 ### Plugins
 
@@ -223,7 +223,7 @@ plugins {
 
 The plugins will be compiled along with the Android project.
 
-<a name="android-building"></a>
+<a id="android-building"></a>
 
 ### Building
 
@@ -278,7 +278,7 @@ For full CLI reference see [cli.md](./cli.md).
 
 <!-- SECTION: IOS -->
 
-<a name="ios"></a>
+<a id="ios"></a>
 
 ## iOS
 
