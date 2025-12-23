@@ -82,6 +82,12 @@
             "targetName": "MyBrownfieldApp"
           }
         }
+      ],
+      [
+        "expo-dev-client",
+        {
+          "launchMode": "most-recent"
+        }
       ]
     ],
     "experiments": {

@@ -2,15 +2,15 @@ import UIKit
 import MyBrownfieldApp
 
 @main
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: BrownfieldAppDelegate {
   var window: UIWindow?
 
-  func application(
+  override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     // TODO: Adopt to UIScene lifecycle for the future
-    ReactNativeHostManager.shared.initialize()
+    let superResult = super.application(application, didFinishLaunchingWithOptions: launchOptions)
     window = UIWindow(frame: UIScreen.main.bounds)
 
     // CASE: Simple use case
@@ -23,6 +23,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     window?.makeKeyAndVisible()
 
-    return true
+    return true && superResult
   }
 }
