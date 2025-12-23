@@ -43,6 +43,12 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
     createFileFromTemplate('ReactNativeView.swift', groupPath);
     // Create the UIKit brownfield view controller based on the template
     createFileFromTemplate('ReactNativeViewController.swift', groupPath);
+    // Create the ExpoAppDelegateWrapper based on the template
+    createFileFromTemplate('ExpoAppDelegateWrapper.swift', groupPath);
+    // Create the BrownfieldAppDelegate based on the template
+    createFileFromTemplate('BrownfieldAppDelegate.swift', groupPath);
+    // Create the ReactNativeDelegate based on the template
+    createFileFromTemplate('ReactNativeDelegate.swift', groupPath);
 
     // Create and properly add a new group for the framework
     createGroup(xcodeProject, pluginConfig.targetName, groupPath, [
@@ -50,6 +56,9 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
       'Messaging.swift',
       'ReactNativeView.swift',
       'ReactNativeViewController.swift',
+      'ExpoAppDelegateWrapper.swift',
+      'BrownfieldAppDelegate.swift',
+      'ReactNativeDelegate.swift',
     ]);
 
     // Create 'Info.plist' and '<target-name>.entitlements' based on the templates
@@ -67,7 +76,8 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
     // - Reference Expo app target's RN bundle script
     // - Add custom script for patching ExpoModulesProvider
     // - Add 'ExpoApp.swift', 'ReactNativeView.swift',
-    //   'Messaging.swift' and 'ReactNativeViewController.swift'
+    //   'Messaging.swift', 'ReactNativeViewController.swift' and
+    //   'ExpoAppDelegateWrapper.swift' and 'BrownfieldAppDelegate.swift'
     //   to the compile sources phase
     configureBuildPhases(
       xcodeProject,
@@ -79,6 +89,9 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
         `${pluginConfig.targetName}/Messaging.swift`,
         `${pluginConfig.targetName}/ReactNativeView.swift`,
         `${pluginConfig.targetName}/ReactNativeViewController.swift`,
+        `${pluginConfig.targetName}/ExpoAppDelegateWrapper.swift`,
+        `${pluginConfig.targetName}/BrownfieldAppDelegate.swift`,
+        `${pluginConfig.targetName}/ReactNativeDelegate.swift`,
       ],
     );
     // Add the required build settings
