@@ -199,8 +199,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 import com.swmansion.brownfield.showReactNativeFragment
+import com.swmansion.brownfield.BrownfieldActivity
 
-class MainActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
+class MainActivity : BrownfieldActivity(), DefaultHardwareBackBtnHandler {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -213,9 +214,54 @@ class MainActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
 }
 ```
 
+Extending `BrownfieldActivity` enables automatic integration of `onConfigurationChanged` lifecycle event with Expo lifecycle dispatcher. You can also set it up manually using `BrownfieldLifecycleDispatcher`:
+
+```kotlin
+// MainActivity.kt
+package com.swmansion.example
+
+import android.content.res.Configuration
+import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
+import com.swmansion.brownfield.showReactNativeFragment
+import com.swmansion.brownfield.BrownfieldLifecycleDispatcher
+
+class MainActivity: AppCompatActivity(), {
+  // ...
+
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    super.onConfigurationChanged(newConfig)
+    BrownfieldLifecycleDispatcher.onConfigurationChanged(this.application, newConfig)
+  }
+}
+```
+
+`BrownfieldLifecycleDispatcher` also includes `onApplicationCreate` method which accepts the application as it's only parameter, but this method shouldn't be called manually, as it's invoked in `ReactNativeHostManager`.
+
 <a name="using-swiftui"></a>
 
 ### iOS (SwiftUI)
+
+```swift
+// MyApp.swift
+import SwiftUI
+import MyBrownfieldApp
+
+@main
+struct MyApp: App {
+  @UIApplicationDelegateAdaptor var delegate: BrownfieldAppDelegate
+
+  var body: some Scene {
+    WindowGroup {
+      ContentView()
+    }
+  }
+}
+```
+
+`BrownfieldAppDelegate` integrates host app with ExpoAppDelegate and initializes the shared instance of ReactNativeHostManager. You can also initialize it manually:
 
 ```swift
 // ContentView.swift
@@ -245,14 +291,43 @@ import UIKit
 import MyBrownfieldApp
 
 @main
+class AppDelegate: BrownfieldAppDelegate {
+    var window: UIWindow?
+
+    override func application(
+      _ application: UIApplication,
+      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+        super.application(application, didFinishLaunchingWithOptions: launchOptions)
+
+        window = UIWindow(frame: UIScreen.main.bounds)
+        let viewController = ReactNativeViewController(moduleName: "main")
+        window?.rootViewController = viewController
+        window?.makeKeyAndVisible()
+
+        return true
+    }
+}
+```
+
+`BrownfieldAppDelegate` integrates host app with ExpoAppDelegate and initializes the shared instance of ReactNativeHostManager. You can also initialize it manually and control which of the app delegate methods you want to forward:
+
+```swift
+// AppDelegate.swift
+import UIKit
+import MyBrownfieldApp
+
+@main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
-    func application(
+    override func application(
       _ application: UIApplication,
       didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         ReactNativeHostManager.shared.initialize()
+        ReactNativeHostManager.shared.expoAppDelegateWraper?
+            .application(application, didFinishLaunchingWithOptions: launchOptions)
 
         window = UIWindow(frame: UIScreen.main.bounds)
         let viewController = ReactNativeViewController(moduleName: "main")
