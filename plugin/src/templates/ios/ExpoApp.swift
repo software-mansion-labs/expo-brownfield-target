@@ -11,8 +11,8 @@ public class ReactNativeHostManager {
   private var reactNativeFactory: RCTReactNativeFactory?
   public private(set) var expoDelegateWrapper: ExpoAppDelegateWrapper?
 
-  /// Initializes the React Native host manager shared instance.
-  /// Prevents multiple initializations of the React Native host manager shared instance.
+  // Initializes the React Native host manager shared instance.
+  // Prevents multiple initializations of the React Native host manager shared instance.
   public func initialize() {
     // Prevent multiple initializations
     guard reactNativeDelegate == nil else {
@@ -32,14 +32,14 @@ public class ReactNativeHostManager {
     _ = ExpoModulesProvider()
   }
 
-  /// Loads and presents the React Native view.
+  // Loads and presents the React Native view.
   public func loadView(
     moduleName: String,
     initialProps: [AnyHashable: Any]?,
     launchOptions: [AnyHashable: Any]?
   ) throws -> UIView {
     guard let expoDelegateWrapper else {
-      throw NSError(domain: "Trying to load view without ExpoAppDelegateWrapper initialized", code: 1)
+      fatalError("Trying to load view without ExpoAppDelegateWrapper initialized")
     }
 
     return expoDelegateWrapper.recreateRootView(

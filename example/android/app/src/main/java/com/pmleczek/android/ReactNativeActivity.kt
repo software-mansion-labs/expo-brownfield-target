@@ -6,14 +6,14 @@ import android.os.Handler
 import android.os.Looper
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 import com.pmleczek.expobrownfieldtargetexample.brownfield.showReactNativeFragment
+import com.pmleczek.expobrownfieldtargetexample.brownfield.BrownfieldActivity
 import expo.modules.brownfield.BrownfieldMessaging
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class ReactNativeActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
+class ReactNativeActivity : BrownfieldActivity(), DefaultHardwareBackBtnHandler {
   private var listenerId: String? = null
   private val handler = Handler(Looper.getMainLooper())
   @RequiresApi(Build.VERSION_CODES.O)
