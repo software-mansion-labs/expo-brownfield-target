@@ -14,10 +14,6 @@ struct ContentView: View {
   @State private var listenerId: String? = nil
   @State private var timer: Timer? = nil
 
-  init() {
-    ReactNativeHostManager.shared.initialize()
-  }
-
   var body: some View {
     // CASE: Simple use case
 //        VStack {
