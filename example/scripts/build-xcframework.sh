@@ -32,7 +32,7 @@ if [ -z "$SCHEME" ]; then
   echo "SCHEME is not defined"
   echo "Searching for brownfield target scheme..."
 
-  SCHEME=$(basename $(dirname $(find "$APP_PROJECT_DIR" -name 'ExpoApp.swift')))
+  SCHEME=$(basename $(dirname $(find "$APP_PROJECT_DIR" -name 'ReactNativeHostManager.swift')))
   if [ -z "$SCHEME" ]; then
     echo "Error: couldn't infer the brownfield scheme name"
     exit 1
