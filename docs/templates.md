@@ -38,13 +38,13 @@ Note: `.brownfield-templates` supports both flat and per-platform directory stru
 ```
 # Flat structure
 .brownfield-templates/
-|__ ExpoApp.swift
+|__ ReactNativeHostManager.swift
 |__ build.gradle.kts
 
 # Per-platform structure
 .brownfield-templates/
 |__ ios/
-    |__ ExpoApp.swift
+    |__ ReactNativeHostManager.swift
 |__ android/
     |__ build.gradle.kts
 ```
@@ -82,7 +82,10 @@ Note: `.brownfield-templates` supports both flat and per-platform directory stru
 
 | File | Default template | Description | Interpolated variable |
 | --- | --- | --- | --- |
-| ExpoApp.swift | [ExpoApp.swift](../plugin/src/templates/ios/ExpoApp.swift) | React Native host manager used to initialize and integrate RN app with the native app lifecycle. Also used for loading the view hosting the React Native app | - |
+| ReactNativeHostManager.swift | [ReactNativeHostManager.swift](../plugin/src/templates/ios/ReactNativeHostManager.swift) | React Native host manager used to initialize and integrate RN app with the native app lifecycle. Also used for loading the view hosting the React Native app | - |
+| ReactNativeDelegate.swift | [ReactNativeDelegate.swift](../plugin/src/templates/ios/ReactNativeDelegate.swift) | Expo React Native factory delegate responsible for providing the bundle URL  | - |
+| `BrownfieldAppDelegate.swift` | [BrownfieldAppDelegate.swift](../plugin/src/templates/ios/BrownfieldAppDelegate.swift) | UIApplicationDelegate which automatically forwards methods to ExpoAppDelegate and can be used to integrate host app with it | - |
+| `ExpoAppDelegateWrapper.swift` | [ExpoAppDelegateWrapper.swift](../plugin/src/templates/ios/ExpoAppDelegateWrapper.swift) | Wrapper which exposes ExpoAppDelegate to the host application | - |
 | Messaging.swift | [Messaging.swift](../plugin/src/templates/ios/Messaging.swift) | Exposes bi-directional communication methods | - |
 | Info.plist | [Info.plist](../plugin/src/templates/ios/Info.plist) | Contains native target metadata and settings. Required by Xcode | `${{bundleIdentifier}}`, `${{targetName}}` |
 | patch-expo.sh | [patch-expo.sh](../plugin/src/templates/ios/patch-expo.sh) | Script embedded within the build steps of the brownfield target. Used to patch Expo Modules | `${{projectName}}`, `${{targetName}}` |

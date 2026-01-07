@@ -312,11 +312,14 @@ You can find full reference on values used by each template and the variable int
 
 Add the following files to the framework directory:
 
-- `ExpoApp.swift`
+- `ReactNativeHostManager.swift`
+- `ReactNativeDelegate.swift`
 - `Info.plist`
 - `Messaging.swift` (if you want to include support for the bi-directional messaging API)
 - `ReactNativeView.swift` (if you want to include SwiftUI support)
 - `ReactNativeViewController.swift` (if you want to include UIKit view controller)
+- `ExpoAppDelegateWrapper.swift`
+- `BrownfieldAppDelegate.swift` (if you want to include one-line integration with ExpoAppDelegate)
 
 Copy the contents of `Template.entitlements` file to a new file named `<target-name>` (e.g. `MyBrownfield.entitlements`) at the framework directory.
 
