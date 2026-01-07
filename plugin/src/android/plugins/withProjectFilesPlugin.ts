@@ -28,6 +28,7 @@ const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (
 
     // Add files from templates to the brownfield library:
     // - AndroidManifest.xml
+    // - BrownfieldActivity.kt
     // - ReactNativeHostManager.kt
     // - ReactNativeViewFactory.kt
     // - ReactNativeFragment.kt
@@ -35,6 +36,9 @@ const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (
     // - proguard-rules.pro
     // - consumer-rules.pro
     createFileFromTemplate('AndroidManifest.xml', brownfieldMainPath);
+    createFileFromTemplate('BrownfieldActivity.kt', brownfieldSourcesPath, {
+      packageId: pluginConfig.package,
+    });
     createFileFromTemplate('ReactNativeHostManager.kt', brownfieldSourcesPath, {
       packageId: pluginConfig.package,
     });
