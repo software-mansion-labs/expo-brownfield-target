@@ -184,6 +184,9 @@ const getCommonBuildSettings = (
     TARGETED_DEVICE_FAMILY: `"1,2"`,
     INFOPLIST_FILE: `${targetName}/Info.plist`,
     CURRENT_PROJECT_VERSION: `"${currentProjectVersion}"`,
+    LD_RUNPATH_SEARCH_PATHS:
+      '"$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks"',
+    DYLIB_INSTALL_NAME_BASE: '"@rpath"',
     // IPHONEOS_DEPLOYMENT_TARGET: `"${deploymentTarget}"`,
     PRODUCT_BUNDLE_IDENTIFIER: `"${bundleIdentifier}"`,
     GENERATE_INFOPLIST_FILE: `"YES"`,
