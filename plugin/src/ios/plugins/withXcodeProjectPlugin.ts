@@ -89,7 +89,7 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
         `${pluginConfig.targetName}/Messaging.swift`,
         `${pluginConfig.targetName}/ReactNativeView.swift`,
         `${pluginConfig.targetName}/ReactNativeViewController.swift`,
-        `${pluginConfig.targetName}/ExpoAppDelegateWrapper.swift`,
+        `${pluginConfig.targetName}/ExpoAppDpelegateWrapper.swift`,
         `${pluginConfig.targetName}/BrownfieldAppDelegate.swift`,
         `${pluginConfig.targetName}/ReactNativeDelegate.swift`,
       ],
@@ -100,6 +100,7 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
       pluginConfig.targetName,
       config.ios?.buildNumber || '1',
       pluginConfig.bundleIdentifier,
+      config.ios?.version || config.version,
     );
 
     return config;
