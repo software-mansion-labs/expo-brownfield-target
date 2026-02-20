@@ -89,7 +89,7 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
         `${pluginConfig.targetName}/Messaging.swift`,
         `${pluginConfig.targetName}/ReactNativeView.swift`,
         `${pluginConfig.targetName}/ReactNativeViewController.swift`,
-        `${pluginConfig.targetName}/ExpoAppDpelegateWrapper.swift`,
+        `${pluginConfig.targetName}/ExpoAppDelegateWrapper.swift`,
         `${pluginConfig.targetName}/BrownfieldAppDelegate.swift`,
         `${pluginConfig.targetName}/ReactNativeDelegate.swift`,
       ],
