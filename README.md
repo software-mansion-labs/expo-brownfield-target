@@ -1,7 +1,7 @@
 ![expo-brownfield-target by Software Mansion](https://github.com/user-attachments/assets/7994328f-6401-474a-965d-35829ba4ac41)
 
 > [!WARNING]  
-> This library is in early development stage; breaking changes can be introduced in minor version upgrades.
+> As of Expo SDK 55 this library has become part of the Expo SDK under new `expo-brownfield` package and will no longer be actively maintained in this repository. Please see: https://docs.expo.dev/versions/latest/sdk/brownfield/ for more details
 
 # expo-brownfield-target
 
