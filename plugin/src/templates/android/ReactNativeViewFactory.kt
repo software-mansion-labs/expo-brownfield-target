@@ -10,20 +10,16 @@ import com.facebook.react.ReactDelegate
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
 
-enum class RootComponent(val key: String) {
-  Main("main")
-}
-
 object ReactNativeViewFactory {
   fun createFrameLayout(
       context: Context,
       activity: FragmentActivity,
-      rootComponent: RootComponent,
+      rootComponent: String,
       launchOptions: Bundle? = null,
   ): FrameLayout {
     val reactHost = ReactNativeHostManager.shared.getReactHost()
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-      val reactDelegate = ReactDelegate(activity, reactHost!!, rootComponent.key, launchOptions)
+      val reactDelegate = ReactDelegate(activity, reactHost!!, rootComponent, launchOptions)
 
       activity.lifecycle.addObserver(
           object : DefaultLifecycleObserver {
@@ -51,7 +47,7 @@ object ReactNativeViewFactory {
     val reactView = ReactRootView(context)
     reactView.startReactApplication(
         instanceManager,
-        rootComponent.key,
+        rootComponent,
         launchOptions,
     )
 
